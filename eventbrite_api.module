@@ -1,0 +1,23 @@
+<?php
+
+/**
+ * @file
+ * Provides the main module.
+ */
+
+/**
+ * Implements hook_libraries_info().
+ */
+function eventbrite_api_libraries_info() {
+  $libraries['eventbrite_php'] = array(
+    'name' => 'eventbrite.php',
+    'vendor url' => 'https://github.com/ryanjarvinen/eventbrite.php',
+    'download url' => 'https://raw.github.com/ryanjarvinen/eventbrite.php/master/Eventbrite.php',
+    'files' => array(
+      'php' => array(
+        'eventbrite.php',
+      ),
+    ),
+  );
+  return $libraries;
+}

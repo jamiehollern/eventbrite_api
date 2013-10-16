@@ -1,0 +1,35 @@
+<?php
+
+/**
+ * Performs database install and uninstall functions for the Eventbrite API module.
+ */
+ 
+/**
+ * Implements hook_requirements().
+ */
+function eventbrite_api_requirements($phase) {
+	// The array that we will return.
+  $requirements = array();
+	// We only need the "runtime" phase.
+  if ($phase == 'runtime') {
+		// Load the library.
+    $library = libraries_detect('eventbrite_php');
+		// If the library is not installed.
+    if (empty($library['installed'])) {
+			// Build the requirements array.
+      $requirements['eventbrite_php'] = array(
+        'title' => $t('Eventbrite API'),
+        'severity' => REQUIREMENT_ERROR,
+        'description' => $t('You need to download !eventbrite_php and place it into a directory named eventbrite in the %path directory on your server.', array('!eventbrite_php' => l($t('eventbrite.php'), $library['download url']), '%path' => 'sites/all/libraries')),
+      );
+    }
+  }
+	return $requirements;
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function eventbrite_api_uninstall() {
+  db_query("DELETE FROM {variable} WHERE name LIKE 'eventbrite_api_%'");
+}
