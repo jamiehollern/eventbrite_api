@@ -51,19 +51,20 @@ function _eventbrite_api_admin() {
 		'#title' => t('Eventbrite authentication details'),
 		'#collapsible' => TRUE,
 		'#collapsed' => FALSE,
-		'#description' => t('Get your API keys at <a href="@url">@url</a>.', array('@url' => 'https://www.eventbrite.com/api/key/')),
 	);
   $form['config']['eventbrite_api_appkey'] = array(
     '#type' => 'textfield',
     '#title' => t('Eventbrite app key'),
     '#default_value' => variable_get('eventbrite_api_appkey', ''),
     '#required' => TRUE,
+		'#description' => t('Get your app keys at <a href="@url">@url</a>.', array('@url' => 'https://www.eventbrite.com/api/key/')),
   );
   $form['config']['eventbrite_api_userkey'] = array(
     '#type' => 'textfield',
     '#title' => t('Eventbrite user key'),
     '#default_value' => variable_get('eventbrite_api_userkey', ''),
     '#required' => TRUE,
+		'#description' => t('Get your user key at <a href="@url">@url</a>.', array('@url' => 'https://www.eventbrite.com/userkeyapi')),
   );
 	$form['#validate'][] = '_eventbrite_api_admin_validate';
   return system_settings_form($form);
