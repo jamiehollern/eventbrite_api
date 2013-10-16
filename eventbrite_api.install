@@ -12,17 +12,30 @@ function eventbrite_api_requirements($phase) {
   $requirements = array();
 	// We only need the "runtime" phase.
   if ($phase == 'runtime') {
+	  // Installation version of t().
+	  $t = get_t();
 		// Load the library.
-    $library = libraries_detect('eventbrite_php');
+    $library = libraries_detect('eventbrite');
 		// If the library is not installed.
     if (empty($library['installed'])) {
 			// Build the requirements array.
-      $requirements['eventbrite_php'] = array(
+      $requirements['eventbrite'] = array(
         'title' => $t('Eventbrite API'),
+				'value' => $t('Not found'),
         'severity' => REQUIREMENT_ERROR,
         'description' => $t('You need to download !eventbrite_php and place it into a directory named eventbrite in the %path directory on your server.', array('!eventbrite_php' => l($t('eventbrite.php'), $library['download url']), '%path' => 'sites/all/libraries')),
       );
     }
+		// Let the user know that it's working.
+		else {
+			// Build the requirements array.
+      $requirements['eventbrite'] = array(
+        'title' => $t('Eventbrite API'),
+				'value' => $t('Found'),
+        'severity' => REQUIREMENT_OK,
+        'description' => $t('The eventbrite.php library is installed.'),
+      );
+		}
   }
 	return $requirements;
 }

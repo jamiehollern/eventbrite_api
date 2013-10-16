@@ -1,0 +1,7 @@
+<?php
+
+/**
+ * Performs database install and uninstall functions for the Eventbrite API Events module.
+ */
+
+
