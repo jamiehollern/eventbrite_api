@@ -11,14 +11,14 @@
 function eventbrite_api_menu() {
   $items = array();
   // Eventbrite API admin config page.
-  $items['admin/config/eventbrite'] = array(
+  $items['admin/config/services/eventbrite'] = array(
     'title' => 'Eventbrite API configuration',
     'description' => 'Configure the Eventbrite API module.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('_eventbrite_api_admin'),
     'access arguments' => array('administer eventbrite_api config'),
     'type' => MENU_NORMAL_ITEM,
-   );
+  );
   return $items;
 }
 
@@ -52,19 +52,19 @@ function _eventbrite_api_admin() {
 		'#collapsible' => TRUE,
 		'#collapsed' => FALSE,
 	);
-  $form['config']['eventbrite_api_appkey'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Eventbrite app key'),
-    '#default_value' => variable_get('eventbrite_api_appkey', ''),
-    '#required' => TRUE,
-		'#description' => t('Get your app keys at <a href="@url">@url</a>.', array('@url' => 'https://www.eventbrite.com/api/key/')),
-  );
   $form['config']['eventbrite_api_userkey'] = array(
     '#type' => 'textfield',
     '#title' => t('Eventbrite user key'),
     '#default_value' => variable_get('eventbrite_api_userkey', ''),
     '#required' => TRUE,
 		'#description' => t('Get your user key at <a href="@url">@url</a>.', array('@url' => 'https://www.eventbrite.com/userkeyapi')),
+  );
+  $form['config']['eventbrite_api_appkey'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Eventbrite app key'),
+    '#default_value' => variable_get('eventbrite_api_appkey', ''),
+    '#required' => TRUE,
+		'#description' => t('Get your app keys at <a href="@url">@url</a>.', array('@url' => 'https://www.eventbrite.com/api/key/')),
   );
 	$form['#validate'][] = '_eventbrite_api_admin_validate';
   return system_settings_form($form);
@@ -86,11 +86,18 @@ function _eventbrite_api_admin_validate($form, &$form_state) {
 	try {
 		// If it works, don't do anything as we want to save the details.
 		$events = $eb_client->user_list_events();
+		dpm($events);
+		// Show a message.
+		if (isset($events)) {
+			drupal_set_message(t('Eventbrite connection successful.'));
+		}
 	}
 	// If it doesn't work, catch the error.
 	catch (Exception $e) {
 		// Variable for the form element.
 		$element = 'config';
+		// Variable for the error message.
+		$error = $e->getMessage();
 		// If it's the user key.
 		if (strpos($error, 'user_key') !== FALSE) {
 			$element = 'eventbrite_api_userkey';
@@ -100,6 +107,6 @@ function _eventbrite_api_admin_validate($form, &$form_state) {
 			$element = 'eventbrite_api_appkey';
 		}
 		// Then stop the form from saving the details while printing the error.
-		form_set_error($element, t('Connection to Eventbrite failed with the following error: @error', array('@error' => $e->getMessage())));
+		form_set_error($element, t('Connection to Eventbrite failed with the following error: @error', array('@error' => $error)));
   }
 }
