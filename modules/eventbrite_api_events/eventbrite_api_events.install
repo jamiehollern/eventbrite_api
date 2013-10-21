@@ -77,7 +77,6 @@ function eventbrite_api_events_schema() {
         'description' => 'The event description.',
         'type' => 'text',
         'not null' => TRUE,
-        'default' => '',
       ),
       'end_date' => array(
         'description' => 'The event end date.',
@@ -172,13 +171,11 @@ function eventbrite_api_events_schema() {
         'description' => 'The description of the event organizer.',
         'type' => 'text',
         'not null' => TRUE,
-        'default' => '',
       ),
       'long_description' => array(
         'description' => 'The longdescription of the event organizer.',
         'type' => 'text',
         'not null' => TRUE,
-        'default' => '',
       ),
       'url' => array(
         'description' => 'The Eventbrite URL for the event.',
@@ -220,13 +217,11 @@ function eventbrite_api_events_schema() {
         'type' => 'int',
         'size' => 'tiny',
         'not null' => TRUE,
-        'default' => '',
       ),
       'description' => array(
         'description' => 'The ticket description.',
         'type' => 'text',
         'not null' => TRUE,
-        'default' => '',
       ),
       'start_date' => array(
         'description' => 'The ticket sale start date.',
@@ -414,4 +409,11 @@ function eventbrite_api_events_schema() {
     'primary key' => array('vid'),
   );
   return $schema;
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function eventbrite_api_events_uninstall() {
+  db_query("DELETE FROM {variable} WHERE name LIKE 'eventbrite_api_events_%'");
 }
