@@ -1,7 +1,0 @@
-name = Eventbrite API
-description = Eventbrite API allows you to manage and display Eventbrite events through Drupal.
-package = Eventbrite
-dependencies[] = entity
-dependencies[] = libraries (>=2.x)
-configure = admin/config/eventbrite
-core = 7.x

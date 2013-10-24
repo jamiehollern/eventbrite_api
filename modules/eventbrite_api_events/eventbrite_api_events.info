@@ -1,6 +1,0 @@
-name = Eventbrite API Events
-description = Eventbrite API Events imports events from Eventbrite into Drupal.
-package = Eventbrite
-dependencies[] = eventbrite_api
-dependencies[] = entity
-core = 7.x
