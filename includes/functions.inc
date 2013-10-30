@@ -68,6 +68,7 @@ function eventbrite_api_entity_import($item) {
 	// Prepare events.
 	$event = eb_event_object_prepare($item);
 	$entity = entity_create('eventbrite_api_event', $event);
-	$save = entity_save('eventbrite_api_event', $entity);
-	watchdog('Eventbrite API', ($save == FALSE ? 'Entity not saved' : $save));
+	$entity->save();
+	//$save = entity_save('eventbrite_api_event', $entity);
+	//watchdog('Eventbrite API', ($save == FALSE ? 'Entity not saved' : $save));
 }

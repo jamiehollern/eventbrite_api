@@ -59,6 +59,7 @@ function eventbrite_api_entity_info() {
       'entity class' => 'Entity',
       'controller class' => 'EntityAPIController',
       'base table' => 'eventbrite_api_events',
+      'fieldable' => TRUE,
       'entity keys' => array(
         'id' => 'eid',
       ),
@@ -72,6 +73,7 @@ function eventbrite_api_entity_info() {
       'entity class' => 'Entity',
       'controller class' => 'EntityAPIController',
       'base table' => 'eventbrite_api_organizers',
+      'fieldable' => TRUE,
       'entity keys' => array(
         'id' => 'oid',
       ),
@@ -85,6 +87,7 @@ function eventbrite_api_entity_info() {
       'entity class' => 'Entity',
       'controller class' => 'EntityAPIController',
       'base table' => 'eventbrite_api_tickets',
+      'fieldable' => TRUE,
       'entity keys' => array(
         'id' => 'tid',
       ),
@@ -98,6 +101,7 @@ function eventbrite_api_entity_info() {
       'entity class' => 'Entity',
       'controller class' => 'EntityAPIController',
       'base table' => 'eventbrite_api_venues',
+      'fieldable' => TRUE,
       'entity keys' => array(
         'id' => 'vid',
       ),

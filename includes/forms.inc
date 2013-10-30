@@ -46,6 +46,11 @@ function _eventbrite_api_admin() {
     '#title' => t('Delete all Eventbrite information from the database before import'),
     '#default_value' => variable_get('eventbrite_api_import_delete', 0),
   );
+  $form['import']['eventbrite_api_import_strip'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Strip HTML code from the event description (recommended)'),
+    '#default_value' => variable_get('eventbrite_api_import_strip', 1),
+  );
 	$form['#validate'][] = '_eventbrite_api_admin_validate';
   return system_settings_form($form);
 }

@@ -2,4 +2,5 @@ name = Eventbrite API UI
 description = Defines menu items for the Eventbrite API module.
 package = Eventbrite
 dependencies[] = eventbrite_api
+dependencies[] = views
 core = 7.x
