@@ -9,10 +9,10 @@
  * Implements hook_init().
  */
 function eventbrite_api_init() {
-	// Globally load the Eventbrite API.
+  // Globally load the Eventbrite API.
   $eventbrite = libraries_load('eventbrite');
-	// Load our functions.
-	module_load_include('inc', 'eventbrite_api', 'includes/functions');
+  // Load our functions.
+  module_load_include('inc', 'eventbrite_api', 'includes/functions');
 }
 
 /**
@@ -37,8 +37,8 @@ function eventbrite_api_libraries_info() {
     'name' => 'eventbrite.php',
     'vendor url' => 'https://github.com/ryanjarvinen/eventbrite.php',
     'download url' => 'https://raw.github.com/ryanjarvinen/eventbrite.php/master/Eventbrite.php',
-		// There isn't a version number anywhere to be found, so we have to hardcode this.
-		'version' => 1,
+    // There isn't a version number anywhere to be found, so we have to hardcode this.
+    'version' => 1,
     'files' => array(
       'php' => array(
         'eventbrite.php',
@@ -63,7 +63,6 @@ function eventbrite_api_entity_info() {
       'entity keys' => array(
         'id' => 'eid',
       ),
-			'module' => 'eventbrite_api',
       'label callback' => 'entity_class_label',
       'uri callback' => 'entity_class_uri',
     ),
@@ -77,7 +76,6 @@ function eventbrite_api_entity_info() {
       'entity keys' => array(
         'id' => 'oid',
       ),
-			'module' => 'eventbrite_api',
       'label callback' => 'entity_class_label',
       'uri callback' => 'entity_class_uri',
     ),
@@ -91,7 +89,6 @@ function eventbrite_api_entity_info() {
       'entity keys' => array(
         'id' => 'tid',
       ),
-			'module' => 'eventbrite_api',
       'label callback' => 'entity_class_label',
       'uri callback' => 'entity_class_uri',
     ),
@@ -105,19 +102,18 @@ function eventbrite_api_entity_info() {
       'entity keys' => array(
         'id' => 'vid',
       ),
-			'module' => 'eventbrite_api',
       'label callback' => 'entity_class_label',
       'uri callback' => 'entity_class_uri',
     ),
   );
-	return $return;
+  return $return;
 }
 
 /**
  * Implementation of hook_cron_queue_info()
  */
 function eventbrite_api_cron_queue_info() {
-  $queues['eventbrite_api_events'] = array(
+  $queues['eventbrite_api_import'] = array(
     'worker callback' => 'eventbrite_api_entity_import',
     'time' => 60,
   );
@@ -128,17 +124,27 @@ function eventbrite_api_cron_queue_info() {
  * Implements hook_cron().
  */
 function eventbrite_api_cron() {
-	$cron = variable_get('eventbrite_api_cron_import', 1);
+  $cron = variable_get('eventbrite_api_cron_import', 1);
   // Only do this is the config is set.
-	if ($cron == 1) {
-	  // Instantiate Eventbrite.
+  if ($cron == 1) {
+    // Instantiate Eventbrite.
     $eb_client = eb_connect();
-		// Get a list of events.
-		$items = eb_get_events($eb_client);
+    // Get a list of events.
+    $items = eb_get_data($eb_client);
     // Put everything in a queue for processing.
-    $queue = DrupalQueue::get('eventbrite_api_events');
+    $queue = DrupalQueue::get('eventbrite_api_import');
     foreach($items as $item) {
       $queue->createItem($item);
     }
-	}
+  }
+}
+
+/**
+ * Implements hook_views_api().
+ */
+function eventbrite_api_views_api() {
+  return array(
+    'api' => 3,
+    'path' => drupal_get_path('module', 'eventbrite_api') . '/views',
+  );
 }

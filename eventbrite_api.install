@@ -8,36 +8,36 @@
  * Implements hook_requirements().
  */
 function eventbrite_api_requirements($phase) {
-	// The array that we will return.
+  // The array that we will return.
   $requirements = array();
-	// We only need the "runtime" phase.
+  // We only need the "runtime" phase.
   if ($phase == 'runtime') {
-	  // Installation version of t().
-	  $t = get_t();
-		// Load the library.
+    // Installation version of t().
+    $t = get_t();
+    // Load the library.
     $library = libraries_detect('eventbrite');
-		// If the library is not installed.
+    // If the library is not installed.
     if (empty($library['installed'])) {
-			// Build the requirements array.
+      // Build the requirements array.
       $requirements['eventbrite'] = array(
         'title' => $t('Eventbrite API'),
-				'value' => $t('Not found'),
+        'value' => $t('Not found'),
         'severity' => REQUIREMENT_ERROR,
         'description' => $t('You need to download !eventbrite_php and place it into a directory named eventbrite in the %path directory on your server.', array('!eventbrite_php' => l($t('eventbrite.php'), $library['download url']), '%path' => 'sites/all/libraries')),
       );
     }
-		// Let the user know that it's working.
-		else {
-			// Build the requirements array.
+    // Let the user know that it's working.
+    else {
+      // Build the requirements array.
       $requirements['eventbrite'] = array(
         'title' => $t('Eventbrite API'),
-				'value' => $t('Found'),
+        'value' => $t('Found'),
         'severity' => REQUIREMENT_OK,
         'description' => $t('The eventbrite.php library is installed.'),
       );
-		}
+    }
   }
-	return $requirements;
+  return $requirements;
 }
 
 /**
@@ -50,14 +50,21 @@ function eventbrite_api_schema() {
       'eid' => array(
         'description' => 'The primary identifier for an event.',
         'type' => 'int',
-				'size' => 'big',
+        'size' => 'big',
         'unsigned' => TRUE,
         'not null' => TRUE,
       ),
       'oid' => array(
         'description' => 'The id of the event organiser.',
         'type' => 'int',
-				'size' => 'big',
+        'size' => 'big',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'vid' => array(
+        'description' => 'The id of the associated venue.',
+        'type' => 'int',
+        'size' => 'big',
         'unsigned' => TRUE,
         'not null' => TRUE,
       ),
@@ -198,7 +205,7 @@ function eventbrite_api_schema() {
       'oid' => array(
         'description' => 'The primary identifier for an event organizer.',
         'type' => 'int',
-				'size' => 'big',
+        'size' => 'big',
         'unsigned' => TRUE,
         'not null' => TRUE,
       ),
@@ -238,14 +245,14 @@ function eventbrite_api_schema() {
       'tid' => array(
         'description' => 'The primary identifier for an event ticket.',
         'type' => 'int',
-				'size' => 'big',
+        'size' => 'big',
         'unsigned' => TRUE,
         'not null' => TRUE,
       ),
       'eid' => array(
         'description' => 'The id of the associated event.',
         'type' => 'int',
-				'size' => 'big',
+        'size' => 'big',
         'unsigned' => TRUE,
         'not null' => TRUE,
       ),
@@ -294,11 +301,11 @@ function eventbrite_api_schema() {
       'price' => array(
         'description' => 'The price of the ticket.',
         'type' => 'numeric', 
-				'size' => 'normal', 
-				'default' => 0, 
-				'precision' => 10, 
-				'scale' => 2,
-        'not null' => TRUE,
+        'size' => 'normal', 
+        'default' => 0, 
+        'precision' => 10, 
+        'scale' => 2,
+        'not null' => FALSE,
       ),
       'quantity_sold' => array(
         'description' => 'The number of the ticket sold.',
@@ -329,11 +336,11 @@ function eventbrite_api_schema() {
       'display_price' => array(
         'description' => 'The display price of the ticket.',
         'type' => 'numeric', 
-				'size' => 'normal', 
-				'default' => 0, 
-				'precision' => 10, 
-				'scale' => 2,
-        'not null' => TRUE,
+        'size' => 'normal', 
+        'default' => 0, 
+        'precision' => 10, 
+        'scale' => 2,
+        'not null' => FALSE,
       ),
     ),
     'indexes' => array(
@@ -354,14 +361,7 @@ function eventbrite_api_schema() {
       'vid' => array(
         'description' => 'The primary identifier for an event venue.',
         'type' => 'int',
-				'size' => 'big',
-        'unsigned' => TRUE,
-        'not null' => TRUE,
-      ),
-      'eid' => array(
-        'description' => 'The id of the associated event.',
-        'type' => 'int',
-				'size' => 'big',
+        'size' => 'big',
         'unsigned' => TRUE,
         'not null' => TRUE,
       ),
@@ -424,25 +424,25 @@ function eventbrite_api_schema() {
       'longitude' => array(
         'description' => 'The venue longitude.',
         'type' => 'numeric',
-				'size' => 'normal', 
-				'default' => 0, 
-				'precision' => 10, 
-				'scale' => 6,
+        'size' => 'normal', 
+        'default' => 0, 
+        'precision' => 10, 
+        'scale' => 6,
         'not null' => TRUE,
       ),
       'latitude' => array(
         'description' => 'The venue latitude.',
         'type' => 'numeric', 
-				'size' => 'normal', 
-				'default' => 0, 
-				'precision' => 10, 
-				'scale' => 6,
+        'size' => 'normal', 
+        'default' => 0, 
+        'precision' => 10, 
+        'scale' => 6,
         'not null' => TRUE,
       ),
       'lat_long' => array(
         'description' => 'The venue latitude and longitude as a string.',
         'type' => 'varchar',
-				'length' => 40,
+        'length' => 40,
         'not null' => TRUE,
       ),
     ),

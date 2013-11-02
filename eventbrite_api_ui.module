@@ -10,7 +10,7 @@
  */ 
 function eventbrite_api_ui_menu() {
   $items = array();
-	$items['admin/eventbrite'] = array(
+  $items['admin/eventbrite'] = array(
     'title' => t('Eventbrite'),
     'description' => t('Administer Eventbrite.'),
     'page callback' => 'system_admin_menu_block_page',
@@ -18,26 +18,6 @@ function eventbrite_api_ui_menu() {
     'file path' => drupal_get_path('module', 'system'),
     'file' => 'system.admin.inc',
     'weight' => -7,
-  );
-  $items['admin/eventbrite/organizers'] = array(
-    'title' => t('Organizers'),
-    'description' => t('List and add organizers.'),
-    'page callback' => 'drupal_get_form',
-    /*'page arguments' => array('_eventbrite_api_admin'),
-    'access arguments' => array('administer eventbrite_api config'),
-    'file path' => drupal_get_path('module', 'eventbrite_api') . '/includes',
-    'file' => 'forms.inc',*/
-    'type' => MENU_NORMAL_ITEM,
-  );
-  $items['admin/eventbrite/venues'] = array(
-    'title' => t('Venues'),
-    'description' => t('List and add venues.'),
-    'page callback' => 'drupal_get_form',
-    /*'page arguments' => array('_eventbrite_api_admin'),
-    'access arguments' => array('administer eventbrite_api config'),
-    'file path' => drupal_get_path('module', 'eventbrite_api') . '/includes',
-    'file' => 'forms.inc',*/
-    'type' => MENU_NORMAL_ITEM,
   );
   $items['admin/eventbrite/config'] = array(
     'title' => 'Eventbrite configuration',
@@ -55,9 +35,9 @@ function eventbrite_api_ui_menu() {
 /**
  * Implements hook_views_api().
  */
-/*function eventbrite_api_ui_views_api() {
+function eventbrite_api_ui_views_api() {
   return array(
     'api' => 3,
     'path' => drupal_get_path('module', 'eventbrite_api') . '/views',
   );
-}*/
+}
