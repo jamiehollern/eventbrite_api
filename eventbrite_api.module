@@ -65,6 +65,12 @@ function eventbrite_api_entity_info() {
       ),
       'label callback' => 'entity_class_label',
       'uri callback' => 'entity_class_uri',
+			'admin ui' => array(
+        'path' => 'admin/eventbrite/events',
+        'file' => 'eventbrite_api_ui.admin.inc',
+        'controller class' => 'EventbriteAPIUIController',
+        'menu wildcard' => '%event',
+      ),
     ),
     'eventbrite_api_organizer' => array(
       'label' => t('Eventbrite Organizer'),
