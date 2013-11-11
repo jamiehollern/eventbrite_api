@@ -16,7 +16,7 @@ function eventbrite_init() {
 /**
  * Implements hook_menu().
  */ 
-function eventbrite_menu() {
+/*function eventbrite_menu() {
   $items = array();
   $items['admin/eventbrite'] = array(
     'title' => t('Eventbrite'),
@@ -38,7 +38,7 @@ function eventbrite_menu() {
     'type' => MENU_NORMAL_ITEM,
   );
   return $items;
-}
+}*/
 
 /**
  * Implements hook_permission().
@@ -90,12 +90,12 @@ function eventbrite_entity_info() {
       ),
       'label callback' => 'entity_class_label',
       'uri callback' => 'entity_class_uri',
-			/*'admin ui' => array(
-        'path' => 'admin/eventbrite/events',
+	    'admin ui' => array(
+        'path' => 'admin/content/models',
         'file' => 'eventbrite.admin.inc',
-        'controller class' => 'EventbriteController',
+        'controller class' => 'EventUIController',
         'menu wildcard' => '%event',
-      ),*/
+      ),
     ),
     'eventbrite_organizer' => array(
       'label' => t('Eventbrite Organizer'),
