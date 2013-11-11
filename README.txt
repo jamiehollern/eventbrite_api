@@ -1,4 +1,4 @@
-Eventbrite API
+Eventbrite
 --------------
 
 This module is intended to be a replacement for the Eventbrite module located 
@@ -12,6 +12,6 @@ Installation
 
 The module depends on Entity API - https://drupal.org/project/entity. 
 It also requires the eventbrite.php class which is essentially a 
-PHP wrapper for the Eventbrite API. Download this into your libraries 
+PHP wrapper for the Eventbrite. Download this into your libraries 
 folder from https://github.com/ryanjarvinen/eventbrite.php.
 

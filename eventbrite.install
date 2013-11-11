@@ -1,13 +1,13 @@
 <?php
 
 /**
- * Performs database schema, install and uninstall functions for the Eventbrite API module.
+ * Performs database schema, install and uninstall functions for the Eventbrite module.
  */
  
 /**
  * Implements hook_requirements().
  */
-function eventbrite_api_requirements($phase) {
+function eventbrite_requirements($phase) {
   // The array that we will return.
   $requirements = array();
   // We only need the "runtime" phase.
@@ -20,7 +20,7 @@ function eventbrite_api_requirements($phase) {
     if (empty($library['installed'])) {
       // Build the requirements array.
       $requirements['eventbrite'] = array(
-        'title' => $t('Eventbrite API'),
+        'title' => $t('Eventbrite'),
         'value' => $t('Not found'),
         'severity' => REQUIREMENT_ERROR,
         'description' => $t('You need to download !eventbrite_php and place it into a directory named eventbrite in the %path directory on your server.', array('!eventbrite_php' => l($t('eventbrite.php'), $library['download url']), '%path' => 'sites/all/libraries')),
@@ -30,7 +30,7 @@ function eventbrite_api_requirements($phase) {
     else {
       // Build the requirements array.
       $requirements['eventbrite'] = array(
-        'title' => $t('Eventbrite API'),
+        'title' => $t('Eventbrite'),
         'value' => $t('Found'),
         'severity' => REQUIREMENT_OK,
         'description' => $t('The eventbrite.php library is installed.'),
@@ -43,8 +43,8 @@ function eventbrite_api_requirements($phase) {
 /**
  * Implements hook_schema().
  */
-function eventbrite_api_schema() {
-  $schema['eventbrite_api_events'] = array(
+function eventbrite_schema() {
+  $schema['eventbrite_events'] = array(
     'description' => 'The base table for Eventbrite events.',
     'fields' => array(
       'eid' => array(
@@ -193,13 +193,13 @@ function eventbrite_api_schema() {
     ),
     'foreign keys' => array(
       'oid' => array(
-        'table' => 'eventbrite_api_organizers',
+        'table' => 'eventbrite_organizers',
         'columns' => array('oid' => 'oid'),
       ),
     ),
     'primary key' => array('eid'),
   );
-  $schema['eventbrite_api_organizers'] = array(
+  $schema['eventbrite_organizers'] = array(
     'description' => 'The table for event organizers.',
     'fields' => array(
       'oid' => array(
@@ -239,7 +239,7 @@ function eventbrite_api_schema() {
     ),
     'primary key' => array('oid'),
   );
-  $schema['eventbrite_api_tickets'] = array(
+  $schema['eventbrite_tickets'] = array(
     'description' => 'The table for event tickets.',
     'fields' => array(
       'tid' => array(
@@ -349,13 +349,13 @@ function eventbrite_api_schema() {
     ),
     'foreign keys' => array(
       'eid' => array(
-        'table' => 'eventbrite_api',
+        'table' => 'eventbrite',
         'columns' => array('eid' => 'eid'),
       ),
     ),
     'primary key' => array('tid'),
   );
-  $schema['eventbrite_api_venues'] = array(
+  $schema['eventbrite_venues'] = array(
     'description' => 'The table for event venues.',
     'fields' => array(
       'vid' => array(
@@ -448,7 +448,7 @@ function eventbrite_api_schema() {
     ),
     'foreign keys' => array(
       'eid' => array(
-        'table' => 'eventbrite_api',
+        'table' => 'eventbrite',
         'columns' => array('eid' => 'eid'),
       ),
     ),
@@ -460,6 +460,6 @@ function eventbrite_api_schema() {
 /**
  * Implements hook_uninstall().
  */
-function eventbrite_api_uninstall() {
-  db_query("DELETE FROM {variable} WHERE name LIKE 'eventbrite_api_%'");
+function eventbrite_uninstall() {
+  db_query("DELETE FROM {variable} WHERE name LIKE 'eventbrite_%'");
 }
