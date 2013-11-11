@@ -16,7 +16,7 @@ function eventbrite_init() {
 /**
  * Implements hook_menu().
  */ 
-/*function eventbrite_menu() {
+function eventbrite_menu() {
   $items = array();
   $items['admin/eventbrite'] = array(
     'title' => t('Eventbrite'),
@@ -27,8 +27,26 @@ function eventbrite_init() {
     'file' => 'system.admin.inc',
     'weight' => -7,
   );
+	// The page admin/eventbrite/events is controlled by a view.
+  /*$items['admin/eventbrite/events/add'] = array(
+    'title' => 'Add an event',
+    'description' => 'Add a new event to Eventbrite.',
+    'page callback' => 'eventbrite_events_add_page',
+    'access arguments' => array('access administration pages'),
+    'weight' => 10,
+    'file' => 'includes/eventbrite.events.inc',
+  );
+	$items['admin/eventbrite/events/add'] = array(
+    'title' => 'Add event',
+    'description' => 'Add a new event to Eventbrite.',
+    'page callback' => 'commerce_product_ui_product_form_wrapper',
+    //'page arguments' => array(commerce_product_new($type)),
+    //'access callback' => 'commerce_product_access',
+    //'access arguments' => array('create', commerce_product_new($type)),
+    'file' => 'includes/commerce_product_ui.products.inc',
+  );*/
   $items['admin/eventbrite/config'] = array(
-    'title' => 'Eventbrite configuration',
+    'title' => 'Configuration',
     'description' => 'Configure the Eventbrite module.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('eventbrite_config_form'),
@@ -36,9 +54,10 @@ function eventbrite_init() {
     'file path' => drupal_get_path('module', 'eventbrite') . '/includes',
     'file' => 'eventbrite.admin.inc',
     'type' => MENU_NORMAL_ITEM,
+    'weight' => 50,
   );
   return $items;
-}*/
+}
 
 /**
  * Implements hook_permission().
@@ -48,6 +67,11 @@ function eventbrite_permission() {
     'administer eventbrite config' => array(
       'title' => t('Configure Eventbrite settings'),
       'description' => t('Allows users to update Eventbrite settings.'),
+      'restrict access' => TRUE,
+    ),
+    'administer eventbrite data' => array(
+      'title' => t('Manage Eventbrite data'),
+      'description' => t('Allows users to manage Eventbrite data.'),
       'restrict access' => TRUE,
     ),
   );
@@ -82,7 +106,7 @@ function eventbrite_entity_info() {
       'label' => t('Eventbrite Event'),
       'plural label' => t('Eventbrite Events'),
       'entity class' => 'Entity',
-      'controller class' => 'EventbriteEventController',
+      'controller class' => 'EntityAPIController',
       'base table' => 'eventbrite_events',
       'fieldable' => TRUE,
       'entity keys' => array(
@@ -90,12 +114,12 @@ function eventbrite_entity_info() {
       ),
       'label callback' => 'entity_class_label',
       'uri callback' => 'entity_class_uri',
-	    'admin ui' => array(
+	    /*'admin ui' => array(
         'path' => 'admin/content/models',
         'file' => 'eventbrite.admin.inc',
         'controller class' => 'EventUIController',
         'menu wildcard' => '%event',
-      ),
+      ),*/
     ),
     'eventbrite_organizer' => array(
       'label' => t('Eventbrite Organizer'),
@@ -181,4 +205,66 @@ function eventbrite_views_api() {
     'api' => 3,
     'path' => drupal_get_path('module', 'eventbrite') . '/views',
   );
+}
+
+/**
+ * Load an event.
+ */
+function event_load($event_id, $reset = FALSE) {
+  $events = event_load_multiple(array($event_id), array(), $reset);
+  return reset($events);
+}
+
+/**
+ * Load multiple events.
+ */
+function event_load_multiple($event_ids = array(), $conditions = array(), $reset = FALSE) {
+  return entity_load('event', $event_ids, $conditions, $reset);
+}
+
+/**
+ * Deletes a event.
+ */
+function event_delete(Event $event) {
+  $event->delete();
+}
+
+/**
+ * Delete multiple events.
+ */
+function event_delete_multiple(array $event_ids) {
+  entity_get_controller('event')->delete($event_ids);
+}
+
+/**
+ * Create a event object.
+ */
+function event_create($values = array()) {
+  return entity_get_controller('event')->create($values);
+}
+
+/**
+ * Saves a event to the database.
+ */
+function event_save(Event $event) {
+  return $event->save();
+}
+
+/**
+ * The class used for model entities
+ */
+class Event extends Entity {
+  
+  public function __construct($values = array()) {
+    parent::__construct($values, 'event');
+  }
+
+  protected function defaultLabel() {
+    return $this->name;
+  }
+
+  protected function defaultUri() {
+    return array('path' => 'model/' . $this->model_id);
+  }
+  
 }
