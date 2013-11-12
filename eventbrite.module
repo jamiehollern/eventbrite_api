@@ -73,7 +73,7 @@ function eventbrite_views_api() {
 /**
  * Implements hook_permission().
  */
-function event_permission() {
+function eventbrite_permission() {
   $permissions = array(
     'administer events' => array(
       'title' => t('Administer events'),
