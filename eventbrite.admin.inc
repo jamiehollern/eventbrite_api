@@ -31,39 +31,34 @@ class EventbriteUIController extends EntityDefaultUIController {
       'access arguments' => array('access administration pages'),
       'file path' => drupal_get_path('module', 'system'),
       'file' => 'system.admin.inc',
-			'weight' => -7,
+      'weight' => -7,
     );
     
-    // Change the overview menu type for the list of events.
-    $items[$this->path]['type'] = MENU_LOCAL_TASK;
-    
-    // Change the add page menu to multiple types of entities
-    $items[$this->path . '/add'] = array(
-      'title' => 'Add a event',
-      'description' => 'Add a new event',
-      'page callback'  => 'event_add_page',
-      'access callback'  => 'event_access',
-      'access arguments' => array('edit'),
-      'type' => MENU_NORMAL_ITEM,
-      'weight' => 20,
-      'file' => 'eventbrite.admin.inc',
-      'file path' => drupal_get_path('module', $this->entityInfo['module'])
+    // Add an event.
+    $items[$this->path . '/events/add'] = array(
+        'title' => t('Add an event'),
+        'page callback' => 'event_form_wrapper',
+        'page arguments' => array(event_create(array())),
+        'access callback' => 'event_access',
+        'access arguments' => array('edit'),
+        'file' => 'eventbrite.admin.inc',
+        'file path' => drupal_get_path('module', $this->entityInfo['module'])
     );
 
     $items[$this->path . '/config'] = array(
       'title' => 'Configuration',
       'description' => 'Manage Eventbrite settings.',
       'page callback' => 'drupal_get_form',
-			'page arguments' => 'eventbrite_config_form',
+      'page arguments' => array('eventbrite_config_form'),
       'access arguments' => array('access administration pages'),
       'type' => MENU_NORMAL_ITEM,
       'file' => 'eventbrite.admin.inc',
       'file path' => drupal_get_path('module', $this->entityInfo['module']),
-			'weight' => 50,
+      'weight' => 50,
     );
 
     // Loading and editing event entities
-    $items[$this->path . '/event/' . $wildcard] = array(
+    $items[$this->path . '/events/' . $wildcard] = array(
       'page callback' => 'event_form_wrapper',
       'page arguments' => array($id_count + 1),
       'access callback' => 'event_access',
@@ -104,7 +99,7 @@ class EventbriteUIController extends EntityDefaultUIController {
       'access arguments' => array('view', 1),
       'type' => MENU_CALLBACK,
     );
-		
+    
     return $items;
   }
   
@@ -162,21 +157,82 @@ function event_delete_form_wrapper($event) {
  *     with only a event type defined.
  */
 function event_edit_form($form, &$form_state, $event) {
-  // Add the default field elements.
-  $form['name'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Event Name'),
-    '#default_value' => isset($event->name) ? $event->name : '',
-    '#maxlength' => 255,
-    '#required' => TRUE,
-    '#weight' => -5,
+
+  $form['details'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('General information'),
   );
   
-  $form['data']['#tree'] = TRUE;
-  $form['data']['sample_data'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('An interesting event switch'),
-    '#default_value' => isset($event->data['sample_data']) ? $event->data['sample_data'] : 1,
+  $form['details']['title'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Event title'),
+    '#default_value' => isset($event->title) ? $event->title : '',
+    '#maxlength' => 255,
+    '#required' => TRUE,
+  );
+  
+  /*$form['details']['description'] = array(
+    '#type' => 'text_format',
+    '#title' => t('Description'),
+    '#default_value' => isset($event->description) ? $event->description : '',
+    '#format' => variable_get('event_desdc_format', 'filtered_html'),
+  );*/
+  
+  $form['details']['description'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Description'),
+    '#default_value' => isset($event->description) ? $event->description : '',
+  );
+  
+  $form['details']['capacity'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Capacity'),
+    '#default_value' => isset($event->capacity) ? $event->capacity : '',
+    '#size' => 5,
+  );
+  
+  $form['details']['currency'] = array(
+    '#type' => 'select',
+    '#title' => t('Currency'),
+    '#default_value' => isset($event->currency) ? $event->currency : variable_get('eventbrite_currency', 'USD'),
+    '#options' => eventbrite_currencies(),
+  );
+  
+  $form['details']['status'] = array(
+    '#type' => 'select',
+    '#title' => t('Event status'),
+    '#default_value' => isset($event->status) ? $event->status : 'draft',
+    '#options' => array(
+		  'draft' => t('Draft'),
+		  'live' => t('Live'),
+    ),
+  );
+
+  $form['dates'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Date information'),
+  );
+  
+  $form['dates']['start_date'] = array(
+    '#type' => 'date_popup',
+    '#title' => t('Start date'),
+    '#default_value' => isset($event->start_date) ? $event->start_date : '',
+    '#required' => TRUE,
+  );
+  
+  $form['dates']['end_date'] = array(
+    '#type' => 'date_popup',
+    '#title' => t('End date'),
+    '#default_value' => isset($event->end_date) ? $event->end_date : '',
+    '#required' => TRUE,
+  );
+
+  $form['dates']['date_default_timezone'] = array(
+    '#type' => 'select',
+    '#title' => t('Default time zone'),
+    '#default_value' => variable_get('date_default_timezone', date_default_timezone_get()),
+    '#options' => system_time_zones(),
+    '#required' => TRUE,
   );
 
   // Add the field related form elements.
@@ -203,11 +259,11 @@ function event_edit_form($form, &$form_state, $event) {
     '#submit' => $submit + array('event_edit_form_submit'),
   );
   
-  if (!empty($event->name)) {
+  if (!empty($event->title)) {
     $form['actions']['delete'] = array(
       '#type' => 'submit',
       '#value' => t('Delete event'),
-      '#suffix' => l(t('Cancel'), 'admin/content/events'),
+      '#suffix' => l(t('Cancel'), 'admin/eventbrite/events'),
       '#submit' => $submit + array('event_form_submit_delete'),
       '#weight' => 45,
     );
@@ -241,13 +297,13 @@ function event_edit_form_submit(&$form, &$form_state) {
   
   // Add in created and changed times.
   if ($event->is_new = isset($event->is_new) ? $event->is_new : 0){
-    $event->created = time();
+    $event->created = eventbrite_ctime(time());
   }
 
-  $event->changed = time();
+  $event->modified = eventbrite_ctime(time());
   
   $event->save();
-  $form_state['redirect'] = 'admin/content/events';
+  $form_state['redirect'] = 'admin/eventbrite/events';
 }
 
 /**
@@ -314,6 +370,7 @@ function event_add_page() {
  * @ingroup themeable
  */
 function theme_event_add_list($variables) {
+  dpm($variables);
   $content = $variables['content'];
   $output = '';
   if ($content) {
@@ -388,8 +445,8 @@ function eventbrite_config_form() {
   );
   $form['import']['import_all_help'] = array(
     '#markup' => '<div>' . t('If you already have Eventbrite data imported,
-		this will delete that data before importing the new data. This
-		cannot be undone.') . '</div>',
+    this will delete that data before importing the new data. This
+    cannot be undone.') . '</div>',
   );
   $form['import_settings'] = array(
     '#type' => 'fieldset',
@@ -406,6 +463,18 @@ function eventbrite_config_form() {
     '#type' => 'checkbox',
     '#title' => t('Strip HTML code from the event description (recommended)'),
     '#default_value' => variable_get('eventbrite_import_strip', 1),
+  );
+  $form['general'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('General settings'),
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
+  );
+  $form['general']['eventbrite_currency'] = array(
+    '#type' => 'select',
+    '#title' => t('Default currency'),
+    '#default_value' => variable_get('eventbrite_currency', 'USD'),
+    '#options' => eventbrite_currencies(),
   );
   $form['#validate'][] = 'eventbrite_config_form_validate';
   return system_settings_form($form);
@@ -443,4 +512,177 @@ function eventbrite_config_form_validate($form, &$form_state) {
     // Then stop the form from saving the details while printing the error.
     form_set_error($element, t('Connection to Eventbrite failed with the following error: @error', array('@error' => $error)));
   }
+}
+
+function eventbrite_currencies() {
+  return array(
+    'AFN' => t('Afghanistani Afghani'),
+    'ALL' => t('Albanian Lek'),
+    'DZD' => t('Algerian Dinar'),
+    'ARS' => t('Argentine Peso'),
+    'AWG' => t('Aruba Florin'),
+    'AUD' => t('Australian Dollar'),
+    'AZN' => t('Azerbaijan New Maneat'),
+    'BSD' => t('Bahamian Dollar'),
+    'BHD' => t('Bahraini Dinar'),
+    'BDT' => t('Bangladeshi Taka'),
+    'BBD' => t('Barbadian Dollar'),
+    'BYR' => t('Belarus Ruble'),
+    'BZD' => t('Belize Dollar'),
+    'BMD' => t('Bermuda Dollar'),
+    'BTN' => t('Bhutanese Ngultrum'),
+    'BOB' => t('Bolivian Boliviano'),
+    'BAM' => t('Bosnia and Herzegovina Convertible Marka'),
+    'BWP' => t('Botswana Pula'),
+    'BRL' => t('Brazilian Real'),
+    'GBP' => t('British Pound'),
+    'BND' => t('Brunei Dollar'),
+    'BGN' => t('Bulgarian Lev'),
+    'BIF' => t('Burundi Franc'),
+    'KHR' => t('Cambodia Riel'),
+    'CAD' => t('Canadian Dollar'),
+    'CVE' => t('Cape Verdean Escudo'),
+    'KYD' => t('Cayman Islands Dollar'),
+    'XOF' => t('CFA Franc'),
+    'XAF' => t('CFA Franc'),
+    'CLP' => t('Chilean Peso'),
+    'CNY' => t('Chinese Yuan'),
+    'COP' => t('Colombian Peso'),
+    'KMF' => t('Comoros Franc'),
+    'CRC' => t('Costa Rica Colon'),
+    'HRK' => t('Croatian Kuna'),
+    'CUP' => t('Cuban Peso'),
+    'CYP' => t('Cyprus Pound'),
+    'CZK' => t('Czech Koruna'),
+    'DKK' => t('Danish Krone'),
+    'DJF' => t('Dijiboutian Franc'),
+    'DOP' => t('Dominican Peso'),
+    'XCD' => t('East Caribbean Dollar'),
+    'EGP' => t('Egyptian Pound'),
+    'SVC' => t('El Salvador Colon'),
+    'ERN' => t('Eritrean Nakfa'),
+    'EEK' => t('Estonian Kroon'),
+    'ETB' => t('Ethiopian Birr'),
+    'EUR' => t('Euro'),
+    'FKP' => t('Falkland Islands Pound'),
+    'FJD' => t('Fiji Dollar'),
+    'GMD' => t('Gambian Dalasi'),
+    'GHC' => t('Ghanian Cedi'),
+    'GIP' => t('Gibraltar Pound'),
+    'XAU' => t('Gold Ounces'),
+    'GTQ' => t('Guatemala Quetzal'),
+    'GGP' => t('Guernsey Pound'),
+    'GNF' => t('Guinea Franc'),
+    'GYD' => t('Guyana Dollar'),
+    'HTG' => t('Haiti Gourde'),
+    'HNL' => t('Honduras Lempira'),
+    'HKD' => t('Hong Kong Dollar'),
+    'HUF' => t('Hungarian Forint'),
+    'ISK' => t('Iceland Krona'),
+    'INR' => t('Indian Rupee'),
+    'IDR' => t('Indonesian Rupiah'),
+    'IRR' => t('Iran Rial'),
+    'IQD' => t('Iraqi Dinar'),
+    'ILS' => t('Israeli Shekel'),
+    'JMD' => t('Jamaican Dollar'),
+    'JPY' => t('Japanese Yen'),
+    'JOD' => t('Jordanian Dinar'),
+    'KZT' => t('Kazakhstan Tenge'),
+    'KES' => t('Kenyan Shilling'),
+    'KRW' => t('Korean Won'),
+    'KWD' => t('Kuwaiti Dinar'),
+    'KGS' => t('Kyrgyzstan Som'),
+    'LAK' => t('Lao Kip'),
+    'LVL' => t('Latvian Lat'),
+    'LBP' => t('Lebanese Pound'),
+    'LSL' => t('Lesotho Loti'),
+    'LRD' => t('Liberian Dollar'),
+    'LYD' => t('Libyan Dinar'),
+    'LTL' => t('Lithuanian Lita'),
+    'MOP' => t('Macau Pataca'),
+    'MKD' => t('Macedonian Denar'),
+    'MGA' => t('Malagasy ariary'),
+    'MWK' => t('Malawian Kwacha'),
+    'MYR' => t('Malaysian Ringgit'),
+    'MVR' => t('Maldives Rufiyaa'),
+    'MTL' => t('Maltese Lira'),
+    'MRO' => t('Mauritania Ougulya'),
+    'MUR' => t('Mauritius Rupee'),
+    'MXN' => t('Mexican Peso'),
+    'MDL' => t('Moldovan Leu'),
+    'MNT' => t('Mongolian Tugrik'),
+    'MAD' => t('Moroccan Dirham'),
+    'MZM' => t('Mozambique Metical'),
+    'MMK' => t('Myanmar Kyat'),
+    'NAD' => t('Namibian Dollar'),
+    'NPR' => t('Nepalese Rupee'),
+    'ANG' => t('Neth Antilles Guilder'),
+    'NZD' => t('New Zealand Dollar'),
+    'NIO' => t('Nicaragua Cordoba'),
+    'NGN' => t('Nigerian Naira'),
+    'KPW' => t('North Korean Won'),
+    'NOK' => t('Norwegian Krone'),
+    'OMR' => t('Omani Rial'),
+    'XPF' => t('Pacific Franc'),
+    'PKR' => t('Pakistani Rupee'),
+    'XPD' => t('Palladium Ounces'),
+    'PAB' => t('Panama Balboa'),
+    'PGK' => t('Papua New Guinea Kina'),
+    'PYG' => t('Paraguayan Guarani'),
+    'PEN' => t('Peruvian Nuevo Sol'),
+    'PHP' => t('Philippine Peso'),
+    'XPT' => t('Platinum Ounces'),
+    'PLN' => t('Polish Zloty'),
+    'QAR' => t('Qatar Rial'),
+    'RON' => t('Romanian New Leu'),
+    'RUB' => t('Russian Rouble'),
+    'RWF' => t('Rwandese Franc'),
+    'WST' => t('Samoan Tala'),
+    'STD' => t('Sao Tome Dobra'),
+    'SAR' => t('Saudi Arabian Riyal'),
+    'SCR' => t('Seychelles Rupee'),
+    'RSD' => t('Serbian Dinar'),
+    'SLL' => t('Sierra Leone Leone'),
+    'XAG' => t('Silver Ounces'),
+    'SGD' => t('Singapore Dollar'),
+    'SKK' => t('Slovak Koruna'),
+    'SBD' => t('Solomon Islands Dollar'),
+    'SOS' => t('Somali Shilling'),
+    'ZAR' => t('South African Rand'),
+    'LKR' => t('Sri Lanka Rupee'),
+    'SHP' => t('St Helena Pound'),
+    'SDG' => t('Sudanese Pound'),
+    'SRD' => t('Surinam Dollar'),
+    'SZL' => t('Swaziland Lilageni'),
+    'SEK' => t('Swedish Krona'),
+    'CHF' => t('Swiss Franc'),
+    'SYP' => t('Syrian Pound'),
+    'TWD' => t('Taiwan Dollar'),
+    'TZS' => t('Tanzanian Shilling'),
+    'THB' => t('Thai Baht'),
+    'TOP' => t("Tonga Pa'anga"),
+    'TTD' => t('Trinidad & Tobago Dollar'),
+    'TND' => t('Tunisian Dinar'),
+    'TRY' => t('Turkish Lira'),
+    'USD' => t('U.S. Dollar'),
+    'AED' => t('UAE Dirham'),
+    'UGX' => t('Ugandan Shilling'),
+    'UAH' => t('Ukraine Hryvnia'),
+    'UYU' => t('Uruguayan New Peso'),
+    'UZS' => t('Uzbekistan Sum'),
+    'VUV' => t('Vanuatu Vatu'),
+    'VEB' => t('Venezuelan Bolivar'),
+    'VND' => t('Vietnam Dong'),
+    'YER' => t('Yemen Riyal'),
+    'YUM' => t('Yugoslav Dinar'),
+    'ZMK' => t('Zambian Kwacha'),
+    'ZWD' => t('Zimbabwe Dollar'),
+  );
+}
+
+function eventbrite_ctime($timestamp) {
+	$time = date('c', $timestamp);
+	$time = str_replace('T', ' ', $time);
+	$time = explode('+', $time);
+	return $time[0];
 }

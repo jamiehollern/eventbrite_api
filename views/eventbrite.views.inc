@@ -14,17 +14,17 @@ function eventbrite_views_data() {
   /**
    * Integrate the events table.
    */
-  $data['events']['table']['group']  = t('Eventbrite');
-  $data['events']['table']['entity type'] = 'event';
+  $data['eventbrite_events']['table']['group']  = t('Eventbrite');
+  $data['eventbrite_events']['table']['entity type'] = 'event';
 
-  $data['events']['table']['base'] = array(
+  $data['eventbrite_events']['table']['base'] = array(
     'field' => 'eid',
     'title' => t('Eventbrite Event'),
     'help' => t('Eventbrite Events.'),
   );
   
   // Expose the event ID.
-  $data['events']['eid'] = array(
+  $data['eventbrite_events']['eid'] = array(
     'title' => t('Event ID'),
     'help' => t('The unique internal identifier of the event.'),
     'field' => array(  
@@ -43,7 +43,7 @@ function eventbrite_views_data() {
   );
   
   // Expose the organizer id.
-  $data['events']['oid'] = array(
+  $data['eventbrite_events']['oid'] = array(
     'title' => t('Organizer ID'),
     'help' => t('The unique internal identifier of the event organizer.'),
     'relationship' => array(
@@ -55,7 +55,7 @@ function eventbrite_views_data() {
   );
   
   // Expose the venue id.
-  $data['events']['vid'] = array(
+  $data['eventbrite_events']['vid'] = array(
     'title' => t('Venue ID'),
     'help' => t('The unique internal identifier of the event venue.'),
     'relationship' => array(
@@ -68,7 +68,7 @@ function eventbrite_views_data() {
   
   if (module_exists('locale')) {
     // Expose the language.
-    $data['events']['locale'] = array(
+    $data['eventbrite_events']['locale'] = array(
       'title' => t('Language'),
       'help' => t('The language the event is in.'),
       'field' => array(
@@ -88,7 +88,7 @@ function eventbrite_views_data() {
   }
   
   // Expose the timezone.
-  $data['events']['timezone'] = array(
+  $data['eventbrite_events']['timezone'] = array(
     'title' => t('Timezone'),
     'help' => t('The event timezone.'),
     'field' => array(
@@ -107,7 +107,7 @@ function eventbrite_views_data() {
   );
   
   // Expose the category.
-  $data['events']['category'] = array(
+  $data['eventbrite_events']['category'] = array(
     'title' => t('Category'),
     'help' => t('The event category.'),
     'field' => array(
@@ -126,7 +126,7 @@ function eventbrite_views_data() {
   );
   
   // Expose the event capacity.
-  $data['events']['capacity'] = array(
+  $data['eventbrite_events']['capacity'] = array(
     'title' => t('Capacity'),
     'help' => t('The capacity of the event.'),
     'field' => array(
@@ -145,7 +145,7 @@ function eventbrite_views_data() {
   );
   
   // Expose the number of registered event attendees.
-  $data['events']['num_attendee_rows'] = array(
+  $data['eventbrite_events']['num_attendee_rows'] = array(
     'title' => t('Registered attendees'),
     'help' => t('The umber of registered event attendees.'),
     'field' => array(
@@ -164,7 +164,7 @@ function eventbrite_views_data() {
   );
 
   // Expose the event title.
-  $data['events']['title'] = array(
+  $data['eventbrite_events']['title'] = array(
     'title' => t('Title'),
     'help' => t('The title of the event.'),
     'field' => array(
@@ -183,7 +183,7 @@ function eventbrite_views_data() {
   );
 
   // Expose the event start date.
-  $data['events']['start_date'] = array(
+  $data['eventbrite_events']['start_date'] = array(
     'title' => t('Start date'),
     'help' => t('The date the event starts.'),
     'field' => array(
@@ -202,7 +202,7 @@ function eventbrite_views_data() {
   );
 
   // Expose the event description.
-  $data['events']['description'] = array(
+  $data['eventbrite_events']['description'] = array(
     'title' => t('Description'),
     'help' => t('The description of the event.'),
     'field' => array(
@@ -218,7 +218,7 @@ function eventbrite_views_data() {
   );
   
   // Expose the event tags.
-  $data['events']['tags'] = array(
+  $data['eventbrite_events']['tags'] = array(
     'title' => t('Tags'),
     'help' => t('The event tags.'),
     'field' => array(
@@ -237,7 +237,7 @@ function eventbrite_views_data() {
   );
   
   // Expose the event timezone offset.
-  $data['events']['timezone_offset'] = array(
+  $data['eventbrite_events']['timezone_offset'] = array(
     'title' => t('Timezone offset'),
     'help' => t('The event timezone offset.'),
     'field' => array(
@@ -256,7 +256,7 @@ function eventbrite_views_data() {
   );
   
   // Expose the event password.
-  $data['events']['password'] = array(
+  $data['eventbrite_events']['password'] = array(
     'title' => t('Password'),
     'help' => t('The event password.'),
     'field' => array(
@@ -275,7 +275,7 @@ function eventbrite_views_data() {
   );
 
   // Expose the date the event was created.
-  $data['events']['created'] = array(
+  $data['eventbrite_events']['created'] = array(
     'title' => t('Created'),
     'help' => t('The date the event was created.'),
     'field' => array(
@@ -294,7 +294,7 @@ function eventbrite_views_data() {
   );
   
   // Expose the event URL.
-  $data['events']['url'] = array(
+  $data['eventbrite_events']['url'] = array(
     'title' => t('URL'),
     'help' => t('The event URL.'),
     'field' => array(
@@ -313,7 +313,7 @@ function eventbrite_views_data() {
   );
   
   // Expose the event privacy setting.
-  $data['events']['privacy'] = array(
+  $data['eventbrite_events']['privacy'] = array(
     'title' => t('Privacy'),
     'help' => t('Whether the event is public or private.'),
     'field' => array(
@@ -332,7 +332,7 @@ function eventbrite_views_data() {
   );
 
   // Expose the date the event was modified.
-  $data['events']['modified'] = array(
+  $data['eventbrite_events']['modified'] = array(
     'title' => t('Modified'),
     'help' => t('The date the event was modified.'),
     'field' => array(
@@ -351,7 +351,7 @@ function eventbrite_views_data() {
   );
   
   // Expose the event repetition setting.
-  $data['events']['repeats'] = array(
+  $data['eventbrite_events']['repeats'] = array(
     'title' => t('Repeats'),
     'help' => t('Whether the event repeats or not.'),
     'field' => array(
