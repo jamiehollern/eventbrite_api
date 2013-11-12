@@ -6,4 +6,4 @@ dependencies[] = libraries (>=2.x)
 dependencies[] = views
 configure = admin/eventbrite/config
 core = 7.x
-files[] = includes/eventbrite.class.inc
+files[] = eventbrite.admin.inc

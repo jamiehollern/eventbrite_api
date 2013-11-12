@@ -14,68 +14,31 @@ function eventbrite_init() {
 }
 
 /**
- * Implements hook_menu().
- */ 
-function eventbrite_menu() {
-  $items = array();
-  $items['admin/eventbrite'] = array(
-    'title' => t('Eventbrite'),
-    'description' => t('Administer Eventbrite.'),
-    'page callback' => 'system_admin_menu_block_page',
-    'access arguments' => array('access administration pages'),
-    'file path' => drupal_get_path('module', 'system'),
-    'file' => 'system.admin.inc',
-    'weight' => -7,
-  );
-	// The page admin/eventbrite/events is controlled by a view.
-  /*$items['admin/eventbrite/events/add'] = array(
-    'title' => 'Add an event',
-    'description' => 'Add a new event to Eventbrite.',
-    'page callback' => 'eventbrite_events_add_page',
-    'access arguments' => array('access administration pages'),
-    'weight' => 10,
-    'file' => 'includes/eventbrite.events.inc',
-  );
-	$items['admin/eventbrite/events/add'] = array(
-    'title' => 'Add event',
-    'description' => 'Add a new event to Eventbrite.',
-    'page callback' => 'commerce_product_ui_product_form_wrapper',
-    //'page arguments' => array(commerce_product_new($type)),
-    //'access callback' => 'commerce_product_access',
-    //'access arguments' => array('create', commerce_product_new($type)),
-    'file' => 'includes/commerce_product_ui.products.inc',
-  );*/
-  $items['admin/eventbrite/config'] = array(
-    'title' => 'Configuration',
-    'description' => 'Configure the Eventbrite module.',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('eventbrite_config_form'),
-    'access arguments' => array('administer eventbrite config'),
-    'file path' => drupal_get_path('module', 'eventbrite') . '/includes',
-    'file' => 'eventbrite.admin.inc',
-    'type' => MENU_NORMAL_ITEM,
-    'weight' => 50,
-  );
-  return $items;
-}
-
-/**
- * Implements hook_permission().
+ * Implements hook_entity_info().
  */
-function eventbrite_permission() {
-  $permissions = array(
-    'administer eventbrite config' => array(
-      'title' => t('Configure Eventbrite settings'),
-      'description' => t('Allows users to update Eventbrite settings.'),
-      'restrict access' => TRUE,
+function eventbrite_entity_info() {
+  $return['event'] = array(
+    'label' => t('Eventbrite'),
+    'entity class' => 'Event',
+    'controller class' => 'EventController',
+    'base table' => 'eventbrite_events',
+    'fieldable' => TRUE,
+    'entity keys' => array(
+        'id' => 'eid',
     ),
-    'administer eventbrite data' => array(
-      'title' => t('Manage Eventbrite data'),
-      'description' => t('Allows users to manage Eventbrite data.'),
-      'restrict access' => TRUE,
+    'label callback' => 'entity_class_label',
+    'uri callback' => 'entity_class_uri',
+    'creation callback' => 'event_create',
+    'access callback' => 'event_access',
+    'module' => 'eventbrite',
+    'admin ui' => array(
+      'path' => 'admin/eventbrite',
+      'file' => 'eventbrite.admin.inc',
+      'controller class' => 'EventbriteUIController',
+      'menu wildcard' => '%event',
     ),
   );
-  return $permissions;
+  return $return;
 }
 
 /**
@@ -98,106 +61,6 @@ function eventbrite_libraries_info() {
 }
 
 /**
- * Implements hook_entity_info().
- */
-function eventbrite_entity_info() {
-  $return = array(
-    'eventbrite_event' => array(
-      'label' => t('Eventbrite Event'),
-      'plural label' => t('Eventbrite Events'),
-      'entity class' => 'Entity',
-      'controller class' => 'EntityAPIController',
-      'base table' => 'eventbrite_events',
-      'fieldable' => TRUE,
-      'entity keys' => array(
-        'id' => 'eid',
-      ),
-      'label callback' => 'entity_class_label',
-      'uri callback' => 'entity_class_uri',
-	    /*'admin ui' => array(
-        'path' => 'admin/content/models',
-        'file' => 'eventbrite.admin.inc',
-        'controller class' => 'EventUIController',
-        'menu wildcard' => '%event',
-      ),*/
-    ),
-    'eventbrite_organizer' => array(
-      'label' => t('Eventbrite Organizer'),
-      'plural label' => t('Eventbrite Organizers'),
-      'entity class' => 'Entity',
-      'controller class' => 'EntityAPIController',
-      'base table' => 'eventbrite_organizers',
-      'fieldable' => TRUE,
-      'entity keys' => array(
-        'id' => 'oid',
-      ),
-      'label callback' => 'entity_class_label',
-      'uri callback' => 'entity_class_uri',
-    ),
-    'eventbrite_ticket' => array(
-      'label' => t('Eventbrite Ticket'),
-      'plural label' => t('Eventbrite Tickets'),
-      'entity class' => 'Entity',
-      'controller class' => 'EntityAPIController',
-      'base table' => 'eventbrite_tickets',
-      'fieldable' => TRUE,
-      'entity keys' => array(
-        'id' => 'tid',
-      ),
-      'label callback' => 'entity_class_label',
-      'uri callback' => 'entity_class_uri',
-    ),
-    'eventbrite_venue' => array(
-      'label' => t('Eventbrite Venue'),
-      'plural label' => t('Eventbrite Venues'),
-      'entity class' => 'Entity',
-      'controller class' => 'EntityAPIController',
-      'base table' => 'eventbrite_venues',
-      'fieldable' => TRUE,
-      'entity keys' => array(
-        'id' => 'vid',
-      ),
-      'label callback' => 'entity_class_label',
-      'uri callback' => 'entity_class_uri',
-    ),
-  );
-  return $return;
-}
-
-/**
- * Implementation of hook_cron_queue_info()
- */
-function eventbrite_cron_queue_info() {
-	module_load_include('inc', 'eventbrite', 'includes/eventbrite.admin');
-  $queues['eventbrite_import'] = array(
-    'worker callback' => 'eventbrite_entity_import',
-    'time' => 60,
-  );
-  return $queues;
-}
-
-/**
- * Implements hook_cron().
- */
-function eventbrite_cron() {
-  $cron = variable_get('eventbrite_cron_import', 1);
-  // Only do this is the config is set.
-  if ($cron == 1) {
-    // Instantiate Eventbrite.
-	  $eb = new eb();
-    // Get a list of events.
-    $items = $eb->get_data();
-		// Get rid of existing data.
-		$eb->delete_all();
-    // Put everything in a queue for processing.
-    $queue = DrupalQueue::get('eventbrite_import');
-    foreach($items as $item) {
-      $queue->createItem($item);
-    }
-  }
-}
-
-/**
  * Implements hook_views_api().
  */
 function eventbrite_views_api() {
@@ -208,7 +71,63 @@ function eventbrite_views_api() {
 }
 
 /**
- * Load an event.
+ * Implements hook_permission().
+ */
+function event_permission() {
+  $permissions = array(
+    'administer events' => array(
+      'title' => t('Administer events'),
+      'description' => t('Edit and delete all events'),
+    ),
+    'edit any event' => array(
+      'title' => t('Edit any event'),
+    ),
+    'view any event' => array(
+      'title' => t('View any event'),
+    ),
+  );
+  return $permissions;  
+}
+
+/**
+ * Determines whether the given user has access to an event.
+ *
+ * @param $op
+ *   The operation being performed. One of 'view', 'update', 'create', 'delete'
+ *   or just 'edit' (being the same as 'create' or 'update').
+ * @param $event
+ *   Optionally an event or an event type to check access for. If nothing is
+ *   given, access for all events is determined.
+ * @param $account
+ *   The user to check for. Leave it to NULL to check for the global user.
+ * @return boolean
+ *   Whether access is allowed or not.
+ */
+function event_access($op, $event = NULL, $account = NULL) {
+  if (user_access('administer events', $account)) {
+    return TRUE;
+  }
+  if (isset($event)) {
+    $op = ($op == 'view') ? 'view' : 'edit';
+    if (user_access("$op any event", $account)) {
+      return TRUE;
+    }
+  }
+  return FALSE;
+}
+
+/**
+ * Fetch an event object. Make sure that the wildcard you choose 
+ * in the event entity definition fits the function name here.
+ *
+ * @param $event_id
+ *   Integer specifying the event id.
+ * @param $reset
+ *   A boolean indicating that the internal cache should be reset.
+ * @return
+ *   A fully-loaded $event object or FALSE if it cannot be loaded.
+ *
+ * @see event_load_multiple()
  */
 function event_load($event_id, $reset = FALSE) {
   $events = event_load_multiple(array($event_id), array(), $reset);
@@ -216,14 +135,26 @@ function event_load($event_id, $reset = FALSE) {
 }
 
 /**
- * Load multiple events.
+ * Load multiple events based on certain conditions.
+ *
+ * @param $event_ids
+ *   An array of event IDs.
+ * @param $conditions
+ *   An array of conditions to match against the {event} table.
+ * @param $reset
+ *   A boolean indicating that the internal cache should be reset.
+ * @return
+ *   An array of event objects, indexed by event_id.
+ *
+ * @see entity_load()
+ * @see event_load()
  */
 function event_load_multiple($event_ids = array(), $conditions = array(), $reset = FALSE) {
   return entity_load('event', $event_ids, $conditions, $reset);
 }
 
 /**
- * Deletes a event.
+ * Deletes an event.
  */
 function event_delete(Event $event) {
   $event->delete();
@@ -231,27 +162,98 @@ function event_delete(Event $event) {
 
 /**
  * Delete multiple events.
+ *
+ * @param $event_ids
+ *   An array of event IDs.
  */
 function event_delete_multiple(array $event_ids) {
   entity_get_controller('event')->delete($event_ids);
 }
 
 /**
- * Create a event object.
+ * Create an event object.
  */
 function event_create($values = array()) {
   return entity_get_controller('event')->create($values);
 }
 
 /**
- * Saves a event to the database.
+ * Saves an event to the database.
+ *
+ * @param $event
+ *   The event object.
  */
 function event_save(Event $event) {
   return $event->save();
 }
 
 /**
- * The class used for model entities
+ * URI callback for events
+ */
+function event_uri(Event $event) {
+  return array(
+    'path' => 'event/' . $event->event_id,
+  );
+}
+
+/**
+ * Menu title callback for showing individual entities
+ */
+function event_page_title(Event $event) {
+  return $event->title;
+}
+
+/**
+ * Sets up content to show an individual event
+ * @todo - get rid of drupal_set_title();
+ */
+function event_page_view($event, $view_mode = 'full') {    
+  $controller = entity_get_controller('event');  
+  $content = $controller->view(array($event->event_id => $event));
+  drupal_set_title($event->name);
+  return $content;
+}
+
+/**
+ * Implement hook_theme().
+ */
+function event_theme() {
+  return array(
+    'event_add_list' => array(
+      'variables' => array('content' => array()),
+      'file' => 'eventbrite.admin.inc',
+    ),
+    'event' => array(
+      'render element' => 'elements',
+      'template' => 'event',
+    ),
+   'event_sample_data' => array(
+      'variables' => array('event_sample_data', 'event' => NULL),
+      'template' => 'event-sample-data',
+    ),
+
+
+  );
+}  
+
+/**
+ * Implements hook_menu_local_tasks_alter().
+ */
+/*function event_menu_local_tasks_alter(&$data, $router_item, $root_path) {
+  // Add action link 'admin/structure/events/add' on 'admin/structure/events'.
+  if ($root_path == 'admin/content/events') {
+    $item = menu_get_item('admin/content/events/add');
+    if ($item['access']) {
+      $data['actions']['output'][] = array(
+        '#theme' => 'menu_local_action',
+        '#link' => $item,
+      );
+    }
+  }
+}*/
+
+/**
+ * The class used for event entities
  */
 class Event extends Entity {
   
@@ -264,7 +266,73 @@ class Event extends Entity {
   }
 
   protected function defaultUri() {
-    return array('path' => 'model/' . $this->model_id);
+    return array('path' => 'event/' . $this->event_id);
+  }
+  
+  
+}
+
+/**
+ * The Controller for Event entities
+ */
+class EventController extends EntityAPIController {
+  public function __construct($entityType) {
+    parent::__construct($entityType);
+  }
+
+
+  /**
+   * Create an event - we first set up the values that are specific
+   * to our event schema but then also go through the EntityAPIController
+   * function.
+   * 
+   * @param $type
+   *   The machine-readable type of the event.
+   *
+   * @return
+   *   A event object with all default fields initialized.
+   */
+  public function create(array $values = array()) {
+    // Add values that are specific to our Event
+    $values += array(
+      'eid' => '',
+      'oid' => '',
+      'vid' => '',
+      'is_new' => TRUE,
+      'locale' => '',
+      'timezone' => '',
+      'category' => '',
+      'capacity' => '',
+      'num_attendee_rows' => '',
+      'title' => '',
+      'start_date' => '',
+      'status' => '',
+      'description' => '',
+      'end_date' => '',
+      'tags' => '',
+      'timezone_offset' => '',
+      'password' => '',
+      'created' => '',
+      'url' => '',
+      'privacy' => '',
+      'modified' => '',
+      'repeats' => '',
+    );
+    
+    $event = parent::create($values);
+    return $event;
+  }
+  
+  /**
+   * Overriding the buldContent function to add entity specific fields
+   */
+  public function buildContent($entity, $view_mode = 'full', $langcode = NULL, $content = array()) {
+    $content = parent::buildContent($entity, $view_mode, $langcode, $content);
+    $content['event_sample_data'] =  array(
+      '#markup' => theme('event_sample_data', array('event_sample_data' => check_plain($entity->data['sample_data']), 'event' => $entity)),
+    );
+
+    return $content;
   }
   
 }
