@@ -155,13 +155,6 @@ function event_edit_form($form, &$form_state, $event) {
     '#required' => TRUE,
   );
   
-  /*$form['details']['description'] = array(
-    '#type' => 'text_format',
-    '#title' => t('Description'),
-    '#default_value' => isset($event->description) ? $event->description : '',
-    '#format' => variable_get('event_desdc_format', 'filtered_html'),
-  );*/
-  
   $form['details']['description'] = array(
     '#type' => 'textarea',
     '#title' => t('Description'),
@@ -336,35 +329,6 @@ function event_delete_form_submit($form, &$form_state) {
   watchdog('event', 'Deleted event %name.', array('%name' => $event->name));
 
   $form_state['redirect'] = 'admin/content/events';
-}
-
-/**
- * Displays the list of available event types for event creation.
- *
- * @ingroup themeable
- */
-function theme_event_add_list($variables) {
-  dpm($variables);
-  $content = $variables['content'];
-  $output = '';
-  if ($content) {
-    $output = '<dl class="event-type-list">';
-    foreach ($content as $item) {
-      $output .= '<dt>' . l($item['title'], $item['href']) . '</dt>';
-      $output .= '<dd>' . filter_xss_admin($item['description']) . '</dd>';
-    }
-    $output .= '</dl>';
-  }
-  else {
-    if (user_access('administer event types')) {
-      $output = '<p>' . t('Event Entities cannot be added because you have not created any event types yet. Go to the <a href="@create-event-type">event type creation page</a> to add a new event type.', array('@create-event-type' => url('admin/structure/event_types/add'))) . '</p>';
-    }
-    else {
-      $output = '<p>' . t('No event types have been created yet for you to use.') . '</p>';
-    }
-  }
-
-  return $output;
 }
 
 /**

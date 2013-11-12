@@ -11,6 +11,8 @@
 function eventbrite_init() {
   // Globally load the Eventbrite class.
   $eventbrite = libraries_load('eventbrite');
+	// Load "global" functions.
+  module_load_include('inc', 'eventbrite', 'eventbrite.functions');
 }
 
 /**
@@ -234,23 +236,7 @@ function event_theme() {
 
 
   );
-}  
-
-/**
- * Implements hook_menu_local_tasks_alter().
- */
-/*function event_menu_local_tasks_alter(&$data, $router_item, $root_path) {
-  // Add action link 'admin/structure/events/add' on 'admin/structure/events'.
-  if ($root_path == 'admin/content/events') {
-    $item = menu_get_item('admin/content/events/add');
-    if ($item['access']) {
-      $data['actions']['output'][] = array(
-        '#theme' => 'menu_local_action',
-        '#link' => $item,
-      );
-    }
-  }
-}*/
+}
 
 /**
  * The class used for event entities
