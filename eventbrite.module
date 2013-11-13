@@ -1,0 +1,244 @@
+<?php
+
+/**
+ * @file
+ * Provides the main hooks and functionality for the Eventbrite module.
+ */
+
+/**
+ * Implements hook_init().
+ */
+function eventbrite_init() {
+  // Globally load the Eventbrite class.
+  $eventbrite = libraries_load('eventbrite');
+	// Load "global" functions.
+  $functions = module_load_include('inc', 'eventbrite', 'includes/eventbrite.functions');
+}
+
+/**
+ * Implements hook_libraries_info().
+ */
+function eventbrite_libraries_info() {
+  $libraries['eventbrite'] = array(
+    'name' => 'eventbrite.php',
+    'vendor url' => 'https://github.com/ryanjarvinen/eventbrite.php',
+    'download url' => 'https://raw.github.com/ryanjarvinen/eventbrite.php/master/Eventbrite.php',
+    // There isn't a version number anywhere to be found, so we have to hardcode this.
+    'version' => 1,
+    'files' => array(
+      'php' => array(
+        'eventbrite.php',
+      ),
+    ),
+  );
+  return $libraries;
+}
+
+/**
+ * Implements hook_menu().
+ */
+function eventbrite_menu() {
+  $items = array();
+  // Top level Eventbrite container.
+  $items['admin/eventbrite'] = array(
+    'title' => 'Eventbrite',
+    'description' => 'Administer Eventbrite data.',
+    'page callback' => 'system_admin_menu_block_page',
+    'access arguments' => array('access administration pages'),
+    'file path' => drupal_get_path('module', 'system'),
+    'file' => 'system.admin.inc',
+    'weight' => -7,
+  );
+	/*$items['admin/eventbrite/event/manage'] = array(
+    'title' => 'Manage Eventbrite events',
+    'description' => 'Administer Eventbrite data.',
+    'page callback' => 'system_admin_menu_block_page',
+    'access arguments' => array('access administration pages'),
+    'file path' => drupal_get_path('module', 'system'),
+    'file' => 'system.admin.inc',
+    'weight' => 1,
+  );*/
+	// Add an event.
+  $items['admin/eventbrite/event/add'] = array(
+    'title' => t('Add an event'),
+    'page callback' => 'event_add',
+    'access arguments' => array('edit'),
+  );
+  /*$items['admin/eventbrite/event/%'] = array(
+    'page callback' => 'event_form_wrapper',
+    'page arguments' => array($id_count + 1),
+    'access callback' => 'event_access',
+    'access arguments' => array('edit', $id_count + 1),
+    'weight' => 0,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+    'file' => 'eventbrite.admin.inc',
+    'file path' => drupal_get_path('module', $this->entityInfo['module'])
+  );
+  $items['admin/eventbrite/event/%/edit'] = array(
+    'title' => 'Edit',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -10,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+  );*/
+  $items['admin/eventbrite/config'] = array(
+    'title' => 'Configuration',
+    'description' => 'Configure settings for Eventbrite.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('eventbrite_config_form'),
+    'access arguments' => array('access administration pages'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'includes/eventbrite.forms.inc',
+		'weight' => 50,
+  );
+  return $items;
+}
+
+/**
+ * Implements hook_entity_info().
+ */
+function eventbrite_entity_info(){
+	$entities = array(
+    'event' => array(
+			'label' => t('Event'),
+			//'controller class' => 'EventController',
+      'entity class' => 'Entity',
+      'controller class' => 'EntityAPIController',
+			'base table' => 'eventbrite_events',
+			'fieldable' => TRUE,
+			'entity keys' => array(
+				'id' => 'eid',
+			),
+			'static cache' => TRUE,
+			/*'bundles' => array(
+				'event'=> array(
+					'label' => 'Event',
+					'admin' => array(
+						'path' => 'admin/eventbrite/event/manage',
+						'access arguments' => array('administer eventbrite'),
+					),
+				),
+			),*/
+    ),
+    'organizer' => array(
+			'label' => t('Organizer'),
+			//'controller class' => 'OrganizerController',
+			'base table' => 'eventbrite_organizers',
+			'fieldable' => TRUE,
+			'entity keys' => array(
+				'id' => 'oid',
+			),
+			'static cache' => TRUE,
+			/*'bundles' => array(
+				'organizer'=> array(
+					'label' => 'Organizer',
+					'admin' => array(
+						'path' => 'admin/eventbrite/organizer/manage',
+						'access arguments' => array('administer eventbrite'),
+					),
+				),
+			),*/
+		),
+    'ticket' => array(
+			'label' => t('Ticket'),
+			//'controller class' => 'TicketController',
+			'base table' => 'eventbrite_tickets',
+			'fieldable' => TRUE,
+			'entity keys' => array(
+				'id' => 'tid',
+			),
+			'static cache' => TRUE,
+			/*'bundles' => array(
+				'ticket'=> array(
+					'label' => 'Ticket',
+					'admin' => array(
+						'path' => 'admin/eventbrite/ticket/manage',
+						'access arguments' => array('administer eventbrite'),
+					),
+				),
+			),*/
+		),
+    'venue' => array(
+			'label' => t('Venue'),
+			//'controller class' => 'VenueController',
+			'base table' => 'eventbrite_venues',
+			'fieldable' => TRUE,
+			'entity keys' => array(
+				'id' => 'vid',
+			),
+			'static cache' => TRUE,
+			/*'bundles' => array(
+				'venue'=> array(
+					'label' => 'Venue',
+					'admin' => array(
+						'path' => 'admin/eventbrite/venue/manage',
+						'access arguments' => array('administer eventbrite'),
+					),
+				),
+			),*/
+		),
+	);
+  return $entities;
+}
+
+/**
+ * Implements hook_views_api().
+ */
+function eventbrite_views_api() {
+  return array(
+    'api' => 3,
+    'path' => drupal_get_path('module', 'eventbrite') . '/views',
+  );
+}
+
+/**
+ * Implements hook_permission().
+ */
+function eventbrite_permission() {
+  $permissions = array(
+    'administer eventbrite' => array(
+      'title' => t('administer eventbrite'),
+      'description' => t('Edit and delete all events'),
+    ),
+  );
+  return $permissions;  
+}
+
+function event_load($eid = NULL, $reset = FALSE){
+  $eids = (isset ($eid) ? array($eid) : array());
+  $event = event_load_multiple($eids, $reset);
+  return $event ? reset ($event) : FALSE;
+}
+
+function event_load_multiple($eids = array(), $conditions = array(), $reset = FALSE){
+  return entity_load('event', $eids, $conditions, $reset);
+}
+
+function event_add() {
+  $event = (object) array(
+		'eid' => '',
+		'oid' => '',
+		'vid' => '',
+		'is_new' => TRUE,
+		'locale' => '',
+		'timezone' => '',
+		'category' => '',
+		'capacity' => '',
+		'num_attendee_rows' => '',
+		'title' => '',
+		'start_date' => '',
+		'status' => '',
+		'description' => '',
+		'end_date' => '',
+		'tags' => '',
+		'timezone_offset' => '',
+		'password' => '',
+		'created' => '',
+		'url' => '',
+		'privacy' => '',
+		'modified' => '',
+		'repeats' => '',
+  );
+  
+	module_load_include('inc', 'eventbrite', 'includes/eventbrite.forms');
+  return drupal_get_form('event_add_form', $event);
+}
