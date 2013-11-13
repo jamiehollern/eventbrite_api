@@ -221,78 +221,96 @@ function eventbrite_import_all() {
 	// Connect to Eventbrite.
   $eb_client = new Eventbrite($auth);
 	// Get all data by using the user_list_events method.
-  $data = $eb_client->user_list_events();
+  $import = $eb_client->user_list_events();
 	// Format it nicely.
-	$events = eventbrite_format_all($data);
+	$events = eventbrite_format_all($import);
 	dpm($events);
 	return;
 	// Should we delete everything before importing?
-	if (variable_get('eventbrite_import_delete', 1) == 1) {
+	if (1 == 2 && variable_get('eventbrite_import_delete', 1) == 1) {
 		// Yes.
     $result = db_truncate('eventbrite_events')->execute();
     $result = db_truncate('eventbrite_organizers')->execute();
     $result = db_truncate('eventbrite_tickets')->execute();
     $result = db_truncate('eventbrite_venues')->execute();
+		// Run through the array.
+		foreach ($events as $type => $data) {
+			// Run through the sub arrays.
+			foreach ($data as $record) {
+				// Write the record.
+				$write = drupal_write_record('eventbrite_' . $type, $record);
+				dpm($write);
+			}
+		}
 	}
 	else {
 		// Update.
 	}
 }
 
-function eventbrite_format_all($data) {// Create an array for our events.
+function eventbrite_format_all($data) {
+	// Create an array for our events.
 	$events = array();
-	// Run through each row of data.
 	foreach ($data->events as $row) {
 		// Set the eid.
 		$eid = $row->event->id;
-		// Add the organizer.
-		$events[$eid]['organizer'] = (array) $row->event->organizer;
-		// Change the id to oid.
-		$oid = $events[$eid]['organizer']['id'];
-		$events[$eid]['organizer']['oid'] = $oid;
-		unset($events[$eid]['organizer']['id']);
-		// Remove the organizer from the original data.
-		unset($row->event->organizer);
-		// Check if there are tickets for this event.
-		if (isset($row->event->tickets) && !empty($row->event->tickets)) {
-			// Run through each ticket.
-		  foreach ($row->event->tickets as $ticket) {
-				// Ticket ID.
-				$tid = $ticket->ticket->id;
-			  $events[$eid]['tickets'][$tid] = (array) $ticket->ticket;
-				// Change the ID to tid.
-			  $events[$eid]['tickets'][$tid]['tid'] = $tid;
-			  unset($events[$eid]['tickets'][$tid]['id']);
-				// Add event ID.
-			  $events[$eid]['tickets'][$tid]['eid'] = $eid;
-		  }
-		  // Remove the tickets from the original data.
-		  unset($row->event->tickets);
+		// Check for an organizer.
+		if (!empty($row->event->organizer)) {
+			// Set the oid.
+			$oid = $row->event->organizer->id;
+			// Add the oid and remove the id.
+			$row->event->organizer->oid = $oid;
+			unset($row->event->organizer->id);
+			// Assign the organizer object as an array to $events.
+		  $events['organizers'][$oid] = (array) $row->event->organizer;
+			// Remove the organizer from the data.
+			unset($row->event->organizer);
 		}
-		// Check if there is a venue for this event.
-		if (isset($row->event->venue) && !empty($row->event->venue)) {
-			// Add the venue.
-			$events[$eid]['venue'] = (array) $row->event->venue;
-			// Change the id to vid.
-			$vid = $events[$eid]['venue']['id'];
-			$events[$eid]['venue']['vid'] = $vid;
-			unset($events[$eid]['venue']['id']);
+		// Check for a venue.
+		if (!empty($row->event->venue)) {
+			// Set the vid.
+			$vid = $row->event->venue->id;
+			// Add the vid and remove the id.
+			$row->event->venue->vid = $vid;
+			unset($row->event->venue->id);
+			// Assign the venue object as an array to $events.
+		  $events['venues'][$vid] = (array) $row->event->venue;
 			// Change Lat-Long to lat_long.
-			$events[$eid]['venue']['lat_long'] = $events[$eid]['venue']['Lat-Long'];
-			unset($events[$eid]['venue']['Lat-Long']);
-			// Remove the organizer from the original data.
+			$events['venues'][$vid]['lat_long'] = $events['venues'][$vid]['Lat-Long'];
+			unset($events['venues'][$vid]['Lat-Long']);
+			// Remove the venue from the data.
 			unset($row->event->venue);
 		}
-		// Add the organizer.
-		$events[$eid]['event'] = (array) $row->event;
-		// Change the id to eid.
-		$events[$eid]['event']['eid'] = $events[$eid]['event']['id'];
-		unset($events[$eid]['event']['id']);
+		// Check for tickets.
+		if (!empty($row->event->tickets)) {
+			// Run through each ticket.
+			foreach ($row->event->tickets as $ticket) {
+				// Set the tid.
+				$tid = $ticket->ticket->id;
+				// Add the tid and remove the id.
+				$ticket->ticket->tid = $tid;
+				unset($ticket->ticket->id);
+				// Add the eid.
+				$ticket->ticket->eid = $eid;
+				// Assign the venue object as an array to $events.
+				$events['tickets'][$tid] = (array) $ticket->ticket;
+			}
+			// Remove the tickets from the data.
+			unset($row->event->tickets);
+		}
+		// Add the eid and remove the id.
+		$row->event->eid = $eid;
+		unset($row->event->id);
+		// Assign the event object as an array to $events.
+		$events['events'][$eid] = (array) $row->event;
 		// Add vid and oid.
-		$events[$eid]['event']['oid'] = $oid;
+		if (!empty($oid)) {
+		  $events['events'][$eid]['oid'] = $oid;
+		}
 		if (!empty($vid)) {
-		  $events[$eid]['event']['vid'] = $vid;
+		  $events['events'][$eid]['vid'] = $vid;
 		}
 	}
+	ksort($events);
 	return $events;
 }
