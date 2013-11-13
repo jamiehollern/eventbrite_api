@@ -52,6 +52,11 @@ function eventbrite_config_form() {
     '#collapsible' => TRUE,
     '#collapsed' => FALSE,
   );
+  $form['import_settings']['eventbrite_import_delete'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Delete all existing data before import.'),
+    '#default_value' => variable_get('eventbrite_import_delete', 1),
+  );
   $form['import_settings']['eventbrite_cron_import'] = array(
     '#type' => 'checkbox',
     '#title' => t('Import events from Eventbrite during cron runs'),
