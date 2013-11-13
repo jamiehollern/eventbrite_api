@@ -49,37 +49,12 @@ function eventbrite_menu() {
     'file' => 'system.admin.inc',
     'weight' => -7,
   );
-	/*$items['admin/eventbrite/event/manage'] = array(
-    'title' => 'Manage Eventbrite events',
-    'description' => 'Administer Eventbrite data.',
-    'page callback' => 'system_admin_menu_block_page',
-    'access arguments' => array('access administration pages'),
-    'file path' => drupal_get_path('module', 'system'),
-    'file' => 'system.admin.inc',
-    'weight' => 1,
-  );*/
 	// Add an event.
   $items['admin/eventbrite/event/add'] = array(
     'title' => t('Add an event'),
     'page callback' => 'event_add',
     'access arguments' => array('edit'),
   );
-  /*$items['admin/eventbrite/event/%'] = array(
-    'page callback' => 'event_form_wrapper',
-    'page arguments' => array($id_count + 1),
-    'access callback' => 'event_access',
-    'access arguments' => array('edit', $id_count + 1),
-    'weight' => 0,
-    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-    'file' => 'eventbrite.admin.inc',
-    'file path' => drupal_get_path('module', $this->entityInfo['module'])
-  );
-  $items['admin/eventbrite/event/%/edit'] = array(
-    'title' => 'Edit',
-    'type' => MENU_DEFAULT_LOCAL_TASK,
-    'weight' => -10,
-    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-  );*/
   $items['admin/eventbrite/config'] = array(
     'title' => 'Configuration',
     'description' => 'Configure settings for Eventbrite.',
@@ -213,8 +188,8 @@ function event_load_multiple($eids = array(), $conditions = array(), $reset = FA
   return entity_load('event', $eids, $conditions, $reset);
 }
 
-function event_add() {
-  $event = (object) array(
+function event_create() {
+	$event = (object) array(
 		'eid' => '',
 		'oid' => '',
 		'vid' => '',
@@ -238,7 +213,11 @@ function event_add() {
 		'modified' => '',
 		'repeats' => '',
   );
-  
+	return $event;
+}
+
+function event_add() {
+  $event = event_create();
 	module_load_include('inc', 'eventbrite', 'includes/eventbrite.forms');
   return drupal_get_form('event_add_form', $event);
 }

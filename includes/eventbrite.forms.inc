@@ -236,13 +236,13 @@ function event_add_form_submit($form, &$form_state) {
   $eventbrite = $form_state['values'];
 	// Format the dates properly.
 	$eventbrite['start_date'] = eventbrite_datef($eventbrite['start_date']);
-	$eventbrite['end_date'] = eventbrite_datef($eventbrite['end_date']);
+	$eventbrite['end_date'] = eventbrite_datef($eventbrite['end_date']);//$time = eventbrite_ctime(time());
 	// Add extra fields.
   field_attach_submit('event', $event_submit, $form, $form_state);
 	// Connect to Eventbrite.
   $auth = array('app_key'  => variable_get('eventbrite_appkey', ''), 'user_key' => variable_get('eventbrite_userkey', ''));
   $eb_client = new Eventbrite($auth);
-  /*try {
+  try {
 		$response = $eb_client->event_new($eventbrite);
 		// If the event is added.
 		if ($response->process->status == 'OK') {
@@ -250,16 +250,25 @@ function event_add_form_submit($form, &$form_state) {
 			$eid = $response->process->id;
 			// Get the full event details.
 		  $response = $eb_client->event_get(array('id' => $eid));
+			// This is the retured event.
 			$event = $response->event;
+			// Make sure the id is correctly labeled.
+			$event->eid = $event->id;
 		}
   }
   catch (Exception $e) {
 		$response = $e->getMessage();
-  }*/
-  $event = event_save($event);
-  $form_state['redirect'] = 'admin/eventbrite/event';
+		form_set_error(NULL, $response);
+  }
+	$event = (object) array_merge((array) $form_state['event'], (array) $event);
+	
+  $save = event_save($event);
+	if (!empty($save)) {
+    drupal_set_message(t('Event @title saved to Eventbrite and cached locally.', array('@title' => '<em>' . $event->title . '</em>')));
+    $form_state['redirect'] = 'admin/eventbrite/event';
+	}
 }
 
 function event_save(&$event) {
-  return entity_get_controller('event')->save($event);
+	return entity_save('event', $event);
 }
