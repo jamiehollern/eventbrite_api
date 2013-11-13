@@ -112,18 +112,9 @@ function eventbrite_config_form_validate($form, &$form_state) {
   }
 }
 
-function eventbrite_import_all() {
-  $auth = array('app_key'  => variable_get('eventbrite_appkey', ''), 'user_key' => variable_get('eventbrite_userkey', ''));
-  $eb_client = new Eventbrite($auth);
-  // For more information about the features that are available through the Eventbrite API, see http://developer.eventbrite.com/doc/
-  $events = $eb_client->user_list_events();
-  dpm($events);
-}
-
 /**
  * Event add form.
  */
-
 function event_add_form($form, &$form_state, $event) {
   $form['details'] = array(
     '#type' => 'fieldset',
@@ -219,17 +210,24 @@ function event_add_form($form, &$form_state, $event) {
   $form['#validate'][] = 'event_add_form_validate';
   // Add the field related form elements.
   $form_state['event'] = $event;
+  $form_state['eid'] = $event->eid;
   
   field_attach_form('event', $event, $form, $form_state);
   
   return $form;
 }
 
+/**
+ * Validation function for event add form.
+ */
 function event_add_form_validate($form, &$form_state) {
   $event_submit = (object) $form_state['values'];
   field_attach_form_validate('event', $event_submit, $form, $form_state);
 }
 
+/**
+ * Submit function for event add form.
+ */
 function event_add_form_submit($form, &$form_state) {
   $event_submit = (object) $form_state['values'];
 	// Assign them to an array to send to Eventbrite.
@@ -261,7 +259,6 @@ function event_add_form_submit($form, &$form_state) {
 		form_set_error(NULL, $response);
   }
 	$event = (object) array_merge((array) $form_state['event'], (array) $event);
-	
   $save = event_save($event);
 	if (!empty($save)) {
     drupal_set_message(t('Event @title saved to Eventbrite and cached locally.', array('@title' => '<em>' . $event->title . '</em>')));
@@ -269,6 +266,55 @@ function event_add_form_submit($form, &$form_state) {
 	}
 }
 
-function event_save(&$event) {
-	return entity_save('event', $event);
+/**
+ * Form API submit callback for the delete button.
+ */
+function event_form_submit_delete(&$form, &$form_state) {
+  $form_state['redirect'] = 'admin/eventbrite/event/' . $form_state['eid'] . '/delete';
+}
+
+/**
+ * Event delete form.
+ */
+function event_delete_form($form, &$form_state, $event) {
+  $form_state['event'] = $event;
+
+  $form['#submit'][] = 'event_delete_form_submit';
+
+  $form = confirm_form($form,
+    t('Are you sure you want to delete event "@title"?', array('@title' => $event->title)),
+    'admin/content/events/event',
+    '<p>' . t('This will cancel the event on Eventbrite and delete it locally. This action cannot be undone.') . '</p>',
+    t('Delete'),
+    t('Cancel'),
+    'confirm'
+  );
+  
+  return $form;
+}
+
+/**
+ * Submit callback for event_delete_form
+ */
+function event_delete_form_submit($form, &$form_state) {
+  $event = $form_state['event'];
+
+  event_delete($event);
+
+  drupal_set_message(t('The event %name has been deleted.', array('%name' => $event->name)));
+
+  $form_state['redirect'] = 'admin/eventbrite/event';
+}
+
+function event_add_wrapper() {
+  $event = event_create();
+  return drupal_get_form('event_add_form', $event);
+}
+
+function event_edit_wrapper($event) {
+  return drupal_get_form('event_add_form', $event);
+}
+
+function event_delete_wrapper($event) {
+  return drupal_get_form('event_delete_form', $event);
 }

@@ -39,8 +39,9 @@ function eventbrite_libraries_info() {
  */
 function eventbrite_menu() {
   $items = array();
+	$path = 'admin/eventbrite';
   // Top level Eventbrite container.
-  $items['admin/eventbrite'] = array(
+  $items[$path] = array(
     'title' => 'Eventbrite',
     'description' => 'Administer Eventbrite data.',
     'page callback' => 'system_admin_menu_block_page',
@@ -49,12 +50,42 @@ function eventbrite_menu() {
     'file' => 'system.admin.inc',
     'weight' => -7,
   );
+	// Intermediate path ['admin/eventbrite/event'] is handled by a view.
 	// Add an event.
-  $items['admin/eventbrite/event/add'] = array(
+  $items[$path . '/event/add'] = array(
     'title' => t('Add an event'),
-    'page callback' => 'event_add',
+    'page callback' => 'event_add_wrapper',
     'access arguments' => array('edit'),
+    'file path' => drupal_get_path('module', 'eventbrite') . '/includes/',
+    'file' => 'eventbrite.forms.inc',
   );
+	// Edit an event.
+	$items[$path . '/event/%event'] = array(
+    'title' => t('Edit an event'),
+    'page callback' => 'event_edit_wrapper',
+    'page arguments' => array(3),
+    'access arguments' => array('edit'),
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+    'file path' => drupal_get_path('module', 'eventbrite') . '/includes/',
+    'file' => 'eventbrite.forms.inc',
+  );
+  $items[$path . '/event/%event/edit'] = array(
+    'title' => 'Edit',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -10,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+  );
+	// Delete an event.
+	$items[$path . '/event/%event/delete'] = array(
+    'title' => t('Delete an event'),
+    'page callback' => 'event_delete_wrapper',
+    'page arguments' => array(3),
+    'access arguments' => array('edit'),
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+    'file path' => drupal_get_path('module', 'eventbrite') . '/includes/',
+    'file' => 'eventbrite.forms.inc',
+  );
+	// Config page.
   $items['admin/eventbrite/config'] = array(
     'title' => 'Configuration',
     'description' => 'Configure settings for Eventbrite.',
@@ -75,7 +106,6 @@ function eventbrite_entity_info(){
 	$entities = array(
     'event' => array(
 			'label' => t('Event'),
-			//'controller class' => 'EventController',
       'entity class' => 'Entity',
       'controller class' => 'EntityAPIController',
 			'base table' => 'eventbrite_events',
@@ -84,72 +114,40 @@ function eventbrite_entity_info(){
 				'id' => 'eid',
 			),
 			'static cache' => TRUE,
-			/*'bundles' => array(
-				'event'=> array(
-					'label' => 'Event',
-					'admin' => array(
-						'path' => 'admin/eventbrite/event/manage',
-						'access arguments' => array('administer eventbrite'),
-					),
-				),
-			),*/
+      'load hook' => 'event_load',
     ),
     'organizer' => array(
 			'label' => t('Organizer'),
-			//'controller class' => 'OrganizerController',
+      'entity class' => 'Entity',
+      'controller class' => 'EntityAPIController',
 			'base table' => 'eventbrite_organizers',
 			'fieldable' => TRUE,
 			'entity keys' => array(
 				'id' => 'oid',
 			),
 			'static cache' => TRUE,
-			/*'bundles' => array(
-				'organizer'=> array(
-					'label' => 'Organizer',
-					'admin' => array(
-						'path' => 'admin/eventbrite/organizer/manage',
-						'access arguments' => array('administer eventbrite'),
-					),
-				),
-			),*/
 		),
     'ticket' => array(
 			'label' => t('Ticket'),
-			//'controller class' => 'TicketController',
+      'entity class' => 'Entity',
+      'controller class' => 'EntityAPIController',
 			'base table' => 'eventbrite_tickets',
 			'fieldable' => TRUE,
 			'entity keys' => array(
 				'id' => 'tid',
 			),
 			'static cache' => TRUE,
-			/*'bundles' => array(
-				'ticket'=> array(
-					'label' => 'Ticket',
-					'admin' => array(
-						'path' => 'admin/eventbrite/ticket/manage',
-						'access arguments' => array('administer eventbrite'),
-					),
-				),
-			),*/
 		),
     'venue' => array(
 			'label' => t('Venue'),
-			//'controller class' => 'VenueController',
+      'entity class' => 'Entity',
+      'controller class' => 'EntityAPIController',
 			'base table' => 'eventbrite_venues',
 			'fieldable' => TRUE,
 			'entity keys' => array(
 				'id' => 'vid',
 			),
 			'static cache' => TRUE,
-			/*'bundles' => array(
-				'venue'=> array(
-					'label' => 'Venue',
-					'admin' => array(
-						'path' => 'admin/eventbrite/venue/manage',
-						'access arguments' => array('administer eventbrite'),
-					),
-				),
-			),*/
 		),
 	);
   return $entities;
@@ -186,38 +184,4 @@ function event_load($eid = NULL, $reset = FALSE){
 
 function event_load_multiple($eids = array(), $conditions = array(), $reset = FALSE){
   return entity_load('event', $eids, $conditions, $reset);
-}
-
-function event_create() {
-	$event = (object) array(
-		'eid' => '',
-		'oid' => '',
-		'vid' => '',
-		'is_new' => TRUE,
-		'locale' => '',
-		'timezone' => '',
-		'category' => '',
-		'capacity' => '',
-		'num_attendee_rows' => '',
-		'title' => '',
-		'start_date' => '',
-		'status' => '',
-		'description' => '',
-		'end_date' => '',
-		'tags' => '',
-		'timezone_offset' => '',
-		'password' => '',
-		'created' => '',
-		'url' => '',
-		'privacy' => '',
-		'modified' => '',
-		'repeats' => '',
-  );
-	return $event;
-}
-
-function event_add() {
-  $event = event_create();
-	module_load_include('inc', 'eventbrite', 'includes/eventbrite.forms');
-  return drupal_get_form('event_add_form', $event);
 }

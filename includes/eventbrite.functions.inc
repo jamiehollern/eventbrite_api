@@ -177,3 +177,48 @@ function eventbrite_ctime($timestamp) {
 function eventbrite_datef($date) {
   return $date . ':00';
 }
+
+function event_save(&$event) {
+	return entity_save('event', $event);
+}
+
+function event_delete($entity) {
+  entity_delete('event', $entity->eid);
+	// MAKE THIS CANCEL EVENT WITH EVENTBRITE.
+}
+
+function event_create() {
+	$event = (object) array(
+		'eid' => '',
+		'oid' => '',
+		'vid' => '',
+		'is_new' => TRUE,
+		'locale' => '',
+		'timezone' => '',
+		'category' => '',
+		'capacity' => '',
+		'num_attendee_rows' => '',
+		'title' => '',
+		'start_date' => '',
+		'status' => '',
+		'description' => '',
+		'end_date' => '',
+		'tags' => '',
+		'timezone_offset' => '',
+		'password' => '',
+		'created' => '',
+		'url' => '',
+		'privacy' => '',
+		'modified' => '',
+		'repeats' => '',
+  );
+	return $event;
+}
+
+function eventbrite_import_all() {
+  $auth = array('app_key'  => variable_get('eventbrite_appkey', ''), 'user_key' => variable_get('eventbrite_userkey', ''));
+  $eb_client = new Eventbrite($auth);
+  // For more information about the features that are available through the Eventbrite API, see http://developer.eventbrite.com/doc/
+  $events = $eb_client->user_list_events();
+  dpm($events);
+}
