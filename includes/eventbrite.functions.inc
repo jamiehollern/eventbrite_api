@@ -224,24 +224,36 @@ function eventbrite_import_all() {
   $import = $eb_client->user_list_events();
 	// Format it nicely.
 	$events = eventbrite_format_all($import);
-	dpm($events);
-	return;
 	// Should we delete everything before importing?
-	if (1 == 2 && variable_get('eventbrite_import_delete', 1) == 1) {
+	if (variable_get('eventbrite_import_delete', 1) == 1) {
 		// Yes.
     $result = db_truncate('eventbrite_events')->execute();
     $result = db_truncate('eventbrite_organizers')->execute();
     $result = db_truncate('eventbrite_tickets')->execute();
     $result = db_truncate('eventbrite_venues')->execute();
+		// Set a count array for our entities.
+		$count = array();
 		// Run through the array.
 		foreach ($events as $type => $data) {
+			// Count how many entities we have.
+			$count[$type] = count($data);
 			// Run through the sub arrays.
 			foreach ($data as $record) {
+				// Make sure all records have the correct keys.
+				$record = (object) array_merge((array) eventbrite_entity_prepare($type), (array) $record);
 				// Write the record.
 				$write = drupal_write_record('eventbrite_' . $type, $record);
-				dpm($write);
 			}
 		}
+		// Set a message and let the user know what's been imported.
+		$placeholders =  array(
+		  '@events' => $count['events'],
+		  '@organizers' => $count['organizers'],
+		  '@tickets' => $count['tickets'],
+		  '@venues' => $count['venues'],
+		);
+		drupal_set_message(t('Import successful. @events events, @organizers organizers, 
+		@tickets tickets and @venues venues imported.', $placeholders));
 	}
 	else {
 		// Update.
@@ -313,4 +325,98 @@ function eventbrite_format_all($data) {
 	}
 	ksort($events);
 	return $events;
+}
+
+function eventbrite_entity_prepare($type) {
+	$event = array(
+		'eid' => '',
+		'oid' => '',
+		'vid' => '',
+		'locale' => '',
+		'timezone' => '',
+		'category' => '',
+		'capacity' => '',
+		'num_attendee_rows' => '',
+		'title' => '',
+		'start_date' => '1970-01-01 00:00:00',
+		'status' => '',
+		'description' => '',
+		'end_date' => '1970-01-01 00:00:00',
+		'tags' => '',
+		'timezone_offset' => '',
+		'password' => '',
+		'created' => '1970-01-01 00:00:00',
+		'url' => '',
+		'privacy' => '',
+		'modified' => '1970-01-01 00:00:00',
+		'repeats' => '',
+		'is_new' => TRUE,
+	);
+	$organizer = array(
+		'oid' => '',
+		'name' => '',
+		'description' => '',
+		'long_description' => '',
+		'url' => '',
+	);
+	$ticket = array(
+		'tid' => '',
+		'eid' => '',
+		'name' => '',
+		'type' => '',
+		'description' => '',
+		'start_date' => '1970-01-01 00:00:00',
+		'end_date' => '1970-01-01 00:00:00',
+		'min' => '',
+		'max' => '',
+		'price' => '0.00',
+		'quantity_sold' => '',
+		'visible' => '',
+		'currency' => '',
+		'quantity_available' => '',
+		'display_price' => '0.00',
+		'is_new' => TRUE,
+	);
+	$venue = array(
+		'vid' => '',
+		'city' => '',
+		'name' => '',
+		'country' => '',
+		'region' => '',
+		'address' => '',
+		'address_2' => '',
+		'postal_code' => '',
+		'country_code' => '',
+		'longitude' => '',
+		'latitude' => '',
+		'lat_long' => '',
+		'is_new' => TRUE,
+	);
+  switch ($type) {
+    case 'event':
+		  $entity = $event;
+      break;
+    case 'events':
+		  $entity = $event;
+      break;
+    case 'organizer':
+		  $entity = $organizer;
+      break;
+    case 'organizers':
+		  $entity = $organizer;
+      break;
+    case 'ticket':
+		  $entity = $ticket;
+      break;
+    case 'tickets':
+		  $entity = $ticket;
+      break;
+    case 'venue':
+		  $entity = $venue;
+      break;
+    case 'venues':
+		  $entity = $venue;
+      break;
+  }
+	return (object) $entity;
 }
