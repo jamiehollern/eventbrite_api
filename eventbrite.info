@@ -7,9 +7,8 @@ dependencies[] = libraries (>=2.x)
 dependencies[] = views
 configure = admin/eventbrite/config
 core = 7.x
-;files[] = eventbrite.admin.inc
-;files[] = views/model.views.inc
-;files[] = views/model_handler_link_field.inc
-;files[] = views/model_handler_delete_link_field.inc
-;files[] = views/model_handler_edit_link_field.inc
-;files[] = views/model_handler_model_operations_field.inc
+
+; Views Handlers
+files[] = views/eventbrite_handler_field_datetime.inc
+files[] = views/eventbrite_handler_field_event_link.inc
+files[] = views/eventbrite_handler_field_event_link_delete.inc

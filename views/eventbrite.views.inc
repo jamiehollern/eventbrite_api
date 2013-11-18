@@ -187,7 +187,7 @@ function eventbrite_views_data() {
     'title' => t('Start date'),
     'help' => t('The date the event starts.'),
     'field' => array(
-      'handler' => 'views_handler_field_date',
+      'handler' => 'eventbrite_handler_field_datetime',
       'click sortable' => TRUE,
     ),
     'filter' => array(
@@ -279,7 +279,7 @@ function eventbrite_views_data() {
     'title' => t('Created'),
     'help' => t('The date the event was created.'),
     'field' => array(
-      'handler' => 'views_handler_field_date',
+      'handler' => 'eventbrite_handler_field_datetime',
       'click sortable' => TRUE,
     ),
     'filter' => array(
@@ -336,7 +336,7 @@ function eventbrite_views_data() {
     'title' => t('Modified'),
     'help' => t('The date the event was modified.'),
     'field' => array(
-      'handler' => 'views_handler_field_date',
+      'handler' => 'eventbrite_handler_field_datetime',
       'click sortable' => TRUE,
     ),
     'filter' => array(
@@ -366,6 +366,23 @@ function eventbrite_views_data() {
     ),
     'argument' => array(
       'handler' => 'views_handler_argument_string',
+    ),
+  );
+
+  // Expose links to operate on the event.
+  $data['eventbrite_events']['edit_event'] = array(
+    'field' => array(
+      'title' => t('Edit link'),
+      'help' => t('Provide a simple link to the edit event page.'),
+      'handler' => 'eventbrite_handler_field_event_link',
+    ),
+  );
+	
+  $data['eventbrite_events']['delete_event'] = array(
+    'field' => array(
+      'title' => t('Delete link'),
+      'help' => t('Provide a simple link to the administrator view of the event.'),
+      'handler' => 'eventbrite_handler_field_event_link_delete',
     ),
   );
 
@@ -579,7 +596,7 @@ function eventbrite_views_data() {
     'title' => t('Start date'),
     'help' => t('The date the ticket starts.'),
     'field' => array(
-      'handler' => 'views_handler_field_date',
+      'handler' => 'eventbrite_handler_field_datetime',
       'click sortable' => TRUE,
     ),
     'filter' => array(
@@ -598,7 +615,7 @@ function eventbrite_views_data() {
     'title' => t('End date'),
     'help' => t('The date the ticket ends.'),
     'field' => array(
-      'handler' => 'views_handler_field_date',
+      'handler' => 'eventbrite_handler_field_datetime',
       'click sortable' => TRUE,
     ),
     'filter' => array(
