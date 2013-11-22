@@ -7,7 +7,7 @@
 /**
  * Implements hook_requirements().
  */
-function eventbrite_requirements($phase) {
+function eventbrite_api_requirements($phase) {
   // The array that we will return.
   $requirements = array();
   // We only need the "runtime" phase.
@@ -43,8 +43,8 @@ function eventbrite_requirements($phase) {
 /**
  * Implements hook_schema().
  */
-function eventbrite_schema() {
-  $schema['eventbrite_events'] = array(
+function eventbrite_api_schema() {
+  $schema['eventbrite_api_events'] = array(
     'description' => 'The base table for Eventbrite events.',
     'fields' => array(
       'eid' => array(
@@ -193,13 +193,13 @@ function eventbrite_schema() {
     ),
     'foreign keys' => array(
       'oid' => array(
-        'table' => 'eventbrite_organizers',
+        'table' => 'eventbrite_api_organizers',
         'columns' => array('oid' => 'oid'),
       ),
     ),
     'primary key' => array('eid'),
   );
-  $schema['eventbrite_organizers'] = array(
+  $schema['eventbrite_api_organizers'] = array(
     'description' => 'The table for event organizers.',
     'fields' => array(
       'oid' => array(
@@ -239,7 +239,7 @@ function eventbrite_schema() {
     ),
     'primary key' => array('oid'),
   );
-  $schema['eventbrite_tickets'] = array(
+  $schema['eventbrite_api_tickets'] = array(
     'description' => 'The table for event tickets.',
     'fields' => array(
       'tid' => array(
@@ -355,7 +355,7 @@ function eventbrite_schema() {
     ),
     'primary key' => array('tid'),
   );
-  $schema['eventbrite_venues'] = array(
+  $schema['eventbrite_api_venues'] = array(
     'description' => 'The table for event venues.',
     'fields' => array(
       'vid' => array(
@@ -460,6 +460,6 @@ function eventbrite_schema() {
 /**
  * Implements hook_uninstall().
  */
-function eventbrite_uninstall() {
-  db_query("DELETE FROM {variable} WHERE name LIKE 'eventbrite_%'");
+function eventbrite_api_uninstall() {
+  db_query("DELETE FROM {variable} WHERE name LIKE 'eventbrite_api_%'");
 }

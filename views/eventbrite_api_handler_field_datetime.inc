@@ -2,13 +2,13 @@
 
 /**
  * @file
- * Definition of eventbrite_handler_datetime.
+ * Definition of eventbrite_api_handler_datetime.
  */
 
 /**
  * Custom filter handler for views, that handles DATETIME
  */
-class eventbrite_handler_field_datetime extends views_handler_field_date {
+class eventbrite_api_handler_field_datetime extends views_handler_field_date {
   function render($values) {
 		// This is the only thing we have to add, changing the datetime to a timestamp.
     $value = strtotime($this->get_value($values));

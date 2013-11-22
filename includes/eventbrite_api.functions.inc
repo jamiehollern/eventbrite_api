@@ -1,6 +1,6 @@
 <?php
 
-function eventbrite_currencies() {
+function eventbrite_api_currencies() {
   $currencies =  array(
     'AFN' => t('Afghanistani Afghani'),
     'ALL' => t('Albanian Lek'),
@@ -167,14 +167,14 @@ function eventbrite_currencies() {
 	return $currencies;
 }
 
-function eventbrite_ctime($timestamp) {
+function eventbrite_api_ctime($timestamp) {
 	$time = date('c', $timestamp);
 	$time = str_replace('T', ' ', $time);
 	$time = explode('+', $time);
 	return $time[0];
 }
 
-function eventbrite_datef($date) {
+function eventbrite_api_datef($date) {
   return $date . ':00';
 }
 
@@ -215,22 +215,22 @@ function event_create() {
 	return $event;
 }
 
-function eventbrite_import_all() {
+function eventbrite_api_import_all() {
 	// Authorisation details.
-  $auth = array('app_key'  => variable_get('eventbrite_appkey', ''), 'user_key' => variable_get('eventbrite_userkey', ''));
+  $auth = array('app_key'  => variable_get('eventbrite_api_appkey', ''), 'user_key' => variable_get('eventbrite_api_userkey', ''));
 	// Connect to Eventbrite.
   $eb_client = new Eventbrite($auth);
 	// Get all data by using the user_list_events method.
   $import = $eb_client->user_list_events();
 	// Format it nicely.
-	$events = eventbrite_format_all($import);
+	$events = eventbrite_api_format_all($import);
 	// Should we delete everything before importing?
-	if (variable_get('eventbrite_import_delete', 1) == 1) {
+	if (variable_get('eventbrite_api_import_delete', 1) == 1) {
 		// Yes.
-    $result = db_truncate('eventbrite_events')->execute();
-    $result = db_truncate('eventbrite_organizers')->execute();
-    $result = db_truncate('eventbrite_tickets')->execute();
-    $result = db_truncate('eventbrite_venues')->execute();
+    $result = db_truncate('eventbrite_api_events')->execute();
+    $result = db_truncate('eventbrite_api_organizers')->execute();
+    $result = db_truncate('eventbrite_api_tickets')->execute();
+    $result = db_truncate('eventbrite_api_venues')->execute();
 		// Set a count array for our entities.
 		$count = array();
 		// Run through the array.
@@ -240,9 +240,9 @@ function eventbrite_import_all() {
 			// Run through the sub arrays.
 			foreach ($data as $record) {
 				// Make sure all records have the correct keys.
-				$record = (object) array_merge((array) eventbrite_entity_prepare($type), (array) $record);
+				$record = (object) array_merge((array) eventbrite_api_entity_prepare($type), (array) $record);
 				// Write the record.
-				$write = drupal_write_record('eventbrite_' . $type, $record);
+				$write = drupal_write_record('eventbrite_api_' . $type, $record);
 			}
 		}
 		// Set a message and let the user know what's been imported.
@@ -260,7 +260,7 @@ function eventbrite_import_all() {
 	}
 }
 
-function eventbrite_format_all($data) {
+function eventbrite_api_format_all($data) {
 	// Create an array for our events.
 	$events = array();
 	foreach ($data->events as $row) {
@@ -331,7 +331,7 @@ function eventbrite_format_all($data) {
  * This prepares an empty entity object for Eventbrite
  * events, organizers, tickets and venues.
  */
-function eventbrite_entity_prepare($type) {
+function eventbrite_api_entity_prepare($type) {
 	$event = array(
 		'eid' => '',
 		'oid' => '',
@@ -431,7 +431,7 @@ function eventbrite_entity_prepare($type) {
  * than this. We use this hook to alter the field size
  * to a "bigint" if it references an event entity.
  */
-function _eventbrite_alter_field($data) {
+function _eventbrite_api_alter_field($data) {
 	// Set some shorthand vars.
 	$type = $data['type'];
 	$target_type = $data['settings']['target_type'];

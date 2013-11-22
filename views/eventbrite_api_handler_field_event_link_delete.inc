@@ -3,7 +3,7 @@
 /**
  * Field handler to present a link to delete an event.
  */
-class eventbrite_handler_field_event_link_delete extends eventbrite_handler_field_event_link {
+class eventbrite_api_handler_field_event_link_delete extends eventbrite_api_handler_field_event_link {
   function construct() {
     parent::construct();
 

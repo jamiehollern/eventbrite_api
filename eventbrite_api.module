@@ -8,7 +8,7 @@
 /**
  * Implements hook_init().
  */
-function eventbrite_init() {
+function eventbrite_api_init() {
   // Globally load the Eventbrite class.
   $eventbrite = libraries_load('eventbrite');
   // Load "global" functions.
@@ -18,7 +18,7 @@ function eventbrite_init() {
 /**
  * Implements hook_libraries_info().
  */
-function eventbrite_libraries_info() {
+function eventbrite_api_libraries_info() {
   $libraries['eventbrite'] = array(
     'name' => 'eventbrite.php',
     'vendor url' => 'https://github.com/ryanjarvinen/eventbrite.php',
@@ -37,7 +37,7 @@ function eventbrite_libraries_info() {
 /**
  * Implements hook_menu().
  */
-function eventbrite_menu() {
+function eventbrite_api_menu() {
   $items = array();
   $path = 'admin/eventbrite';
   // Top level Eventbrite container.
@@ -90,7 +90,7 @@ function eventbrite_menu() {
     'title' => 'Configuration',
     'description' => 'Configure settings for Eventbrite.',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('eventbrite_config_form'),
+    'page arguments' => array('eventbrite_api_config_form'),
     'access arguments' => array('access administration pages'),
     'type' => MENU_NORMAL_ITEM,
     'file' => 'includes/eventbrite.forms.inc',
@@ -102,13 +102,13 @@ function eventbrite_menu() {
 /**
  * Implements hook_entity_info().
  */
-function eventbrite_entity_info(){
+function eventbrite_api_entity_info(){
   $entities = array(
     'event' => array(
       'label' => t('Event'),
       'entity class' => 'Entity',
       'controller class' => 'EntityAPIController',
-      'base table' => 'eventbrite_events',
+      'base table' => 'eventbrite_api_events',
       'fieldable' => TRUE,
       'entity keys' => array(
         'id' => 'eid',
@@ -121,7 +121,7 @@ function eventbrite_entity_info(){
       'label' => t('Organizer'),
       'entity class' => 'Entity',
       'controller class' => 'EntityAPIController',
-      'base table' => 'eventbrite_organizers',
+      'base table' => 'eventbrite_api_organizers',
       'fieldable' => TRUE,
       'entity keys' => array(
         'id' => 'oid',
@@ -133,7 +133,7 @@ function eventbrite_entity_info(){
       'label' => t('Ticket'),
       'entity class' => 'Entity',
       'controller class' => 'EntityAPIController',
-      'base table' => 'eventbrite_tickets',
+      'base table' => 'eventbrite_api_tickets',
       'fieldable' => TRUE,
       'entity keys' => array(
         'id' => 'tid',
@@ -145,7 +145,7 @@ function eventbrite_entity_info(){
       'label' => t('Venue'),
       'entity class' => 'Entity',
       'controller class' => 'EntityAPIController',
-      'base table' => 'eventbrite_venues',
+      'base table' => 'eventbrite_api_venues',
       'fieldable' => TRUE,
       'entity keys' => array(
         'id' => 'vid',
@@ -160,7 +160,7 @@ function eventbrite_entity_info(){
 /**
  * Implements hook_views_api().
  */
-function eventbrite_views_api() {
+function eventbrite_api_views_api() {
   return array(
     'api' => 3,
     'path' => drupal_get_path('module', 'eventbrite') . '/views',
@@ -170,7 +170,7 @@ function eventbrite_views_api() {
 /**
  * Implements hook_permission().
  */
-function eventbrite_permission() {
+function eventbrite_api_permission() {
   $permissions = array(
     'administer eventbrite' => array(
       'title' => t('administer eventbrite'),
@@ -183,19 +183,19 @@ function eventbrite_permission() {
 /**
  * Implements hook_field_create_field().
  *
- * See _eventbrite_alter_field().
+ * See _eventbrite_api_alter_field().
  */
-function eventbrite_field_create_field($field) {
-	_eventbrite_alter_field($field);
+function eventbrite_api_field_create_field($field) {
+	_eventbrite_api_alter_field($field);
 }
 
 /**
  * Implements hook_field_update_field().
  *
- * See _eventbrite_alter_field().
+ * See _eventbrite_api_alter_field().
  */
-function eventbrite_field_update_field($field, $prior_field, $has_data) {
-	_eventbrite_alter_field($field);
+function eventbrite_api_field_update_field($field, $prior_field, $has_data) {
+	_eventbrite_api_alter_field($field);
 }
 
 function event_load($eid = NULL, $reset = FALSE) {

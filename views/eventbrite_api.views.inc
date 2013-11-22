@@ -8,23 +8,23 @@
 /**
  * Implements hook_views_data()
  */
-function eventbrite_views_data() {
+function eventbrite_api_views_data() {
   $data = array();
   
   /**
    * Integrate the events table.
    */
-  $data['eventbrite_events']['table']['group']  = t('Eventbrite event');
-  $data['eventbrite_events']['table']['entity type'] = 'event';
+  $data['eventbrite_api_events']['table']['group']  = t('Eventbrite event');
+  $data['eventbrite_api_events']['table']['entity type'] = 'event';
 
-  $data['eventbrite_events']['table']['base'] = array(
+  $data['eventbrite_api_events']['table']['base'] = array(
     'field' => 'eid',
     'title' => t('Eventbrite Event'),
     'help' => t('Eventbrite Events.'),
   );
 
   // Expose the event ID.
-  $data['eventbrite_events']['eid'] = array(
+  $data['eventbrite_api_events']['eid'] = array(
     'title' => t('Event ID'),
     'help' => t('The unique internal identifier of the event.'),
     'field' => array(  
@@ -42,17 +42,17 @@ function eventbrite_views_data() {
     ),
     /*'relationship' => array(
       'handler' => 'views_handler_relationship',
-      'base' => 'eventbrite_tickets',
+      'base' => 'eventbrite_api_tickets',
       'base field' => 'eid',
       'label' => t('Ticket'),
     ),*/
   );
 	
-	 $data['eventbrite_events']['tid'] = array(
+	 $data['eventbrite_api_events']['tid'] = array(
     'title' => t('Tickets'),
     'help' => t('The unique internal identifier of event tickets.'),
     'relationship' => array(
-      'base' => 'eventbrite_tickets',
+      'base' => 'eventbrite_api_tickets',
       'base field' => 'eid',
       'field' => 'eid',
       'handler' => 'views_handler_relationship',
@@ -63,12 +63,12 @@ function eventbrite_views_data() {
   );
 
   // Expose the organizer id.
-  $data['eventbrite_events']['oid'] = array(
+  $data['eventbrite_api_events']['oid'] = array(
     'title' => t('Organizer ID'),
     'help' => t('The unique internal identifier of the event organizer.'),
     'relationship' => array(
       'handler' => 'views_handler_relationship',
-      'base' => 'eventbrite_organizers',
+      'base' => 'eventbrite_api_organizers',
       'base field' => 'oid',
       'label' => t('Event organizer'),
       'title' => t('Organizer'),
@@ -77,12 +77,12 @@ function eventbrite_views_data() {
   );
 
   // Expose the venue id.
-  $data['eventbrite_events']['vid'] = array(
+  $data['eventbrite_api_events']['vid'] = array(
     'title' => t('Venue ID'),
     'help' => t('The unique internal identifier of the event venue.'),
     'relationship' => array(
       'handler' => 'views_handler_relationship',
-      'base' => 'eventbrite_venues',
+      'base' => 'eventbrite_api_venues',
       'base field' => 'vid',
       'label' => t('Event venue'),
       'title' => t('Venue'),
@@ -92,7 +92,7 @@ function eventbrite_views_data() {
   
   if (module_exists('locale')) {
     // Expose the language.
-    $data['eventbrite_events']['locale'] = array(
+    $data['eventbrite_api_events']['locale'] = array(
       'title' => t('Language'),
       'help' => t('The language the event is in.'),
       'field' => array(
@@ -112,7 +112,7 @@ function eventbrite_views_data() {
   }
   
   // Expose the timezone.
-  $data['eventbrite_events']['timezone'] = array(
+  $data['eventbrite_api_events']['timezone'] = array(
     'title' => t('Timezone'),
     'help' => t('The event timezone.'),
     'field' => array(
@@ -131,7 +131,7 @@ function eventbrite_views_data() {
   );
 
   // Expose the category.
-  $data['eventbrite_events']['category'] = array(
+  $data['eventbrite_api_events']['category'] = array(
     'title' => t('Category'),
     'help' => t('The event category.'),
     'field' => array(
@@ -150,7 +150,7 @@ function eventbrite_views_data() {
   );
 
   // Expose the event capacity.
-  $data['eventbrite_events']['capacity'] = array(
+  $data['eventbrite_api_events']['capacity'] = array(
     'title' => t('Capacity'),
     'help' => t('The capacity of the event.'),
     'field' => array(
@@ -169,7 +169,7 @@ function eventbrite_views_data() {
   );
 
   // Expose the number of registered event attendees.
-  $data['eventbrite_events']['num_attendee_rows'] = array(
+  $data['eventbrite_api_events']['num_attendee_rows'] = array(
     'title' => t('Registered attendees'),
     'help' => t('The umber of registered event attendees.'),
     'field' => array(
@@ -188,7 +188,7 @@ function eventbrite_views_data() {
   );
 
   // Expose the event title.
-  $data['eventbrite_events']['title'] = array(
+  $data['eventbrite_api_events']['title'] = array(
     'title' => t('Title'),
     'help' => t('The title of the event.'),
     'field' => array(
@@ -207,11 +207,11 @@ function eventbrite_views_data() {
   );
 
   // Expose the event start date.
-  $data['eventbrite_events']['start_date'] = array(
+  $data['eventbrite_api_events']['start_date'] = array(
     'title' => t('Start date'),
     'help' => t('The date the event starts.'),
     'field' => array(
-      'handler' => 'eventbrite_handler_field_datetime',
+      'handler' => 'eventbrite_api_handler_field_datetime',
       'click sortable' => TRUE,
     ),
     'filter' => array(
@@ -226,7 +226,7 @@ function eventbrite_views_data() {
   );
 
   // Expose the event description.
-  $data['eventbrite_events']['description'] = array(
+  $data['eventbrite_api_events']['description'] = array(
     'title' => t('Description'),
     'help' => t('The description of the event.'),
     'field' => array(
@@ -242,7 +242,7 @@ function eventbrite_views_data() {
   );
 
   // Expose the event tags.
-  $data['eventbrite_events']['tags'] = array(
+  $data['eventbrite_api_events']['tags'] = array(
     'title' => t('Tags'),
     'help' => t('The event tags.'),
     'field' => array(
@@ -261,7 +261,7 @@ function eventbrite_views_data() {
   );
 
   // Expose the event timezone offset.
-  $data['eventbrite_events']['timezone_offset'] = array(
+  $data['eventbrite_api_events']['timezone_offset'] = array(
     'title' => t('Timezone offset'),
     'help' => t('The event timezone offset.'),
     'field' => array(
@@ -280,7 +280,7 @@ function eventbrite_views_data() {
   );
 
   // Expose the event password.
-  $data['eventbrite_events']['password'] = array(
+  $data['eventbrite_api_events']['password'] = array(
     'title' => t('Password'),
     'help' => t('The event password.'),
     'field' => array(
@@ -299,11 +299,11 @@ function eventbrite_views_data() {
   );
 
   // Expose the date the event was created.
-  $data['eventbrite_events']['created'] = array(
+  $data['eventbrite_api_events']['created'] = array(
     'title' => t('Created'),
     'help' => t('The date the event was created.'),
     'field' => array(
-      'handler' => 'eventbrite_handler_field_datetime',
+      'handler' => 'eventbrite_api_handler_field_datetime',
       'click sortable' => TRUE,
     ),
     'filter' => array(
@@ -318,7 +318,7 @@ function eventbrite_views_data() {
   );
 
   // Expose the event URL.
-  $data['eventbrite_events']['url'] = array(
+  $data['eventbrite_api_events']['url'] = array(
     'title' => t('URL'),
     'help' => t('The event URL.'),
     'field' => array(
@@ -337,7 +337,7 @@ function eventbrite_views_data() {
   );
 
   // Expose the event privacy setting.
-  $data['eventbrite_events']['privacy'] = array(
+  $data['eventbrite_api_events']['privacy'] = array(
     'title' => t('Privacy'),
     'help' => t('Whether the event is public or private.'),
     'field' => array(
@@ -356,11 +356,11 @@ function eventbrite_views_data() {
   );
 
   // Expose the date the event was modified.
-  $data['eventbrite_events']['modified'] = array(
+  $data['eventbrite_api_events']['modified'] = array(
     'title' => t('Modified'),
     'help' => t('The date the event was modified.'),
     'field' => array(
-      'handler' => 'eventbrite_handler_field_datetime',
+      'handler' => 'eventbrite_api_handler_field_datetime',
       'click sortable' => TRUE,
     ),
     'filter' => array(
@@ -375,7 +375,7 @@ function eventbrite_views_data() {
   );
 
   // Expose the event repetition setting.
-  $data['eventbrite_events']['repeats'] = array(
+  $data['eventbrite_api_events']['repeats'] = array(
     'title' => t('Repeats'),
     'help' => t('Whether the event repeats or not.'),
     'field' => array(
@@ -394,36 +394,36 @@ function eventbrite_views_data() {
   );
 
   // Expose links to operate on the event.
-  $data['eventbrite_events']['edit_event'] = array(
+  $data['eventbrite_api_events']['edit_event'] = array(
     'field' => array(
       'title' => t('Edit link'),
       'help' => t('Provide a simple link to the edit event page.'),
-      'handler' => 'eventbrite_handler_field_event_link',
+      'handler' => 'eventbrite_api_handler_field_event_link',
     ),
   );
 	
-  $data['eventbrite_events']['delete_event'] = array(
+  $data['eventbrite_api_events']['delete_event'] = array(
     'field' => array(
       'title' => t('Delete link'),
       'help' => t('Provide a simple link to the administrator view of the event.'),
-      'handler' => 'eventbrite_handler_field_event_link_delete',
+      'handler' => 'eventbrite_api_handler_field_event_link_delete',
     ),
   );
 
   /**
    * Integrate the organizers table.
    */
-  $data['eventbrite_organizers']['table']['group']  = t('Eventbrite organizer');
-  $data['eventbrite_organizers']['table']['entity type'] = 'organizer';
+  $data['eventbrite_api_organizers']['table']['group']  = t('Eventbrite organizer');
+  $data['eventbrite_api_organizers']['table']['entity type'] = 'organizer';
 
-  $data['eventbrite_organizers']['table']['base'] = array(
+  $data['eventbrite_api_organizers']['table']['base'] = array(
     'field' => 'oid',
     'title' => t('Eventbrite Organizers'),
     'help' => t('Organizers of Eventbrite events.'),
   );
 
   // Expose the organizer ID.
-  $data['eventbrite_organizers']['oid'] = array(
+  $data['eventbrite_api_organizers']['oid'] = array(
     'title' => t('Organizer ID'),
     'help' => t('The unique internal identifier of the event organizer.'),
     'field' => array(
@@ -442,7 +442,7 @@ function eventbrite_views_data() {
   );
 
   // Expose the organizer name.
-  $data['eventbrite_organizers']['name'] = array(
+  $data['eventbrite_api_organizers']['name'] = array(
     'title' => t('Name'),
     'help' => t('The name of the event organizer.'),
     'field' => array(
@@ -460,7 +460,7 @@ function eventbrite_views_data() {
     ),
   );
 
-  $data['eventbrite_organizers']['table']['default_relationship'] = array(
+  $data['eventbrite_api_organizers']['table']['default_relationship'] = array(
     'events' => array(
       'table' => 'events',
       'field' => 'oid',
@@ -468,7 +468,7 @@ function eventbrite_views_data() {
   );
 
   // Expose the organizer description.
-  $data['eventbrite_organizers']['description'] = array(
+  $data['eventbrite_api_organizers']['description'] = array(
     'title' => t('Description'),
     'help' => t('The description of the event organizer.'),
     'field' => array(
@@ -487,7 +487,7 @@ function eventbrite_views_data() {
   );
 
   // Expose the organizer long description.
-  $data['eventbrite_organizers']['long_description'] = array(
+  $data['eventbrite_api_organizers']['long_description'] = array(
     'title' => t('Long description'),
     'help' => t('The long description of the event organizer.'),
     'field' => array(
@@ -506,7 +506,7 @@ function eventbrite_views_data() {
   );
 
   // Expose the organizer's URL.
-  $data['eventbrite_organizers']['url'] = array(
+  $data['eventbrite_api_organizers']['url'] = array(
     'title' => t('URL'),
     'help' => t('The URL of the event organizer.'),
     'field' => array(
@@ -527,10 +527,10 @@ function eventbrite_views_data() {
   /**
    * Integrate the tickets table.
    */
-  $data['eventbrite_tickets']['table']['group']  = t('Eventbrite ticket');
-  $data['eventbrite_tickets']['table']['entity type'] = 'ticket';
+  $data['eventbrite_api_tickets']['table']['group']  = t('Eventbrite ticket');
+  $data['eventbrite_api_tickets']['table']['entity type'] = 'ticket';
 
-  $data['eventbrite_tickets']['table']['base'] = array(
+  $data['eventbrite_api_tickets']['table']['base'] = array(
     'field' => 'tid',
     'title' => t('Eventbrite Tickets'),
     'help' => t('Tickets for Eventbrite events.'),
@@ -539,7 +539,7 @@ function eventbrite_views_data() {
     ),
   );
 
-  $data['eventbrite_tickets']['table']['default_relationship'] = array(
+  $data['eventbrite_api_tickets']['table']['default_relationship'] = array(
     'events' => array(
       'table' => 'events',
       'field' => 'eid',
@@ -547,7 +547,7 @@ function eventbrite_views_data() {
   );
 
   // Expose the ticket ID.
-  $data['eventbrite_tickets']['tid'] = array(
+  $data['eventbrite_api_tickets']['tid'] = array(
     'title' => t('Ticket ID'),
     'help' => t('The unique internal identifier of the event ticket.'),
     'field' => array(
@@ -566,19 +566,19 @@ function eventbrite_views_data() {
   );
 
   // Expose the event id.
-  $data['eventbrite_tickets']['eid'] = array(
+  $data['eventbrite_api_tickets']['eid'] = array(
     'title' => t('Event ID'),
     'help' => t('The unique internal identifier of the event.'),
     'relationship' => array(
       'handler' => 'views_handler_relationship',
-      'base' => 'eventbrite_events',
+      'base' => 'eventbrite_api_events',
       'base field' => 'eid',
       'label' => t('Event'),
     ),
   );
 
   // Expose the ticket name.
-  $data['eventbrite_tickets']['name'] = array(
+  $data['eventbrite_api_tickets']['name'] = array(
     'title' => t('Name'),
     'help' => t('The name of the ticket.'),
     'field' => array(
@@ -597,7 +597,7 @@ function eventbrite_views_data() {
   );
 
   // Expose the ticket description.
-  $data['eventbrite_tickets']['description'] = array(
+  $data['eventbrite_api_tickets']['description'] = array(
     'title' => t('Description'),
     'help' => t('The description of the ticket.'),
     'field' => array(
@@ -616,11 +616,11 @@ function eventbrite_views_data() {
   );
 
   // Expose the ticket start date.
-  $data['eventbrite_tickets']['start_date'] = array(
+  $data['eventbrite_api_tickets']['start_date'] = array(
     'title' => t('Start date'),
     'help' => t('The date the ticket starts.'),
     'field' => array(
-      'handler' => 'eventbrite_handler_field_datetime',
+      'handler' => 'eventbrite_api_handler_field_datetime',
       'click sortable' => TRUE,
     ),
     'filter' => array(
@@ -635,11 +635,11 @@ function eventbrite_views_data() {
   );
 
   // Expose the ticket end date.
-  $data['eventbrite_tickets']['end_date'] = array(
+  $data['eventbrite_api_tickets']['end_date'] = array(
     'title' => t('End date'),
     'help' => t('The date the ticket ends.'),
     'field' => array(
-      'handler' => 'eventbrite_handler_field_datetime',
+      'handler' => 'eventbrite_api_handler_field_datetime',
       'click sortable' => TRUE,
     ),
     'filter' => array(
@@ -654,7 +654,7 @@ function eventbrite_views_data() {
   );
 
   // Expose the ticket minimum purchase.
-  $data['eventbrite_tickets']['min'] = array(
+  $data['eventbrite_api_tickets']['min'] = array(
     'title' => t('Minimum purchase'),
     'help' => t('The minimum number of tickets to be purchased.'),
     'field' => array(
@@ -673,7 +673,7 @@ function eventbrite_views_data() {
   );
 
   // Expose the ticket maximum purchase.
-  $data['eventbrite_tickets']['max'] = array(
+  $data['eventbrite_api_tickets']['max'] = array(
     'title' => t('Maximum purchase'),
     'help' => t('The maximum number of tickets to be purchased.'),
     'field' => array(
@@ -692,7 +692,7 @@ function eventbrite_views_data() {
   );
 
   // Expose the ticket price.
-  $data['eventbrite_tickets']['price'] = array(
+  $data['eventbrite_api_tickets']['price'] = array(
     'title' => t('Price'),
     'help' => t('The price of the ticket.'),
     'field' => array(
@@ -712,7 +712,7 @@ function eventbrite_views_data() {
   );
 
   // Expose the quantity sold.
-  $data['eventbrite_tickets']['quantity_sold'] = array(
+  $data['eventbrite_api_tickets']['quantity_sold'] = array(
     'title' => t('Quantity sold'),
     'help' => t('The quantity of tickets sold.'),
     'field' => array(
@@ -731,7 +731,7 @@ function eventbrite_views_data() {
   );
 
   // Expose the visibility.
-  $data['eventbrite_tickets']['visible'] = array(
+  $data['eventbrite_api_tickets']['visible'] = array(
     'title' => t('Visible'),
     'help' => t('The visibility of the ticket.'),
     'field' => array(
@@ -749,7 +749,7 @@ function eventbrite_views_data() {
   );
 
   // Expose the ticket currency.
-  $data['eventbrite_tickets']['currency'] = array(
+  $data['eventbrite_api_tickets']['currency'] = array(
     'title' => t('Currency'),
     'help' => t('The currency of the ticket.'),
     'field' => array(
@@ -768,7 +768,7 @@ function eventbrite_views_data() {
   );
 
   // Expose the quantity available.
-  $data['eventbrite_tickets']['quantity_available'] = array(
+  $data['eventbrite_api_tickets']['quantity_available'] = array(
     'title' => t('Quantity available'),
     'help' => t('The quantity of tickets available.'),
     'field' => array(
@@ -787,7 +787,7 @@ function eventbrite_views_data() {
   );
 
   // Expose the ticket display price.
-  $data['eventbrite_tickets']['display_price'] = array(
+  $data['eventbrite_api_tickets']['display_price'] = array(
     'title' => t('Display price'),
     'help' => t('The display price of the ticket.'),
     'field' => array(
@@ -809,10 +809,10 @@ function eventbrite_views_data() {
   /**
    * Integrate the venues table.
    */
-  $data['eventbrite_venues']['table']['group']  = t('Eventbrite venue');
-  $data['eventbrite_venues']['table']['entity type'] = 'venue';
+  $data['eventbrite_api_venues']['table']['group']  = t('Eventbrite venue');
+  $data['eventbrite_api_venues']['table']['entity type'] = 'venue';
 
-  $data['eventbrite_venues']['table']['base'] = array(
+  $data['eventbrite_api_venues']['table']['base'] = array(
     'field' => 'vid',
     'title' => t('Eventbrite Venues'),
     'help' => t('Venues for Eventbrite events.'),
@@ -822,7 +822,7 @@ function eventbrite_views_data() {
   );
 
   // Expose the venue ID.
-  $data['eventbrite_venues']['vid'] = array(
+  $data['eventbrite_api_venues']['vid'] = array(
     'title' => t('Venue ID'),
     'help' => t('The unique internal identifier of the event venue.'),
     'field' => array(
@@ -841,7 +841,7 @@ function eventbrite_views_data() {
   );
 
   // Expose the venue city.
-  $data['eventbrite_venues']['city'] = array(
+  $data['eventbrite_api_venues']['city'] = array(
     'title' => t('City'),
     'help' => t('The city of the venue.'),
     'field' => array(
@@ -860,7 +860,7 @@ function eventbrite_views_data() {
   );
 
   // Expose the venue name.
-  $data['eventbrite_venues']['name'] = array(
+  $data['eventbrite_api_venues']['name'] = array(
     'title' => t('Name'),
     'help' => t('The name of the venue.'),
     'field' => array(
@@ -879,7 +879,7 @@ function eventbrite_views_data() {
   );
 
   // Expose the venue country.
-  $data['eventbrite_venues']['country'] = array(
+  $data['eventbrite_api_venues']['country'] = array(
     'title' => t('Country'),
     'help' => t('The country of the venue.'),
     'field' => array(
@@ -898,7 +898,7 @@ function eventbrite_views_data() {
   );
 
   // Expose the venue region.
-  $data['eventbrite_venues']['region'] = array(
+  $data['eventbrite_api_venues']['region'] = array(
     'title' => t('Region'),
     'help' => t('The region of the venue.'),
     'field' => array(
@@ -917,7 +917,7 @@ function eventbrite_views_data() {
   );
 
   // Expose the venue address.
-  $data['eventbrite_venues']['address'] = array(
+  $data['eventbrite_api_venues']['address'] = array(
     'title' => t('Address'),
     'help' => t('The address of the venue.'),
     'field' => array(
@@ -936,7 +936,7 @@ function eventbrite_views_data() {
   );
 
   // Expose the venue address2.
-  $data['eventbrite_venues']['address2'] = array(
+  $data['eventbrite_api_venues']['address2'] = array(
     'title' => t('Address 2'),
     'help' => t('The address 2 of the venue.'),
     'field' => array(
@@ -955,7 +955,7 @@ function eventbrite_views_data() {
   );
 
   // Expose the venue postal code.
-  $data['eventbrite_venues']['postal_code'] = array(
+  $data['eventbrite_api_venues']['postal_code'] = array(
     'title' => t('Postal code'),
     'help' => t('The postal code of the venue.'),
     'field' => array(
@@ -974,7 +974,7 @@ function eventbrite_views_data() {
   );
 
   // Expose the venue country code.
-  $data['eventbrite_venues']['country_code'] = array(
+  $data['eventbrite_api_venues']['country_code'] = array(
     'title' => t('Country code'),
     'help' => t('The country code of the venue.'),
     'field' => array(
@@ -993,7 +993,7 @@ function eventbrite_views_data() {
   );
 
   // Expose the venue longitude.
-  $data['eventbrite_venues']['longitude'] = array(
+  $data['eventbrite_api_venues']['longitude'] = array(
     'title' => t('Longitude'),
     'help' => t('The longitude of the venue.'),
     'field' => array(
@@ -1013,7 +1013,7 @@ function eventbrite_views_data() {
   );
 
   // Expose the venue latitude.
-  $data['eventbrite_venues']['latitude'] = array(
+  $data['eventbrite_api_venues']['latitude'] = array(
     'title' => t('Latitude'),
     'help' => t('The latitude of the venue.'),
     'field' => array(
@@ -1033,7 +1033,7 @@ function eventbrite_views_data() {
   );
 
   // Expose the lat/long.
-  $data['eventbrite_venues']['lat_long'] = array(
+  $data['eventbrite_api_venues']['lat_long'] = array(
     'title' => t('Latitude/longitude'),
     'help' => t('The latitude/longitude of the venue.'),
     'field' => array(
