@@ -8,8 +8,6 @@
  * Implements hook_views_default_views().
  */
 function eventbrite_views_default_views() {
-	$views = array();
-
 	$view = new view();
 	$view->name = 'events_list';
 	$view->description = '';
@@ -107,6 +105,14 @@ function eventbrite_views_default_views() {
 	$handler->display->display_options['fields']['created']['table'] = 'eventbrite_events';
 	$handler->display->display_options['fields']['created']['field'] = 'created';
 	$handler->display->display_options['fields']['created']['date_format'] = 'short';
+	/* Field: Eventbrite: Edit link */
+	$handler->display->display_options['fields']['edit_event']['id'] = 'edit_event';
+	$handler->display->display_options['fields']['edit_event']['table'] = 'eventbrite_events';
+	$handler->display->display_options['fields']['edit_event']['field'] = 'edit_event';
+	/* Field: Eventbrite: Delete link */
+	$handler->display->display_options['fields']['delete_event']['id'] = 'delete_event';
+	$handler->display->display_options['fields']['delete_event']['table'] = 'eventbrite_events';
+	$handler->display->display_options['fields']['delete_event']['field'] = 'delete_event';
 	
 	/* Display: Page */
 	$handler = $view->new_display('page', 'Page', 'page');

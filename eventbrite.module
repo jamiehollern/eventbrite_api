@@ -180,6 +180,24 @@ function eventbrite_permission() {
   return $permissions;  
 }
 
+/**
+ * Implements hook_field_create_field().
+ *
+ * See _eventbrite_alter_field().
+ */
+function eventbrite_field_create_field($field) {
+	_eventbrite_alter_field($field);
+}
+
+/**
+ * Implements hook_field_update_field().
+ *
+ * See _eventbrite_alter_field().
+ */
+function eventbrite_field_update_field($field, $prior_field, $has_data) {
+	_eventbrite_alter_field($field);
+}
+
 function event_load($eid = NULL, $reset = FALSE) {
   $eids = (isset ($eid) ? array($eid) : array());
   $event = event_load_multiple($eids, $reset);

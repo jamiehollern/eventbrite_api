@@ -327,6 +327,10 @@ function eventbrite_format_all($data) {
 	return $events;
 }
 
+/**
+ * This prepares an empty entity object for Eventbrite
+ * events, organizers, tickets and venues.
+ */
 function eventbrite_entity_prepare($type) {
 	$event = array(
 		'eid' => '',
@@ -419,4 +423,29 @@ function eventbrite_entity_prepare($type) {
       break;
   }
 	return (object) $entity;
+}
+
+/**
+ * Entity reference fields store entity target IDs as 10
+ * character integers but Eventbrite event IDs are longer
+ * than this. We use this hook to alter the field size
+ * to a "bigint" if it references an event entity.
+ */
+function _eventbrite_alter_field($data) {
+	// Set some shorthand vars.
+	$type = $data['type'];
+	$target_type = $data['settings']['target_type'];
+	// Check to see if this is the correct field.
+	if ($type == 'entityreference' && $target_type == 'event') {
+		// Get all of the necessary variables together.
+		$table = 'field_data_' . $data['field_name'];
+		$field = $data['storage']['details']['sql']['FIELD_LOAD_CURRENT'][$table]['target_id'];
+		$field_new = $field;
+		$spec = array('type' => 'int', 'size' => 'big');
+		// Update the field.
+		db_change_field($table, $field, $field_new, $spec);
+		// Now do the revisions table.
+		$table = 'field_revision_' . $data['field_name'];
+		db_change_field($table, $field, $field_new, $spec);
+  }
 }

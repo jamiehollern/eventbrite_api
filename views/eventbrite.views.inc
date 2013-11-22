@@ -14,7 +14,7 @@ function eventbrite_views_data() {
   /**
    * Integrate the events table.
    */
-  $data['eventbrite_events']['table']['group']  = t('Eventbrite');
+  $data['eventbrite_events']['table']['group']  = t('Eventbrite event');
   $data['eventbrite_events']['table']['entity type'] = 'event';
 
   $data['eventbrite_events']['table']['base'] = array(
@@ -40,6 +40,26 @@ function eventbrite_views_data() {
     'argument' => array(
       'handler' => 'views_handler_argument_numeric',
     ),
+    /*'relationship' => array(
+      'handler' => 'views_handler_relationship',
+      'base' => 'eventbrite_tickets',
+      'base field' => 'eid',
+      'label' => t('Ticket'),
+    ),*/
+  );
+	
+	 $data['eventbrite_events']['tid'] = array(
+    'title' => t('Tickets'),
+    'help' => t('The unique internal identifier of event tickets.'),
+    'relationship' => array(
+      'base' => 'eventbrite_tickets',
+      'base field' => 'eid',
+      'field' => 'eid',
+      'handler' => 'views_handler_relationship',
+      'label' => t('Event tickets'),
+      'title' => t('Tickets'),
+      'help' => t('The tickets associated with the event.'),
+    ),
   );
 
   // Expose the organizer id.
@@ -51,6 +71,8 @@ function eventbrite_views_data() {
       'base' => 'eventbrite_organizers',
       'base field' => 'oid',
       'label' => t('Event organizer'),
+      'title' => t('Organizer'),
+      'help' => t('The organizer associated with the event.'),
     ),
   );
 
@@ -63,6 +85,8 @@ function eventbrite_views_data() {
       'base' => 'eventbrite_venues',
       'base field' => 'vid',
       'label' => t('Event venue'),
+      'title' => t('Venue'),
+      'help' => t('The venue associated with the event.'),
     ),
   );
   
@@ -389,7 +413,7 @@ function eventbrite_views_data() {
   /**
    * Integrate the organizers table.
    */
-  $data['eventbrite_organizers']['table']['group']  = t('Eventbrite');
+  $data['eventbrite_organizers']['table']['group']  = t('Eventbrite organizer');
   $data['eventbrite_organizers']['table']['entity type'] = 'organizer';
 
   $data['eventbrite_organizers']['table']['base'] = array(
@@ -503,7 +527,7 @@ function eventbrite_views_data() {
   /**
    * Integrate the tickets table.
    */
-  $data['eventbrite_tickets']['table']['group']  = t('Eventbrite');
+  $data['eventbrite_tickets']['table']['group']  = t('Eventbrite ticket');
   $data['eventbrite_tickets']['table']['entity type'] = 'ticket';
 
   $data['eventbrite_tickets']['table']['base'] = array(
@@ -785,7 +809,7 @@ function eventbrite_views_data() {
   /**
    * Integrate the venues table.
    */
-  $data['eventbrite_venues']['table']['group']  = t('Eventbrite');
+  $data['eventbrite_venues']['table']['group']  = t('Eventbrite venue');
   $data['eventbrite_venues']['table']['entity type'] = 'venue';
 
   $data['eventbrite_venues']['table']['base'] = array(
