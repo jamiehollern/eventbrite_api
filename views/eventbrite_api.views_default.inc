@@ -7,12 +7,12 @@
 /**
  * Implements hook_views_default_views().
  */
-function eventbrite_views_default_views() {
+function eventbrite_api_views_default_views() {
 	$view = new view();
 	$view->name = 'events_list';
 	$view->description = '';
 	$view->tag = 'default';
-	$view->base_table = 'eventbrite_events';
+	$view->base_table = 'eventbrite_api_events';
 	$view->human_name = 'Events';
 	$view->core = 7;
 	$view->api_version = '3.0';
@@ -84,34 +84,34 @@ function eventbrite_views_default_views() {
 	);
 	/* Field: Eventbrite: Event ID */
 	$handler->display->display_options['fields']['eid']['id'] = 'eid';
-	$handler->display->display_options['fields']['eid']['table'] = 'eventbrite_events';
+	$handler->display->display_options['fields']['eid']['table'] = 'eventbrite_api_events';
 	$handler->display->display_options['fields']['eid']['field'] = 'eid';
 	$handler->display->display_options['fields']['eid']['separator'] = '';
 	/* Field: Eventbrite: Title */
 	$handler->display->display_options['fields']['title']['id'] = 'title';
-	$handler->display->display_options['fields']['title']['table'] = 'eventbrite_events';
+	$handler->display->display_options['fields']['title']['table'] = 'eventbrite_api_events';
 	$handler->display->display_options['fields']['title']['field'] = 'title';
 	/* Field: Eventbrite: URL */
 	$handler->display->display_options['fields']['url']['id'] = 'url';
-	$handler->display->display_options['fields']['url']['table'] = 'eventbrite_events';
+	$handler->display->display_options['fields']['url']['table'] = 'eventbrite_api_events';
 	$handler->display->display_options['fields']['url']['field'] = 'url';
 	/* Field: Eventbrite: Modified */
 	$handler->display->display_options['fields']['modified']['id'] = 'modified';
-	$handler->display->display_options['fields']['modified']['table'] = 'eventbrite_events';
+	$handler->display->display_options['fields']['modified']['table'] = 'eventbrite_api_events';
 	$handler->display->display_options['fields']['modified']['field'] = 'modified';
 	$handler->display->display_options['fields']['modified']['date_format'] = 'short';
 	/* Field: Eventbrite: Created */
 	$handler->display->display_options['fields']['created']['id'] = 'created';
-	$handler->display->display_options['fields']['created']['table'] = 'eventbrite_events';
+	$handler->display->display_options['fields']['created']['table'] = 'eventbrite_api_events';
 	$handler->display->display_options['fields']['created']['field'] = 'created';
 	$handler->display->display_options['fields']['created']['date_format'] = 'short';
 	/* Field: Eventbrite: Edit link */
 	$handler->display->display_options['fields']['edit_event']['id'] = 'edit_event';
-	$handler->display->display_options['fields']['edit_event']['table'] = 'eventbrite_events';
+	$handler->display->display_options['fields']['edit_event']['table'] = 'eventbrite_api_events';
 	$handler->display->display_options['fields']['edit_event']['field'] = 'edit_event';
 	/* Field: Eventbrite: Delete link */
 	$handler->display->display_options['fields']['delete_event']['id'] = 'delete_event';
-	$handler->display->display_options['fields']['delete_event']['table'] = 'eventbrite_events';
+	$handler->display->display_options['fields']['delete_event']['table'] = 'eventbrite_api_events';
 	$handler->display->display_options['fields']['delete_event']['field'] = 'delete_event';
 	
 	/* Display: Page */

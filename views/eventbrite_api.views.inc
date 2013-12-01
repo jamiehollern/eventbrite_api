@@ -14,7 +14,7 @@ function eventbrite_api_views_data() {
   /**
    * Integrate the events table.
    */
-  $data['eventbrite_api_events']['table']['group']  = t('Eventbrite event');
+  $data['eventbrite_api_events']['table']['group']  = t('Eventbrite events');
   $data['eventbrite_api_events']['table']['entity type'] = 'event';
 
   $data['eventbrite_api_events']['table']['base'] = array(
