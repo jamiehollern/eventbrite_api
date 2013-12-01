@@ -47,8 +47,8 @@ function eventbrite_api_views_data() {
       'label' => t('Ticket'),
     ),*/
   );
-	
-	 $data['eventbrite_api_events']['tid'] = array(
+  
+   $data['eventbrite_api_events']['tid'] = array(
     'title' => t('Tickets'),
     'help' => t('The unique internal identifier of event tickets.'),
     'relationship' => array(
@@ -401,7 +401,7 @@ function eventbrite_api_views_data() {
       'handler' => 'eventbrite_api_handler_field_event_link',
     ),
   );
-	
+  
   $data['eventbrite_api_events']['delete_event'] = array(
     'field' => array(
       'title' => t('Delete link'),
@@ -698,7 +698,7 @@ function eventbrite_api_views_data() {
     'field' => array(
       'handler' => 'views_handler_field_numeric',
       'click sortable' => TRUE,
-			'float' => TRUE,
+      'float' => TRUE,
     ),
     'filter' => array(
       'handler' => 'views_handler_filter_numeric',
@@ -740,7 +740,7 @@ function eventbrite_api_views_data() {
     ),
     'filter' => array(
       'handler' => 'views_handler_filter_boolean_operator',
-			'type' => 'yes-no',
+      'type' => 'yes-no',
       'use equal' => TRUE,
     ),
     'sort' => array(
@@ -793,7 +793,7 @@ function eventbrite_api_views_data() {
     'field' => array(
       'handler' => 'views_handler_field_numeric',
       'click sortable' => TRUE,
-			'float' => TRUE,
+      'float' => TRUE,
     ),
     'filter' => array(
       'handler' => 'views_handler_filter_numeric',
@@ -999,7 +999,7 @@ function eventbrite_api_views_data() {
     'field' => array(
       'handler' => 'views_handler_field_numeric',
       'click sortable' => TRUE,
-			'float' => TRUE,
+      'float' => TRUE,
     ),
     'filter' => array(
       'handler' => 'views_handler_filter_numeric',
@@ -1019,7 +1019,7 @@ function eventbrite_api_views_data() {
     'field' => array(
       'handler' => 'views_handler_field_numeric',
       'click sortable' => TRUE,
-			'float' => TRUE,
+      'float' => TRUE,
     ),
     'filter' => array(
       'handler' => 'views_handler_filter_numeric',

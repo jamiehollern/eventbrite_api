@@ -24,7 +24,7 @@ class eventbrite_api_handler_field_event_link_delete extends eventbrite_api_hand
     $text = !empty($this->options['text']) ? $this->options['text'] : t('delete');
 
     return l($text, 'admin/commerce/products/' . $product->product_id . '/delete', array('query' => drupal_get_destination()));*/
-		
+    
     $text = !empty($this->options['text']) ? $this->options['text'] : t('delete');
     $eid = $this->get_value($values, 'eid');
 

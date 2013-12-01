@@ -9,6 +9,9 @@
  * Admin configiguration form.
  */
 function eventbrite_api_config_form() {
+	// Load the details.
+	$ukey = variable_get('eventbrite_api_userkey', '');
+	$akey = variable_get('eventbrite_api_appkey', '');
   $form = array();
   $form['auth'] = array(
     '#type' => 'fieldset',
@@ -19,66 +22,69 @@ function eventbrite_api_config_form() {
   $form['auth']['eventbrite_api_userkey'] = array(
     '#type' => 'textfield',
     '#title' => t('Eventbrite user key'),
-    '#default_value' => variable_get('eventbrite_api_userkey', ''),
+    '#default_value' => $ukey,
     '#required' => TRUE,
     '#description' => t('Get your user key at <a href="@url">@url</a>.', array('@url' => 'https://www.eventbrite.com/userkeyapi')),
   );
   $form['auth']['eventbrite_api_appkey'] = array(
     '#type' => 'textfield',
     '#title' => t('Eventbrite app key'),
-    '#default_value' => variable_get('eventbrite_api_appkey', ''),
+    '#default_value' => $akey,
     '#required' => TRUE,
     '#description' => t('Get your app keys at <a href="@url">@url</a>.', array('@url' => 'https://www.eventbrite.com/api/key/')),
   );
-  $form['import'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Eventbrite data import'),
-    '#collapsible' => TRUE,
-    '#collapsed' => FALSE,
-  );
-  $form['import']['import_all'] = array(
-    '#type' => 'submit',
-    '#value' => t('Import all Eventbrite event data'),
-    '#submit' => array('eventbrite_api_import_all'),
-  );
-  $form['import']['import_all_help'] = array(
-    '#markup' => '<div>' . t('If you already have Eventbrite data imported,
-    this will delete that data before importing the new data. This
-    cannot be undone.') . '</div>',
-  );
-  $form['import_settings'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Event import settings'),
-    '#collapsible' => TRUE,
-    '#collapsed' => FALSE,
-  );
-  $form['import_settings']['eventbrite_api_import_delete'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Delete all existing data before import.'),
-    '#default_value' => variable_get('eventbrite_api_import_delete', 1),
-  );
-  $form['import_settings']['eventbrite_api_cron_import'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Import events from Eventbrite during cron runs'),
-    '#default_value' => variable_get('eventbrite_api_cron_import', 1),
-  );
-  $form['import_settings']['eventbrite_api_import_strip'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Strip HTML code from the event description (recommended)'),
-    '#default_value' => variable_get('eventbrite_api_import_strip', 1),
-  );
-  $form['general'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('General settings'),
-    '#collapsible' => TRUE,
-    '#collapsed' => FALSE,
-  );
-  $form['general']['eventbrite_api_currency'] = array(
-    '#type' => 'select',
-    '#title' => t('Default currency'),
-    '#default_value' => variable_get('eventbrite_api_currency', 'USD'),
-    '#options' => eventbrite_api_currencies(),
-  );
+	// Display the rest of the form only when the Eventbrite details are correct.
+	if (!empty($ukey) && !empty($akey)) {
+		$form['import'] = array(
+			'#type' => 'fieldset',
+			'#title' => t('Eventbrite data import'),
+			'#collapsible' => TRUE,
+			'#collapsed' => FALSE,
+		);
+		$form['import']['import_all'] = array(
+			'#type' => 'submit',
+			'#value' => t('Import all Eventbrite event data'),
+			'#submit' => array('eventbrite_api_import_all'),
+		);
+		$form['import']['import_all_help'] = array(
+			'#markup' => '<div>' . t('If you already have Eventbrite data imported,
+			this will delete that data before importing the new data. This
+			cannot be undone.') . '</div>',
+		);
+		$form['import_settings'] = array(
+			'#type' => 'fieldset',
+			'#title' => t('Event import settings'),
+			'#collapsible' => TRUE,
+			'#collapsed' => FALSE,
+		);
+		$form['import_settings']['eventbrite_api_import_delete'] = array(
+			'#type' => 'checkbox',
+			'#title' => t('Delete all existing data before import.'),
+			'#default_value' => variable_get('eventbrite_api_import_delete', 1),
+		);
+		$form['import_settings']['eventbrite_api_cron_import'] = array(
+			'#type' => 'checkbox',
+			'#title' => t('Import events from Eventbrite during cron runs'),
+			'#default_value' => variable_get('eventbrite_api_cron_import', 1),
+		);
+		$form['import_settings']['eventbrite_api_import_strip'] = array(
+			'#type' => 'checkbox',
+			'#title' => t('Strip HTML code from the event description (recommended)'),
+			'#default_value' => variable_get('eventbrite_api_import_strip', 1),
+		);
+		$form['general'] = array(
+			'#type' => 'fieldset',
+			'#title' => t('General settings'),
+			'#collapsible' => TRUE,
+			'#collapsed' => FALSE,
+		);
+		$form['general']['eventbrite_api_currency'] = array(
+			'#type' => 'select',
+			'#title' => t('Default currency'),
+			'#default_value' => variable_get('eventbrite_api_currency', 'USD'),
+			'#options' => eventbrite_api_currencies(),
+		);
+	}
   $form['#validate'][] = 'eventbrite_api_config_form_validate';
   return system_settings_form($form);
 }
@@ -235,40 +241,40 @@ function event_add_form_validate($form, &$form_state) {
  */
 function event_add_form_submit($form, &$form_state) {
   $event_submit = (object) $form_state['values'];
-	// Assign them to an array to send to Eventbrite.
+  // Assign them to an array to send to Eventbrite.
   $eventbrite = $form_state['values'];
-	// Format the dates properly.
-	$eventbrite['start_date'] = eventbrite_api_datef($eventbrite['start_date']);
-	$eventbrite['end_date'] = eventbrite_api_datef($eventbrite['end_date']);//$time = eventbrite_api_ctime(time());
-	// Add extra fields.
+  // Format the dates properly.
+  $eventbrite['start_date'] = eventbrite_api_datef($eventbrite['start_date']);
+  $eventbrite['end_date'] = eventbrite_api_datef($eventbrite['end_date']);//$time = eventbrite_api_ctime(time());
+  // Add extra fields.
   field_attach_submit('event', $event_submit, $form, $form_state);
-	// Connect to Eventbrite.
+  // Connect to Eventbrite.
   $auth = array('app_key'  => variable_get('eventbrite_api_appkey', ''), 'user_key' => variable_get('eventbrite_api_userkey', ''));
   $eb_client = new Eventbrite($auth);
   try {
-		$response = $eb_client->event_new($eventbrite);
-		// If the event is added.
-		if ($response->process->status == 'OK') {
-			// Event ID.
-			$eid = $response->process->id;
-			// Get the full event details.
-		  $response = $eb_client->event_get(array('id' => $eid));
-			// This is the retured event.
-			$event = $response->event;
-			// Make sure the id is correctly labeled.
-			$event->eid = $event->id;
-		}
+    $response = $eb_client->event_new($eventbrite);
+    // If the event is added.
+    if ($response->process->status == 'OK') {
+      // Event ID.
+      $eid = $response->process->id;
+      // Get the full event details.
+      $response = $eb_client->event_get(array('id' => $eid));
+      // This is the retured event.
+      $event = $response->event;
+      // Make sure the id is correctly labeled.
+      $event->eid = $event->id;
+    }
   }
   catch (Exception $e) {
-		$response = $e->getMessage();
-		form_set_error(NULL, $response);
+    $response = $e->getMessage();
+    form_set_error(NULL, $response);
   }
-	$event = (object) array_merge((array) $form_state['event'], (array) $event);
+  $event = (object) array_merge((array) $form_state['event'], (array) $event);
   $save = event_save($event);
-	if (!empty($save)) {
+  if (!empty($save)) {
     drupal_set_message(t('Event @title saved to Eventbrite and cached locally.', array('@title' => '<em>' . $event->title . '</em>')));
     $form_state['redirect'] = 'admin/eventbrite/event';
-	}
+  }
 }
 
 /**
@@ -303,11 +309,8 @@ function event_delete_form($form, &$form_state, $event) {
  */
 function event_delete_form_submit($form, &$form_state) {
   $event = $form_state['event'];
-
   event_delete($event);
-
   drupal_set_message(t('The event %name has been deleted.', array('%name' => $event->name)));
-
   $form_state['redirect'] = 'admin/eventbrite/event';
 }
 
