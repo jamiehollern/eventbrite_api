@@ -278,7 +278,7 @@ function event_add_form_submit($form, &$form_state) {
 }
 
 /**
- * Form API submit callback for the delete button.
+ * Form API submit callback for the event delete button.
  */
 function event_form_submit_delete(&$form, &$form_state) {
   $form_state['redirect'] = 'admin/eventbrite/event/' . $form_state['eid'] . '/delete';
@@ -314,6 +314,43 @@ function event_delete_form_submit($form, &$form_state) {
   $form_state['redirect'] = 'admin/eventbrite/event';
 }
 
+/**
+ * Form API submit callback for the organizer delete button.
+ */
+function organizer_form_submit_delete(&$form, &$form_state) {
+  $form_state['redirect'] = 'admin/eventbrite/organizer/' . $form_state['oid'] . '/delete';
+}
+
+/**
+ * Organizer delete form.
+ */
+function organizer_delete_form($form, &$form_state, $organizer) {
+  $form_state['organizer'] = $organizer;
+
+  $form['#submit'][] = 'organizer_delete_form_submit';
+
+  $form = confirm_form($form,
+    t('Are you sure you want to delete organizer "@name"?', array('@name' => $organizer->name)),
+    'admin/content/events/event',
+    '<p>' . t('This will delete the organizer on Eventbrite and delete it locally. This action cannot be undone.') . '</p>',
+    t('Delete'),
+    t('Cancel'),
+    'confirm'
+  );
+  
+  return $form;
+}
+
+/**
+ * Submit callback for event_delete_form
+ */
+function organizer_delete_form_submit($form, &$form_state) {
+  $organizer = $form_state['organizer'];
+  organizer_delete($organizer);
+  drupal_set_message(t('The organizer %name has been deleted.', array('%name' => $organizer->name)));
+  $form_state['redirect'] = 'admin/eventbrite/organizer';
+}
+
 function event_add_wrapper() {
   $event = event_create();
   return drupal_get_form('event_add_form', $event);
@@ -325,4 +362,127 @@ function event_edit_wrapper($event) {
 
 function event_delete_wrapper($event) {
   return drupal_get_form('event_delete_form', $event);
+}
+
+/**
+ * Organizer add form.
+ */
+function organizer_add_form($form, &$form_state, $organizer) {
+  $form['name'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Event title'),
+    '#default_value' => isset($organizer->name) ? $organizer->name : '',
+    '#maxlength' => 255,
+    '#required' => TRUE,
+  );
+  
+  $form['description'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Description'),
+    '#default_value' => isset($organizer->description) ? $organizer->description : '',
+  );
+  if (!empty($organizer->name)) {
+    $form['delete'] = array(
+      '#type' => 'submit',
+      '#value' => t('Delete organizer'),
+      '#suffix' => l(t('Cancel'), 'admin/eventbrite/organizer'),
+      '#submit' => $submit + array('organizer_form_submit_delete'),
+      '#weight' => 45,
+    );
+  }
+  
+  $submit = array();
+
+  if (!empty($form['#submit'])) {
+    $submit += $form['#submit'];
+  }
+  
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save'),
+    '#submit' => $submit + array('organizer_add_form_submit'),
+  );
+  $form['#validate'][] = 'organizer_add_form_validate';
+  // Add the field related form elements.
+  $form_state['organizer'] = $organizer;
+  $form_state['oid'] = $organizer->oid;
+  
+  field_attach_form('organizer', $organizer, $form, $form_state);
+	return $form;
+}
+
+/**
+ * Validation function for event add form.
+ */
+function organizer_add_form_validate($form, &$form_state) {
+  $organizer_submit = (object) $form_state['values'];
+  field_attach_form_validate('event', $organizer_submit, $form, $form_state);
+}
+
+/**
+ * Submit function for organizer add form.
+ */
+function organizer_add_form_submit($form, &$form_state) {
+  $organizer_submit = (object) $form_state['values'];
+  // Assign them to an array to send to Eventbrite.
+  $eventbrite = $form_state['values'];
+  // Add extra fields.
+  field_attach_submit('organizer', $organizer_submit, $form, $form_state);
+  // Connect to Eventbrite.
+  $auth = array('app_key'  => variable_get('eventbrite_api_appkey', ''), 'user_key' => variable_get('eventbrite_api_userkey', ''));
+  $eb_client = new Eventbrite($auth);
+  try {
+    $response = $eb_client->organizer_new($eventbrite);
+    // If the event is added.
+    if ($response->process->status == 'OK') {
+      // Organizer ID.
+      $oid = $response->process->id;
+      // Get the full event details.
+      $response = $eb_client->organizer_get(array('id' => $oid));
+      // This is the retured event.
+      $organizer = $response->organizer[0];
+      // Make sure the id is correctly labeled.
+      $organizer->oid = $organizer->id;
+    }
+  }
+  catch (Exception $e) {
+    $response = $e->getMessage();
+    form_set_error(NULL, $response);
+  }
+  $organizer = (object) array_merge((array) $form_state['organizer'], (array) $organizer);
+  $save = organizer_save($organizer);
+	dpm($save);
+  if (!empty($save)) {
+    drupal_set_message(t('Organizer @name saved to Eventbrite and cached locally.', array('@name' => '<em>' . $organizer->name . '</em>')));
+    //$form_state['redirect'] = 'admin/eventbrite/organizer';
+  }
+}
+
+function organizer_add_wrapper() {
+  $organizer = organizer_create();
+  return drupal_get_form('organizer_add_form', $organizer);
+}
+
+function organizer_edit_wrapper($organizer) {
+  return drupal_get_form('organizer_add_form', $organizer);
+}
+
+function event_load($eid = NULL, $reset = FALSE) {
+  $eids = (isset ($eid) ? array($eid) : array());
+  $event = event_load_multiple($eids, $reset);
+  return $event ? reset ($event) : FALSE;
+}
+
+function event_load_multiple($eids = array(), $conditions = array(), $reset = FALSE) {
+  return entity_load('event', $eids, $conditions, $reset);
+}
+
+function organizer_load($oid = NULL, $reset = FALSE) {
+  $oids = (isset ($oid) ? array($oid) : array());
+  $organizer = organizer_load_multiple($oids, $reset);
+  return $organizer ? reset ($organizer) : FALSE;
+}
+
+function organizer_load_multiple($oids = array(), $conditions = array(), $reset = FALSE) {
+  return entity_load('organizer', $oids, $conditions, $reset);
 }

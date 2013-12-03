@@ -215,6 +215,21 @@ function event_create() {
   return $event;
 }
 
+function organizer_create() {
+  $organizer = (object) array(
+    'oid' => '',
+    'name' => '',
+    'description' => '',
+    'long_description' => '',
+    'url' => '',
+  );
+  return $organizer;
+}
+
+function organizer_save(&$organizer) {
+  return entity_save('organizer', $organizer);
+}
+
 function eventbrite_api_import_all() {
   // Authorisation details.
   $auth = array('app_key'  => variable_get('eventbrite_api_appkey', ''), 'user_key' => variable_get('eventbrite_api_userkey', ''));
