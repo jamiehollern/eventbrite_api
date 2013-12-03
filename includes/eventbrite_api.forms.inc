@@ -269,31 +269,45 @@ function event_add_form_submit($form, &$form_state) {
   $auth = array('app_key'  => variable_get('eventbrite_api_appkey', ''), 'user_key' => variable_get('eventbrite_api_userkey', ''));
   $eb_client = new Eventbrite($auth);
   try {
-    $response = $eb_client->event_new($eventbrite);
-    // If the event is added.
-    if ($response->process->status == 'OK') {
-      // Event ID.
-      $eid = $response->process->id;
-      // Get the full event details.
-      $response = $eb_client->event_get(array('id' => $eid));
-      // This is the retured event.
-      $event = $response->event;
-      // Make sure the id is correctly labeled.
-      $event->eid = $event->id;
-      // Add the oid and vid.
-      $event->oid = $event->organizer->id;
-      $event->vid = $event->venue->id;
-    }
+		// Should we update an existing event or add a new one?
+		if (!empty($form_state['eid'])) {
+			// Add the id with the correct key.
+			$eventbrite['id'] = $form_state['eid'];
+			$response = $eb_client->event_update($eventbrite);
+			// If the event is updated.
+			if ($response->process->status == 'OK') {
+				// Set the event entity values.
+        $event = (object) array_merge((array) $form_state['event'], (array) $form_state['values']);
+			}
+		}
+		else {
+			$response = $eb_client->event_new($eventbrite);
+			// If the event is added.
+			if ($response->process->status == 'OK') {
+				// Event ID.
+				$eid = $response->process->id;
+				// Get the full event details.
+				$response = $eb_client->event_get(array('id' => $eid));
+				// This is the retured event.
+				$event = $response->event;
+				// Make sure the id is correctly labeled.
+				$event->eid = $event->id;
+				// Add the oid and vid.
+				$event->oid = $event->organizer->id;
+				$event->vid = $event->venue->id;
+				// Build the event.
+        $event = (object) array_merge((array) $form_state['event'], (array) $event);
+			}
+		}
   }
   catch (Exception $e) {
     $response = $e->getMessage();
     form_set_error(NULL, $response);
   }
-  $event = (object) array_merge((array) $form_state['event'], (array) $event);
   $save = event_save($event);
   if (!empty($save)) {
-    drupal_set_message(t('Event @title saved to Eventbrite and cached locally.', array('@title' => '<em>' . $event->title . '</em>')));
-    //$form_state['redirect'] = 'admin/eventbrite/event';
+    drupal_set_message(t('Event !title saved to Eventbrite and cached locally.', array('!title' => '<em>' . $event->title . '</em>')));
+    $form_state['redirect'] = 'admin/eventbrite/event';
   }
 }
 
@@ -474,7 +488,7 @@ function organizer_add_form_submit($form, &$form_state) {
   $organizer = (object) array_merge((array) $form_state['organizer'], (array) $organizer);
   $save = organizer_save($organizer);
   if (!empty($save)) {
-    drupal_set_message(t('Organizer @name saved to Eventbrite and cached locally.', array('@name' => '<em>' . $organizer->name . '</em>')));
+    drupal_set_message(t('Organizer !name saved to Eventbrite and cached locally.', array('!name' => '<em>' . $organizer->name . '</em>')));
     $form_state['redirect'] = 'admin/eventbrite/organizer';
   }
 }
