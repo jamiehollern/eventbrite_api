@@ -222,6 +222,7 @@ function organizer_create() {
     'description' => '',
     'long_description' => '',
     'url' => '',
+    'is_new' => TRUE,
   );
   return $organizer;
 }
@@ -377,6 +378,7 @@ function eventbrite_api_entity_prepare($type) {
     'description' => '',
     'long_description' => '',
     'url' => '',
+    'is_new' => TRUE,
   );
   $ticket = array(
     'tid' => '',
@@ -463,4 +465,46 @@ function _eventbrite_api_alter_field($data) {
     $table = 'field_revision_' . $data['field_name'];
     db_change_field($table, $field, $field_new, $spec);
   }
+}
+
+/**
+ * Autocomplete results for the event form organizer field.
+ */
+function _eventbrite_organizer_autocomplete($string) {
+  $matches = array();
+  // Select the organizers table.
+  $query = db_select('eventbrite_api_organizers', 'o');
+  // Select rows that match the string.
+  $return = $query
+    ->fields('o', array('oid', 'name'))
+    ->condition('o.name', '%' . db_like($string) . '%', 'LIKE')
+    ->range(0, 10)
+    ->execute();
+  // Add matches to $matches . 
+  foreach ($return as $row) {
+    $matches[$row->oid] = check_plain($row->name);
+  }
+  // Return for JS.
+  drupal_json_output($matches);
+}
+
+/**
+ * Autocomplete results for the event form venue field.
+ */
+function _eventbrite_venue_autocomplete($string) {
+  $matches = array();
+  // Select the organizers table.
+  $query = db_select('eventbrite_api_venues', 'v');
+  // Select rows that match the string.
+  $return = $query
+    ->fields('v', array('vid', 'name'))
+    ->condition('v.name', '%' . db_like($string) . '%', 'LIKE')
+    ->range(0, 10)
+    ->execute();
+  // Add matches to $matches . 
+  foreach ($return as $row) {
+    $matches[$row->vid] = check_plain($row->name);
+  }
+  // Return for JS.
+  drupal_json_output($matches);
 }

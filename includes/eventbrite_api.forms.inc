@@ -169,6 +169,20 @@ function event_add_form($form, &$form_state, $event) {
       'live' => t('Live'),
     ),
   );
+	
+	$form['details']['oid'] = array(
+    '#title' => t('Organizer'),
+    '#type' => 'textfield',
+    '#autocomplete_path' => 'eventbrite/organizer/autocomplete',
+    '#default_value' => isset($event->oid) ? $event->oid : '',
+   );
+	
+	$form['details']['vid'] = array(
+    '#title' => t('Venue'),
+    '#type' => 'textfield',
+    '#autocomplete_path' => 'eventbrite/venue/autocomplete',
+    '#default_value' => isset($event->vid) ? $event->vid : '',
+   );
 
   $form['dates'] = array(
     '#type' => 'fieldset',
@@ -245,7 +259,10 @@ function event_add_form_submit($form, &$form_state) {
   $eventbrite = $form_state['values'];
   // Format the dates properly.
   $eventbrite['start_date'] = eventbrite_api_datef($eventbrite['start_date']);
-  $eventbrite['end_date'] = eventbrite_api_datef($eventbrite['end_date']);//$time = eventbrite_api_ctime(time());
+  $eventbrite['end_date'] = eventbrite_api_datef($eventbrite['end_date']);
+  // Add the vid and oid with correct keys.
+  $eventbrite['venue_id'] = $eventbrite['vid'];
+  $eventbrite['organizer_id'] = $eventbrite['oid'];
   // Add extra fields.
   field_attach_submit('event', $event_submit, $form, $form_state);
   // Connect to Eventbrite.
@@ -263,6 +280,9 @@ function event_add_form_submit($form, &$form_state) {
       $event = $response->event;
       // Make sure the id is correctly labeled.
       $event->eid = $event->id;
+      // Add the oid and vid.
+      $event->oid = $event->organizer->id;
+      $event->vid = $event->venue->id;
     }
   }
   catch (Exception $e) {
@@ -273,7 +293,7 @@ function event_add_form_submit($form, &$form_state) {
   $save = event_save($event);
   if (!empty($save)) {
     drupal_set_message(t('Event @title saved to Eventbrite and cached locally.', array('@title' => '<em>' . $event->title . '</em>')));
-    $form_state['redirect'] = 'admin/eventbrite/event';
+    //$form_state['redirect'] = 'admin/eventbrite/event';
   }
 }
 
@@ -443,6 +463,8 @@ function organizer_add_form_submit($form, &$form_state) {
       $organizer = $response->organizer[0];
       // Make sure the id is correctly labeled.
       $organizer->oid = $organizer->id;
+			// Get rid of the ID element.
+	    unset($organizer->id);
     }
   }
   catch (Exception $e) {
@@ -451,10 +473,9 @@ function organizer_add_form_submit($form, &$form_state) {
   }
   $organizer = (object) array_merge((array) $form_state['organizer'], (array) $organizer);
   $save = organizer_save($organizer);
-	dpm($save);
   if (!empty($save)) {
     drupal_set_message(t('Organizer @name saved to Eventbrite and cached locally.', array('@name' => '<em>' . $organizer->name . '</em>')));
-    //$form_state['redirect'] = 'admin/eventbrite/organizer';
+    $form_state['redirect'] = 'admin/eventbrite/organizer';
   }
 }
 
@@ -465,24 +486,4 @@ function organizer_add_wrapper() {
 
 function organizer_edit_wrapper($organizer) {
   return drupal_get_form('organizer_add_form', $organizer);
-}
-
-function event_load($eid = NULL, $reset = FALSE) {
-  $eids = (isset ($eid) ? array($eid) : array());
-  $event = event_load_multiple($eids, $reset);
-  return $event ? reset ($event) : FALSE;
-}
-
-function event_load_multiple($eids = array(), $conditions = array(), $reset = FALSE) {
-  return entity_load('event', $eids, $conditions, $reset);
-}
-
-function organizer_load($oid = NULL, $reset = FALSE) {
-  $oids = (isset ($oid) ? array($oid) : array());
-  $organizer = organizer_load_multiple($oids, $reset);
-  return $organizer ? reset ($organizer) : FALSE;
-}
-
-function organizer_load_multiple($oids = array(), $conditions = array(), $reset = FALSE) {
-  return entity_load('organizer', $oids, $conditions, $reset);
 }

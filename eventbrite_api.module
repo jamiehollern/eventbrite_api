@@ -201,13 +201,25 @@ function eventbrite_api_menu() {
     'file' => 'includes/eventbrite_api.forms.inc',
     'weight' => 50,
   );
+	// Event form organizer autocomplete.
+	$items['eventbrite/organizer/autocomplete'] = array(
+    'page callback' => '_eventbrite_organizer_autocomplete',
+    'access arguments' => array('administer eventbrite'),
+    'type' => MENU_CALLBACK
+  );
+	// Event form venue autocomplete.
+	$items['eventbrite/venue/autocomplete'] = array(
+    'page callback' => '_eventbrite_venue_autocomplete',
+    'access arguments' => array('administer eventbrite'),
+    'type' => MENU_CALLBACK
+  );
   return $items;
 }
 
 /**
  * Implements hook_entity_info().
  */
-function eventbrite_api_entity_info(){
+function eventbrite_api_entity_info() {
   $entities = array(
     'event' => array(
       'label' => t('Event'),
@@ -302,4 +314,24 @@ function eventbrite_api_field_create_field($field) {
  */
 function eventbrite_api_field_update_field($field, $prior_field, $has_data) {
   _eventbrite_api_alter_field($field);
+}
+
+function event_load($eid = NULL, $reset = FALSE) {
+  $eids = (isset ($eid) ? array($eid) : array());
+  $event = event_load_multiple($eids, $reset);
+  return $event ? reset ($event) : FALSE;
+}
+
+function event_load_multiple($eids = array(), $conditions = array(), $reset = FALSE) {
+  return entity_load('event', $eids, $conditions, $reset);
+}
+
+function organizer_load($oid = NULL, $reset = FALSE) {
+  $oids = (isset ($oid) ? array($oid) : array());
+  $organizer = organizer_load_multiple($oids, $reset);
+  return $organizer ? reset ($organizer) : FALSE;
+}
+
+function organizer_load_multiple($oids = array(), $conditions = array(), $reset = FALSE) {
+  return entity_load('organizer', $oids, $conditions, $reset);
 }
