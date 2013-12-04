@@ -180,7 +180,7 @@ function eventbrite_api_menu() {
     'weight' => -10,
     'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
   );
-  // Delete a ticket.
+  // Delete a venue.
   $items[$path . '/venue/%venue/delete'] = array(
     'title' => t('Delete a venue'),
     'page callback' => 'venue_delete_wrapper',
@@ -200,6 +200,12 @@ function eventbrite_api_menu() {
     'type' => MENU_NORMAL_ITEM,
     'file' => 'includes/eventbrite_api.forms.inc',
     'weight' => 50,
+  );
+	// Ticket form organizer autocomplete.
+	$items['eventbrite/event/autocomplete'] = array(
+    'page callback' => '_eventbrite_event_autocomplete',
+    'access arguments' => array('administer eventbrite'),
+    'type' => MENU_CALLBACK
   );
 	// Event form organizer autocomplete.
 	$items['eventbrite/organizer/autocomplete'] = array(

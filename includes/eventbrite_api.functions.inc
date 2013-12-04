@@ -227,6 +227,28 @@ function organizer_create() {
   return $organizer;
 }
 
+function ticket_create() {
+  $ticket = (object) array(
+    'tid' => '',
+    'eid' => '',
+    'name' => '',
+    'type' => '',
+    'description' => '',
+    'start_date' => '',
+    'end_date' => '',
+    'min' => '',
+    'max' => '',
+    'price' => '',
+    'quantity_sold' => '',
+    'visible' => '',
+    'currency' => '',
+    'quantity_available' => '',
+    'display_price' => '',
+    'is_new' => TRUE,
+  );
+  return $ticket;
+}
+
 function organizer_save(&$organizer) {
   return entity_save('organizer', $organizer);
 }
@@ -465,6 +487,27 @@ function _eventbrite_api_alter_field($data) {
     $table = 'field_revision_' . $data['field_name'];
     db_change_field($table, $field, $field_new, $spec);
   }
+}
+
+/**
+ * Autocomplete results for the ticket form event field.
+ */
+function _eventbrite_event_autocomplete($string) {
+  $matches = array();
+  // Select the organizers table.
+  $query = db_select('eventbrite_api_events', 'e');
+  // Select rows that match the string.
+  $return = $query
+    ->fields('e', array('eid', 'title'))
+    ->condition('e.title', '%' . db_like($string) . '%', 'LIKE')
+    ->range(0, 10)
+    ->execute();
+  // Add matches to $matches . 
+  foreach ($return as $row) {
+    $matches[$row->eid] = check_plain($row->title);
+  }
+  // Return for JS.
+  drupal_json_output($matches);
 }
 
 /**
