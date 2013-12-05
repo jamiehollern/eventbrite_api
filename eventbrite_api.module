@@ -341,3 +341,13 @@ function organizer_load($oid = NULL, $reset = FALSE) {
 function organizer_load_multiple($oids = array(), $conditions = array(), $reset = FALSE) {
   return entity_load('organizer', $oids, $conditions, $reset);
 }
+
+function ticket_load($tid = NULL, $reset = FALSE) {
+  $tids = (isset ($tid) ? array($tid) : array());
+  $ticket = ticket_load_multiple($tids, $reset);
+  return $ticket ? reset ($ticket) : FALSE;
+}
+
+function ticket_load_multiple($tids = array(), $conditions = array(), $reset = FALSE) {
+  return entity_load('ticket', $tids, $conditions, $reset);
+}

@@ -349,33 +349,6 @@ function event_delete_form_submit($form, &$form_state) {
 }
 
 /**
- * Form API submit callback for the organizer delete button.
- */
-function organizer_form_submit_delete(&$form, &$form_state) {
-  $form_state['redirect'] = 'admin/eventbrite/organizer/' . $form_state['oid'] . '/delete';
-}
-
-/**
- * Organizer delete form.
- */
-function organizer_delete_form($form, &$form_state, $organizer) {
-  $form_state['organizer'] = $organizer;
-
-  $form['#submit'][] = 'organizer_delete_form_submit';
-
-  $form = confirm_form($form,
-    t('Are you sure you want to delete organizer "@name"?', array('@name' => $organizer->name)),
-    'admin/content/events/event',
-    '<p>' . t('This will delete the organizer on Eventbrite and delete it locally. This action cannot be undone.') . '</p>',
-    t('Delete'),
-    t('Cancel'),
-    'confirm'
-  );
-  
-  return $form;
-}
-
-/**
  * Submit callback for event_delete_form
  */
 function organizer_delete_form_submit($form, &$form_state) {
@@ -510,6 +483,33 @@ function organizer_add_form_submit($form, &$form_state) {
   }
 }
 
+/**
+ * Form API submit callback for the organizer delete button.
+ */
+function organizer_form_submit_delete(&$form, &$form_state) {
+  $form_state['redirect'] = 'admin/eventbrite/organizer/' . $form_state['oid'] . '/delete';
+}
+
+/**
+ * Organizer delete form.
+ */
+function organizer_delete_form($form, &$form_state, $organizer) {
+  $form_state['organizer'] = $organizer;
+
+  $form['#submit'][] = 'organizer_delete_form_submit';
+
+  $form = confirm_form($form,
+    t('Are you sure you want to delete organizer "@name"?', array('@name' => $organizer->name)),
+    'admin/content/events/event',
+    '<p>' . t('This will delete the organizer on Eventbrite and delete it locally. This action cannot be undone.') . '</p>',
+    t('Delete'),
+    t('Cancel'),
+    'confirm'
+  );
+  
+  return $form;
+}
+
 function organizer_add_wrapper() {
   $organizer = organizer_create();
   return drupal_get_form('organizer_add_form', $organizer);
@@ -517,6 +517,10 @@ function organizer_add_wrapper() {
 
 function organizer_edit_wrapper($organizer) {
   return drupal_get_form('organizer_add_form', $organizer);
+}
+
+function organizer_delete_wrapper($organizer) {
+  return drupal_get_form('organizer_delete_form', $organizer);
 }
 
 /**
@@ -532,8 +536,16 @@ function ticket_add_form($form, &$form_state, $ticket) {
     '#default_value' => isset($ticket->eid) ? $ticket->eid : '',
     '#maxlength' => 255,
     '#required' => TRUE,
-    '#autocomplete_path' => 'eventbrite/event/autocomplete',
   );
+	
+	// If we're editing an event we can't edit the event ID.
+	if (!empty($ticket->name)) {
+		$form['eid']['#disabled'] = TRUE;
+	}
+	// If it's not being edited, add autocomplete to the field.
+	else {
+    $form['eid']['#autocomplete_path'] = 'eventbrite/event/autocomplete';
+	}
 
   $form['name'] = array(
     '#type' => 'textfield',
@@ -554,27 +566,39 @@ function ticket_add_form($form, &$form_state, $ticket) {
     '#required' => TRUE,
   );
 
-  $form['max'] = array(
+  $form['min'] = array(
     '#type' => 'textfield',
-    '#title' => t('Max'),
-    '#default_value' => isset($ticket->max) ? $ticket->max : '',
+    '#title' => t('Min'),
+    '#default_value' => isset($ticket->max) ? $ticket->max : 1,
     '#maxlength' => 255,
     '#required' => TRUE,
   );
 
-  $form['min'] = array(
+  $form['max'] = array(
     '#type' => 'textfield',
-    '#title' => t('Min'),
-    '#default_value' => isset($ticket->max) ? $ticket->max : '',
+    '#title' => t('Max'),
+    '#default_value' => isset($ticket->max) ? $ticket->max : 0,
     '#maxlength' => 255,
     '#required' => TRUE,
+  );
+
+  $form['price'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Price'),
+    '#default_value' => isset($ticket->price) ? $ticket->price : '',
+  );
+
+  $form['quantity_available'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Quantity available'),
+    '#default_value' => isset($ticket->quantity_available) ? $ticket->quantity_available : '',
   );
 
   $form['currency'] = array(
     '#type' => 'select',
     '#title' => t('Currency'),
 		'#options' => eventbrite_api_currencies(),
-    '#default_value' => isset($ticket->type) ? $ticket->type : 0,
+    '#default_value' => !empty($ticket->currency) ? $ticket->currency : variable_get('eventbrite_api_currency', 'USD'),
     '#required' => TRUE,
   );
   
@@ -583,6 +607,44 @@ function ticket_add_form($form, &$form_state, $ticket) {
     '#title' => t('Description'),
     '#default_value' => isset($ticket->description) ? $ticket->description : '',
   );
+  
+  $form['start_date'] = array(
+    '#type' => 'date_popup',
+    '#title' => t('Start date'),
+    '#default_value' => isset($ticket->start_date) ? $ticket->start_date : '',
+    '#required' => TRUE,
+  );
+  
+  $form['end_date'] = array(
+    '#type' => 'date_popup',
+    '#title' => t('End date'),
+    '#default_value' => isset($ticket->end_date) ? $ticket->end_date : '',
+    '#required' => TRUE,
+  );
+
+  $form['include_fee'] = array(
+    '#type' => 'select',
+    '#title' => t('Include fee'),
+		'#options' => array(
+		  0 => 'Add to ticket price',
+			1 => 'Include in ticket price',
+		),
+    '#default_value' => isset($ticket->include_fee) ? $ticket->include_fee : 0,
+    '#required' => TRUE,
+  );
+	
+  if (!empty($ticket->name)) {
+	  $form['hide'] = array(
+			'#type' => 'select',
+			'#title' => t('Show or hide'),
+			'#options' => array(
+				'n' => 'Show',
+				'y' => 'Hide',
+			),
+			'#default_value' => isset($ticket->hide) ? $ticket->hide : 'n',
+			'#required' => TRUE,
+		);
+  }
   
   $submit = array();
 
@@ -630,6 +692,10 @@ function ticket_add_form_submit($form, &$form_state) {
   $eventbrite = $form_state['values'];
   // Add extra fields.
   field_attach_submit('ticket', $ticket_submit, $form, $form_state);
+	// Format the dates correctly.
+	$eventbrite['start_date'] = eventbrite_api_datef($eventbrite['start_date']);
+	$eventbrite['end_date'] = eventbrite_api_datef($eventbrite['end_date']);
+	dpm($eventbrite);
   // Connect to Eventbrite.
   $auth = array('app_key'  => variable_get('eventbrite_api_appkey', ''), 'user_key' => variable_get('eventbrite_api_userkey', ''));
   $eb_client = new Eventbrite($auth);
@@ -646,19 +712,25 @@ function ticket_add_form_submit($form, &$form_state) {
 			}
 		}
 		else {
+			// Add the event id.
+			$eventbrite['event_id'] = $eventbrite['eid'];
 			$response = $eb_client->ticket_new($eventbrite);
 			// If the event is added.
 			if ($response->process->status == 'OK') {
-				// ticket ID.
+				// Ticket ID.
 				$tid = $response->process->id;
-				// Get the full event details.
-				$response = $eb_client->ticket_get(array('id' => $tid));
-				// This is the returned ticket.
-				$ticket = $response->ticket[0];
-				// Make sure the id is correctly labeled.
-				$ticket->tid = $ticket->id;
-				// Get rid of the ID element.
-				unset($ticket->id);
+				// We have to call the actual event to get the full ticket details.
+				$response = $eb_client->event_get(array('id' => $eventbrite['eid']));
+				// Get the list of tickets.
+				$ticket = array('tid' => $tid);
+				$tickets = $response->event->tickets;
+				// Find the ticket we just added.
+				foreach ($tickets as $t) {
+					if ($t->ticket->id == $tid) {
+						$ticket = $ticket + $t;
+						break;
+					}
+				}
 				// Set the ticket.
         $ticket = (object) array_merge((array) $form_state['ticket'], (array) $ticket);
 			}
@@ -666,13 +738,41 @@ function ticket_add_form_submit($form, &$form_state) {
   }
   catch (Exception $e) {
     $response = $e->getMessage();
+		dpm($response);
     form_set_error(NULL, $response);
   }
   $save = ticket_save($ticket);
   if (!empty($save)) {
-    drupal_set_message(t('ticket !name saved to Eventbrite and cached locally.', array('!name' => '<em>' . $ticket->name . '</em>')));
-    $form_state['redirect'] = 'admin/eventbrite/ticket';
+    drupal_set_message(t('Ticket !name saved to Eventbrite and cached locally.', array('!name' => '<em>' . $ticket->name . '</em>')));
+    //$form_state['redirect'] = 'admin/eventbrite/ticket';
   }
+}
+
+/**
+ * Form API submit callback for the ticket delete button.
+ */
+function ticket_form_submit_delete(&$form, &$form_state) {
+  $form_state['redirect'] = 'admin/eventbrite/ticket/' . $form_state['tid'] . '/delete';
+}
+
+/**
+ * Organizer delete form.
+ */
+function ticket_delete_form($form, &$form_state, $ticket) {
+  $form_state['ticket'] = $ticket;
+
+  $form['#submit'][] = 'ticket_delete_form_submit';
+
+  $form = confirm_form($form,
+    t('Are you sure you want to delete ticket "@name"?', array('@name' => $ticket->name)),
+    'admin/content/events/event',
+    '<p>' . t('This will delete the ticket on Eventbrite and delete it locally. This action cannot be undone.') . '</p>',
+    t('Delete'),
+    t('Cancel'),
+    'confirm'
+  );
+  
+  return $form;
 }
 
 function ticket_add_wrapper() {
@@ -682,4 +782,8 @@ function ticket_add_wrapper() {
 
 function ticket_edit_wrapper($ticket) {
   return drupal_get_form('ticket_add_form', $ticket);
+}
+
+function ticket_delete_wrapper($ticket) {
+  return drupal_get_form('ticket_delete_form', $ticket);
 }

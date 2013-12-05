@@ -167,7 +167,10 @@ function eventbrite_api_currencies() {
   return $currencies;
 }
 
-function eventbrite_api_ctime($timestamp) {
+function eventbrite_api_ctime($timestamp = NULL) {
+	if (empty($timestamp)) {
+		$timestamp = time();
+	}
   $time = date('c', $timestamp);
   $time = str_replace('T', ' ', $time);
   $time = explode('+', $time);
@@ -227,6 +230,15 @@ function organizer_create() {
   return $organizer;
 }
 
+function organizer_save(&$organizer) {
+  return entity_save('organizer', $organizer);
+}
+
+function organizer_delete($entity) {
+  entity_delete('organizer', $entity->oid);
+  // MAKE THIS DELETE ORGANIZER WITH EVENTBRITE.
+}
+
 function ticket_create() {
   $ticket = (object) array(
     'tid' => '',
@@ -249,8 +261,13 @@ function ticket_create() {
   return $ticket;
 }
 
-function organizer_save(&$organizer) {
-  return entity_save('organizer', $organizer);
+function ticket_save(&$ticket) {
+  return entity_save('ticket', $ticket);
+}
+
+function ticket_delete($entity) {
+  entity_delete('ticket', $entity->tid);
+  // MAKE THIS CANCEL EVENT WITH EVENTBRITE.
 }
 
 function eventbrite_api_import_all() {
@@ -342,6 +359,10 @@ function eventbrite_api_format_all($data) {
         unset($ticket->ticket->id);
         // Add the eid.
         $ticket->ticket->eid = $eid;
+				// Remove commas from ticket prices.
+				if (!empty($ticket->ticket->price)) {
+          $ticket->ticket->price = str_replace(',', '', $ticket->ticket->price);
+				}
         // Assign the venue object as an array to $events.
         $events['tickets'][$tid] = (array) $ticket->ticket;
       }
@@ -380,17 +401,17 @@ function eventbrite_api_entity_prepare($type) {
     'capacity' => '',
     'num_attendee_rows' => '',
     'title' => '',
-    'start_date' => '1970-01-01 00:00:00',
+    'start_date' => eventbrite_api_ctime(),
     'status' => '',
     'description' => '',
-    'end_date' => '1970-01-01 00:00:00',
+    'end_date' => eventbrite_api_ctime(),
     'tags' => '',
     'timezone_offset' => '',
     'password' => '',
-    'created' => '1970-01-01 00:00:00',
+    'created' => eventbrite_api_ctime(),
     'url' => '',
     'privacy' => '',
-    'modified' => '1970-01-01 00:00:00',
+    'modified' => eventbrite_api_ctime(),
     'repeats' => '',
     'is_new' => TRUE,
   );
@@ -408,8 +429,8 @@ function eventbrite_api_entity_prepare($type) {
     'name' => '',
     'type' => '',
     'description' => '',
-    'start_date' => '1970-01-01 00:00:00',
-    'end_date' => '1970-01-01 00:00:00',
+    'start_date' => eventbrite_api_ctime(),
+    'end_date' => eventbrite_api_ctime(),
     'min' => '',
     'max' => '',
     'price' => '0.00',
