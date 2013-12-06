@@ -201,20 +201,20 @@ function eventbrite_api_menu() {
     'file' => 'includes/eventbrite_api.forms.inc',
     'weight' => 50,
   );
-	// Ticket form organizer autocomplete.
-	$items['eventbrite/event/autocomplete'] = array(
+  // Ticket form organizer autocomplete.
+  $items['eventbrite/event/autocomplete'] = array(
     'page callback' => '_eventbrite_event_autocomplete',
     'access arguments' => array('administer eventbrite'),
     'type' => MENU_CALLBACK
   );
-	// Event form organizer autocomplete.
-	$items['eventbrite/organizer/autocomplete'] = array(
+  // Event form organizer autocomplete.
+  $items['eventbrite/organizer/autocomplete'] = array(
     'page callback' => '_eventbrite_organizer_autocomplete',
     'access arguments' => array('administer eventbrite'),
     'type' => MENU_CALLBACK
   );
-	// Event form venue autocomplete.
-	$items['eventbrite/venue/autocomplete'] = array(
+  // Event form venue autocomplete.
+  $items['eventbrite/venue/autocomplete'] = array(
     'page callback' => '_eventbrite_venue_autocomplete',
     'access arguments' => array('administer eventbrite'),
     'type' => MENU_CALLBACK
@@ -301,7 +301,7 @@ function eventbrite_api_permission() {
       'description' => t('Edit and delete all events'),
     ),
   );
-  return $permissions;  
+  return $permissions;
 }
 
 /**
@@ -351,3 +351,101 @@ function ticket_load($tid = NULL, $reset = FALSE) {
 function ticket_load_multiple($tids = array(), $conditions = array(), $reset = FALSE) {
   return entity_load('ticket', $tids, $conditions, $reset);
 }
+
+/**
+ * Implementation hook_help() for eventbrite_api.
+ *
+ * Function eventbrite_api_help
+ * Display the Readme file in the drupal help pages.
+ *
+ * @param string $path
+ *   the current help menu path
+ * @param array $arg
+ *   An array of arguments
+ *
+ * @return string
+ *   the output of the REAMDE.txt file
+ */
+function eventbrite_api_help($path, $arg) {
+  switch ($path) {
+    case 'admin/help#eventbrite_api':
+      $output = file_get_contents(drupal_get_path('module', 'eventbrite_api') . '/README.txt');
+      return module_exists('markdown') ? filter_xss_admin(module_invoke('markdown', 'filter', 'process', 0, -1, $output)) : '<pre>' . check_plain($output) . '</pre>';
+  }
+}
+
+/**
+ * Implements hook_cron().
+ * Run any scheduled tasks
+ */
+function eventbrite_api_cron() {
+  // Check that enough time has past since the last cron run
+  if (time() > variable_get('eventbrite_api_cron_time',0)) {
+    $events = array();
+    // Get all of the events that are relevant
+    $count = 0;
+
+    // If there are events
+    if (count($events)) {
+      $queue = DrupalQueue::get('eventbrite_api_sync_events');
+      // Go through all of them.
+      foreach($events['events'] as $event){
+        $queue->createItem(array('event_id' => $id, 'created' => $created));
+      }
+    }
+    watchdog('eventbrite_api', '!count new events have been found.', array('!count' => $count), WATCHDOG_INFO);
+    variable_set('eventbrite_api_cron_time',time() + variable_get('eventbrite_api_cron_delay',360));
+  }
+}
+
+/*
+ * Implements hook_cron_queue_info().
+ */
+function eventbrite_api_cron_queue_info(){
+  $queues['eventbrite_api_sync_events'] = array(
+    'worker callback' => '_eventbrite_api_cron_add_event',
+    'time' => 120,
+  );
+  return $queues;
+}
+
+/**
+ * Function _eventbrite_api_cron_add_event
+ *
+ * Create a new node for any new events from Eventbrite.
+ *
+ * @param  object $event_id
+ *  An eventbrite id
+ *
+ */
+function _eventbrite_api_cron_add_event($vars) {
+  if (($library = libraries_load('eventbrite')) && !empty($library['loaded'])) {
+   //  // Get the app key and user key values from the form..
+   //  $akey = variable_get('eventbrite_api_appkey', '');
+   //  $ukey = variable_get('eventbrite_api_userkey', '');
+   //  // Connect to Eventbrite using the Eventbrite class.
+   //  $eb_client = new Eventbrite(array('app_key' => $akey, 'user_key' => $ukey));
+   //  $events = get all teh events
+   //  if (is_array($event)) {
+   //    // Create a new event entity
+   //    $values = array(
+   //      'type' => 'events',
+   //      'uid' => 1,
+   //      'status' => 0,
+   //      'comment' => 1,
+   //      'promote' => 0,
+   //      'revision' => 1,
+   //      'created' => 1,
+   //      'timestamp' => 1,
+   //    );
+   //    $entity = entity_create('event', $values);
+   //    Do teh rest of the creating here
+
+   //    watchdog('eventbrite_api', 'A new event has been created with the id !nid.', array('!nid' => $ewrapper->nid->value()), WATCHDOG_INFO, 'node/' . $ewrapper->nid->value());
+   //   }
+  }
+  else {
+    watchdog(t('eventbrite_api', 'Sync failed Please install the Eventbrite API library. Check the !readme for further information.', array('!readme' => l(t('README'), 'admin/help/eventbrite_api'))), 'error');
+  }
+}
+

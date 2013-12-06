@@ -9,9 +9,9 @@
  * Admin configiguration form.
  */
 function eventbrite_api_config_form() {
-	// Load the details.
-	$ukey = variable_get('eventbrite_api_userkey', '');
-	$akey = variable_get('eventbrite_api_appkey', '');
+  // Load the details.
+  $ukey = variable_get('eventbrite_api_userkey', '');
+  $akey = variable_get('eventbrite_api_appkey', '');
   $form = array();
   $form['auth'] = array(
     '#type' => 'fieldset',
@@ -33,58 +33,78 @@ function eventbrite_api_config_form() {
     '#required' => TRUE,
     '#description' => t('Get your app keys at <a href="@url">@url</a>.', array('@url' => 'https://www.eventbrite.com/api/key/')),
   );
-	// Display the rest of the form only when the Eventbrite details are correct.
-	if (!empty($ukey) && !empty($akey)) {
-		$form['import'] = array(
-			'#type' => 'fieldset',
-			'#title' => t('Eventbrite data import'),
-			'#collapsible' => TRUE,
-			'#collapsed' => FALSE,
-		);
-		$form['import']['import_all'] = array(
-			'#type' => 'submit',
-			'#value' => t('Import all Eventbrite event data'),
-			'#submit' => array('eventbrite_api_import_all'),
-		);
-		$form['import']['import_all_help'] = array(
-			'#markup' => '<div>' . t('If you already have Eventbrite data imported,
-			this will delete that data before importing the new data. This
-			cannot be undone.') . '</div>',
-		);
-		$form['import_settings'] = array(
-			'#type' => 'fieldset',
-			'#title' => t('Event import settings'),
-			'#collapsible' => TRUE,
-			'#collapsed' => FALSE,
-		);
-		$form['import_settings']['eventbrite_api_import_delete'] = array(
-			'#type' => 'checkbox',
-			'#title' => t('Delete all existing data before import.'),
-			'#default_value' => variable_get('eventbrite_api_import_delete', 1),
-		);
-		$form['import_settings']['eventbrite_api_cron_import'] = array(
-			'#type' => 'checkbox',
-			'#title' => t('Import events from Eventbrite during cron runs'),
-			'#default_value' => variable_get('eventbrite_api_cron_import', 1),
-		);
-		$form['import_settings']['eventbrite_api_import_strip'] = array(
-			'#type' => 'checkbox',
-			'#title' => t('Strip HTML code from the event description (recommended)'),
-			'#default_value' => variable_get('eventbrite_api_import_strip', 1),
-		);
-		$form['general'] = array(
-			'#type' => 'fieldset',
-			'#title' => t('General settings'),
-			'#collapsible' => TRUE,
-			'#collapsed' => FALSE,
-		);
-		$form['general']['eventbrite_api_currency'] = array(
-			'#type' => 'select',
-			'#title' => t('Default currency'),
-			'#default_value' => variable_get('eventbrite_api_currency', 'USD'),
-			'#options' => eventbrite_api_currencies(),
-		);
-	}
+  // Display the rest of the form only when the Eventbrite details are correct.
+  if (!empty($ukey) && !empty($akey)) {
+    $form['import'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Eventbrite data import'),
+      '#collapsible' => TRUE,
+      '#collapsed' => FALSE,
+    );
+    $form['import']['import_all'] = array(
+      '#type' => 'submit',
+      '#value' => t('Import all Eventbrite event data'),
+      '#submit' => array('eventbrite_api_import_all'),
+    );
+    $form['import']['import_all_help'] = array(
+      '#markup' => '<div>' . t('If you already have Eventbrite data imported,
+      this will delete that data before importing the new data. This
+      cannot be undone.') . '</div>',
+    );
+    $form['import_settings'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Event import settings'),
+      '#collapsible' => TRUE,
+      '#collapsed' => FALSE,
+    );
+    $form['import_settings']['eventbrite_api_import_delete'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Delete all existing data before import.'),
+      '#default_value' => variable_get('eventbrite_api_import_delete', 1),
+    );
+    $form['import_settings']['eventbrite_api_cron_import'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Import events from Eventbrite during cron runs'),
+      '#default_value' => variable_get('eventbrite_api_cron_import', 1),
+    );
+    $form['import_settings']['eventbrite_api_cron_delay'] = array(
+      '#type' => 'select',
+      '#title' => t('How often should we run cron'),
+      '#default_value' => variable_get('eventbrite_api_cron_delay',360),
+      '#options' => array(
+        3600 => 'Every hour',
+        7200 => 'Every 2 hours',
+        10800 => 'Every 3 hours',
+        14400 => 'Every 4 hours',
+        18000 => 'Every 5 hours',
+        43200 => 'Every 12 hours',
+        86400 => 'Once per day',
+        172800 => 'Every 2 days',
+        259200 => 'Every 3 days',
+        432000 => 'Every 5 days',
+        604800 => 'Once per week',
+        1209600 => 'Every 2 weeks',
+      ),
+      '#description' => t('Select the gap in hours between each cron run. Remember that syncronising with the server requires resources, so set this value to as high as you believe is feasible to keep your site up to date.',array()),
+    );
+    $form['import_settings']['eventbrite_api_import_strip'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Strip HTML code from the event description (recommended)'),
+      '#default_value' => variable_get('eventbrite_api_import_strip', 1),
+    );
+    $form['general'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('General settings'),
+      '#collapsible' => TRUE,
+      '#collapsed' => FALSE,
+    );
+    $form['general']['eventbrite_api_currency'] = array(
+      '#type' => 'select',
+      '#title' => t('Default currency'),
+      '#default_value' => variable_get('eventbrite_api_currency', 'USD'),
+      '#options' => eventbrite_api_currencies(),
+    );
+  }
   $form['#validate'][] = 'eventbrite_api_config_form_validate';
   return system_settings_form($form);
 }
@@ -94,32 +114,38 @@ function eventbrite_api_config_form() {
  * Essentially, we're testing to see if the keys work.
  */
 function eventbrite_api_config_form_validate($form, &$form_state) {
-  // Get the app key and user key values from the form..
-  $akey = $form_state['values']['eventbrite_api_appkey'];
-  $ukey = $form_state['values']['eventbrite_api_userkey'];
-  // Connect to Eventbrite using the Eventbrite class.
-  $eb_client = new Eventbrite(array('app_key' => $akey, 'user_key' => $ukey));
-  // Try to get a list of events from Eventbrite with our credentials.
-  try {
-    // If it works, don't do anything as we want to save the details.
-    $events = $eb_client->user_list_events();
+
+  if (($library = libraries_load('eventbrite')) && !empty($library['loaded'])) {
+    // Get the app key and user key values from the form..
+    $akey = $form_state['values']['eventbrite_api_appkey'];
+    $ukey = $form_state['values']['eventbrite_api_userkey'];
+    // Connect to Eventbrite using the Eventbrite class.
+    $eb_client = new Eventbrite(array('app_key' => $akey, 'user_key' => $ukey));
+    // Try to get a list of events from Eventbrite with our credentials.
+    try {
+      // If it works, don't do anything as we want to save the details.
+      $events = $eb_client->user_list_events();
+    }
+    // If it doesn't work, catch the error.
+    catch (Exception $e) {
+      // Variable for the form element.
+      $element = 'config';
+      // Variable for the error message.
+      $error = $e->getMessage();
+      // If it's the user key.
+      if (strpos($error, 'user_key') !== FALSE) {
+        $element = 'eventbrite_api_userkey';
+      }
+      // If it's the app key.
+      elseif (strpos($error, 'application key') !== FALSE) {
+        $element = 'eventbrite_api_appkey';
+      }
+      // Then stop the form from saving the details while printing the error.
+      form_set_error($element, t('Connection to Eventbrite failed with the following error: @error', array('@error' => $error)));
+    }
   }
-  // If it doesn't work, catch the error.
-  catch (Exception $e) {
-    // Variable for the form element.
-    $element = 'config';
-    // Variable for the error message.
-    $error = $e->getMessage();
-    // If it's the user key.
-    if (strpos($error, 'user_key') !== FALSE) {
-      $element = 'eventbrite_api_userkey';
-    }
-    // If it's the app key.
-    elseif (strpos($error, 'application key') !== FALSE) {
-      $element = 'eventbrite_api_appkey';
-    }
-    // Then stop the form from saving the details while printing the error.
-    form_set_error($element, t('Connection to Eventbrite failed with the following error: @error', array('@error' => $error)));
+  else {
+    drupal_set_message(t('Please install the Eventbrite API library. Check the !readme for further information.', array('!readme' => l(t('README'), 'admin/help/eventbrite_api'))), 'error');
   }
 }
 
@@ -131,7 +157,7 @@ function event_add_form($form, &$form_state, $event) {
     '#type' => 'fieldset',
     '#title' => t('General information'),
   );
-  
+
   $form['details']['title'] = array(
     '#type' => 'textfield',
     '#title' => t('Event title'),
@@ -139,27 +165,27 @@ function event_add_form($form, &$form_state, $event) {
     '#maxlength' => 255,
     '#required' => TRUE,
   );
-  
+
   $form['details']['description'] = array(
     '#type' => 'textarea',
     '#title' => t('Description'),
     '#default_value' => isset($event->description) ? $event->description : '',
   );
-  
+
   $form['details']['capacity'] = array(
     '#type' => 'textfield',
     '#title' => t('Capacity'),
     '#default_value' => isset($event->capacity) ? $event->capacity : '',
     '#size' => 5,
   );
-  
+
   $form['details']['currency'] = array(
     '#type' => 'select',
     '#title' => t('Currency'),
     '#default_value' => isset($event->currency) ? $event->currency : variable_get('eventbrite_api_currency', 'USD'),
     '#options' => eventbrite_api_currencies(),
   );
-  
+
   $form['details']['status'] = array(
     '#type' => 'select',
     '#title' => t('Event status'),
@@ -169,15 +195,15 @@ function event_add_form($form, &$form_state, $event) {
       'live' => t('Live'),
     ),
   );
-	
-	$form['details']['oid'] = array(
+
+  $form['details']['oid'] = array(
     '#title' => t('Organizer'),
     '#type' => 'textfield',
     '#autocomplete_path' => 'eventbrite/organizer/autocomplete',
     '#default_value' => isset($event->oid) ? $event->oid : '',
    );
-	
-	$form['details']['vid'] = array(
+
+  $form['details']['vid'] = array(
     '#title' => t('Venue'),
     '#type' => 'textfield',
     '#autocomplete_path' => 'eventbrite/venue/autocomplete',
@@ -188,14 +214,14 @@ function event_add_form($form, &$form_state, $event) {
     '#type' => 'fieldset',
     '#title' => t('Date information'),
   );
-  
+
   $form['dates']['start_date'] = array(
     '#type' => 'date_popup',
     '#title' => t('Start date'),
     '#default_value' => isset($event->start_date) ? $event->start_date : '',
     '#required' => TRUE,
   );
-  
+
   $form['dates']['end_date'] = array(
     '#type' => 'date_popup',
     '#title' => t('End date'),
@@ -210,19 +236,19 @@ function event_add_form($form, &$form_state, $event) {
     '#options' => system_time_zones(),
     '#required' => TRUE,
   );
-  
+
   $submit = array();
 
   if (!empty($form['#submit'])) {
     $submit += $form['#submit'];
   }
-  
+
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Save'),
     '#submit' => $submit + array('event_add_form_submit'),
   );
-  
+
   if (!empty($event->title)) {
     $form['actions']['delete'] = array(
       '#type' => 'submit',
@@ -236,9 +262,9 @@ function event_add_form($form, &$form_state, $event) {
   // Add the field related form elements.
   $form_state['event'] = $event;
   $form_state['eid'] = $event->eid;
-  
+
   field_attach_form('event', $event, $form, $form_state);
-  
+
   return $form;
 }
 
@@ -266,43 +292,48 @@ function event_add_form_submit($form, &$form_state) {
   // Add extra fields.
   field_attach_submit('event', $event_submit, $form, $form_state);
   // Connect to Eventbrite.
-  $auth = array('app_key'  => variable_get('eventbrite_api_appkey', ''), 'user_key' => variable_get('eventbrite_api_userkey', ''));
-  $eb_client = new Eventbrite($auth);
-  try {
-		// Should we update an existing event or add a new one?
-		if (!empty($form_state['eid'])) {
-			// Add the id with the correct key.
-			$eventbrite['id'] = $form_state['eid'];
-			$response = $eb_client->event_update($eventbrite);
-			// If the event is updated.
-			if ($response->process->status == 'OK') {
-				// Set the event entity values.
-        $event = (object) array_merge((array) $form_state['event'], (array) $form_state['values']);
-			}
-		}
-		else {
-			$response = $eb_client->event_new($eventbrite);
-			// If the event is added.
-			if ($response->process->status == 'OK') {
-				// Event ID.
-				$eid = $response->process->id;
-				// Get the full event details.
-				$response = $eb_client->event_get(array('id' => $eid));
-				// This is the retured event.
-				$event = $response->event;
-				// Make sure the id is correctly labeled.
-				$event->eid = $event->id;
-				// Add the oid and vid.
-				$event->oid = $event->organizer->id;
-				$event->vid = $event->venue->id;
-				// Build the event.
-        $event = (object) array_merge((array) $form_state['event'], (array) $event);
-			}
-		}
+  if (($library = libraries_load('eventbrite')) && !empty($library['loaded'])) {
+    $auth = array('app_key'  => variable_get('eventbrite_api_appkey', ''), 'user_key' => variable_get('eventbrite_api_userkey', ''));
+    $eb_client = new Eventbrite($auth);
+    try {
+      // Should we update an existing event or add a new one?
+      if (!empty($form_state['eid'])) {
+        // Add the id with the correct key.
+        $eventbrite['id'] = $form_state['eid'];
+        $response = $eb_client->event_update($eventbrite);
+        // If the event is updated.
+        if ($response->process->status == 'OK') {
+          // Set the event entity values.
+          $event = (object) array_merge((array) $form_state['event'], (array) $form_state['values']);
+        }
+      }
+      else {
+        $response = $eb_client->event_new($eventbrite);
+        // If the event is added.
+        if ($response->process->status == 'OK') {
+          // Event ID.
+          $eid = $response->process->id;
+          // Get the full event details.
+          $response = $eb_client->event_get(array('id' => $eid));
+          // This is the retured event.
+          $event = $response->event;
+          // Make sure the id is correctly labeled.
+          $event->eid = $event->id;
+          // Add the oid and vid.
+          $event->oid = $event->organizer->id;
+          $event->vid = $event->venue->id;
+          // Build the event.
+          $event = (object) array_merge((array) $form_state['event'], (array) $event);
+        }
+      }
+    }
+    catch (Exception $e) {
+      $response = $e->getMessage();
+      form_set_error(NULL, $response);
+    }
   }
-  catch (Exception $e) {
-    $response = $e->getMessage();
-    form_set_error(NULL, $response);
+  else {
+    drupal_set_message(t('Please install the Eventbrite API library. Check the !readme for further information.', array('!readme' => l(t('README'), 'admin/help/eventbrite_api'))), 'error');
   }
   $save = event_save($event);
   if (!empty($save)) {
@@ -334,7 +365,7 @@ function event_delete_form($form, &$form_state, $event) {
     t('Cancel'),
     'confirm'
   );
-  
+
   return $form;
 }
 
@@ -375,8 +406,8 @@ function event_delete_wrapper($event) {
  * Organizer add form.
  */
 function organizer_add_form($form, &$form_state, $organizer) {
-	// Add the OID into the $form_state array.
-	$form_state['oid'] = $organizer->oid;
+  // Add the OID into the $form_state array.
+  $form_state['oid'] = $organizer->oid;
 
   $form['name'] = array(
     '#type' => 'textfield',
@@ -385,19 +416,19 @@ function organizer_add_form($form, &$form_state, $organizer) {
     '#maxlength' => 255,
     '#required' => TRUE,
   );
-  
+
   $form['description'] = array(
     '#type' => 'textarea',
     '#title' => t('Description'),
     '#default_value' => isset($organizer->description) ? $organizer->description : '',
   );
-  
+
   $submit = array();
 
   if (!empty($form['#submit'])) {
     $submit += $form['#submit'];
   }
-  
+
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Save'),
@@ -416,9 +447,9 @@ function organizer_add_form($form, &$form_state, $organizer) {
   // Add the field related form elements.
   $form_state['organizer'] = $organizer;
   $form_state['oid'] = $organizer->oid;
-  
+
   field_attach_form('organizer', $organizer, $form, $form_state);
-	return $form;
+  return $form;
 }
 
 /**
@@ -439,42 +470,47 @@ function organizer_add_form_submit($form, &$form_state) {
   // Add extra fields.
   field_attach_submit('organizer', $organizer_submit, $form, $form_state);
   // Connect to Eventbrite.
-  $auth = array('app_key'  => variable_get('eventbrite_api_appkey', ''), 'user_key' => variable_get('eventbrite_api_userkey', ''));
-  $eb_client = new Eventbrite($auth);
-  try {
-		// Should we update an existing organizer or add a new one?
-		if (!empty($form_state['oid'])) {
-			// Add the id with the correct key.
-			$eventbrite['id'] = $form_state['oid'];
-			$response = $eb_client->organizer_update($eventbrite);
-			// If the event is updated.
-			if ($response->process->status == 'OK') {
-				// Set the organizer entity values.
-        $organizer = (object) array_merge((array) $form_state['organizer'], (array) $form_state['values']);
-			}
-		}
-		else {
-			$response = $eb_client->organizer_new($eventbrite);
-			// If the event is added.
-			if ($response->process->status == 'OK') {
-				// Organizer ID.
-				$oid = $response->process->id;
-				// Get the full event details.
-				$response = $eb_client->organizer_get(array('id' => $oid));
-				// This is the returned organizer.
-				$organizer = $response->organizer[0];
-				// Make sure the id is correctly labeled.
-				$organizer->oid = $organizer->id;
-				// Get rid of the ID element.
-				unset($organizer->id);
-				// Set the organizer.
-        $organizer = (object) array_merge((array) $form_state['organizer'], (array) $organizer);
-			}
-		}
+  if (($library = libraries_load('eventbrite')) && !empty($library['loaded'])) {
+    $auth = array('app_key'  => variable_get('eventbrite_api_appkey', ''), 'user_key' => variable_get('eventbrite_api_userkey', ''));
+    $eb_client = new Eventbrite($auth);
+    try {
+      // Should we update an existing organizer or add a new one?
+      if (!empty($form_state['oid'])) {
+        // Add the id with the correct key.
+        $eventbrite['id'] = $form_state['oid'];
+        $response = $eb_client->organizer_update($eventbrite);
+        // If the event is updated.
+        if ($response->process->status == 'OK') {
+          // Set the organizer entity values.
+          $organizer = (object) array_merge((array) $form_state['organizer'], (array) $form_state['values']);
+        }
+      }
+      else {
+        $response = $eb_client->organizer_new($eventbrite);
+        // If the event is added.
+        if ($response->process->status == 'OK') {
+          // Organizer ID.
+          $oid = $response->process->id;
+          // Get the full event details.
+          $response = $eb_client->organizer_get(array('id' => $oid));
+          // This is the returned organizer.
+          $organizer = $response->organizer[0];
+          // Make sure the id is correctly labeled.
+          $organizer->oid = $organizer->id;
+          // Get rid of the ID element.
+          unset($organizer->id);
+          // Set the organizer.
+          $organizer = (object) array_merge((array) $form_state['organizer'], (array) $organizer);
+        }
+      }
+    }
+    catch (Exception $e) {
+      $response = $e->getMessage();
+      form_set_error(NULL, $response);
+    }
   }
-  catch (Exception $e) {
-    $response = $e->getMessage();
-    form_set_error(NULL, $response);
+  else {
+    drupal_set_message(t('Please install the Eventbrite API library. Check the !readme for further information.', array('!readme' => l(t('README'), 'admin/help/eventbrite_api'))), 'error');
   }
   $save = organizer_save($organizer);
   if (!empty($save)) {
@@ -506,7 +542,7 @@ function organizer_delete_form($form, &$form_state, $organizer) {
     t('Cancel'),
     'confirm'
   );
-  
+
   return $form;
 }
 
@@ -527,8 +563,8 @@ function organizer_delete_wrapper($organizer) {
  * Ticket add form.
  */
 function ticket_add_form($form, &$form_state, $ticket) {
-	// Add the TID into the $form_state array.
-	$form_state['tid'] = $ticket->tid;
+  // Add the TID into the $form_state array.
+  $form_state['tid'] = $ticket->tid;
 
   $form['eid'] = array(
     '#type' => 'textfield',
@@ -537,15 +573,15 @@ function ticket_add_form($form, &$form_state, $ticket) {
     '#maxlength' => 255,
     '#required' => TRUE,
   );
-	
-	// If we're editing an event we can't edit the event ID.
-	if (!empty($ticket->name)) {
-		$form['eid']['#disabled'] = TRUE;
-	}
-	// If it's not being edited, add autocomplete to the field.
-	else {
+
+  // If we're editing an event we can't edit the event ID.
+  if (!empty($ticket->name)) {
+    $form['eid']['#disabled'] = TRUE;
+  }
+  // If it's not being edited, add autocomplete to the field.
+  else {
     $form['eid']['#autocomplete_path'] = 'eventbrite/event/autocomplete';
-	}
+  }
 
   $form['name'] = array(
     '#type' => 'textfield',
@@ -558,10 +594,10 @@ function ticket_add_form($form, &$form_state, $ticket) {
   $form['type'] = array(
     '#type' => 'select',
     '#title' => t('Type'),
-		'#options' => array(
-		  0 => 'Fixed price',
-			1 => 'Donation',
-		),
+    '#options' => array(
+      0 => 'Fixed price',
+      1 => 'Donation',
+    ),
     '#default_value' => isset($ticket->type) ? $ticket->type : 0,
     '#required' => TRUE,
   );
@@ -597,24 +633,24 @@ function ticket_add_form($form, &$form_state, $ticket) {
   $form['currency'] = array(
     '#type' => 'select',
     '#title' => t('Currency'),
-		'#options' => eventbrite_api_currencies(),
+    '#options' => eventbrite_api_currencies(),
     '#default_value' => !empty($ticket->currency) ? $ticket->currency : variable_get('eventbrite_api_currency', 'USD'),
     '#required' => TRUE,
   );
-  
+
   $form['description'] = array(
     '#type' => 'textarea',
     '#title' => t('Description'),
     '#default_value' => isset($ticket->description) ? $ticket->description : '',
   );
-  
+
   $form['start_date'] = array(
     '#type' => 'date_popup',
     '#title' => t('Start date'),
     '#default_value' => isset($ticket->start_date) ? $ticket->start_date : '',
     '#required' => TRUE,
   );
-  
+
   $form['end_date'] = array(
     '#type' => 'date_popup',
     '#title' => t('End date'),
@@ -625,33 +661,33 @@ function ticket_add_form($form, &$form_state, $ticket) {
   $form['include_fee'] = array(
     '#type' => 'select',
     '#title' => t('Include fee'),
-		'#options' => array(
-		  0 => 'Add to ticket price',
-			1 => 'Include in ticket price',
-		),
+    '#options' => array(
+      0 => 'Add to ticket price',
+      1 => 'Include in ticket price',
+    ),
     '#default_value' => isset($ticket->include_fee) ? $ticket->include_fee : 0,
     '#required' => TRUE,
   );
-	
+
   if (!empty($ticket->name)) {
-	  $form['hide'] = array(
-			'#type' => 'select',
-			'#title' => t('Show or hide'),
-			'#options' => array(
-				'n' => 'Show',
-				'y' => 'Hide',
-			),
-			'#default_value' => isset($ticket->hide) ? $ticket->hide : 'n',
-			'#required' => TRUE,
-		);
+    $form['hide'] = array(
+      '#type' => 'select',
+      '#title' => t('Show or hide'),
+      '#options' => array(
+        'n' => 'Show',
+        'y' => 'Hide',
+      ),
+      '#default_value' => isset($ticket->hide) ? $ticket->hide : 'n',
+      '#required' => TRUE,
+    );
   }
-  
+
   $submit = array();
 
   if (!empty($form['#submit'])) {
     $submit += $form['#submit'];
   }
-  
+
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Save'),
@@ -670,9 +706,9 @@ function ticket_add_form($form, &$form_state, $ticket) {
   // Add the field related form elements.
   $form_state['ticket'] = $ticket;
   $form_state['tid'] = $ticket->tid;
-  
+
   field_attach_form('ticket', $ticket, $form, $form_state);
-	return $form;
+  return $form;
 }
 
 /**
@@ -692,54 +728,59 @@ function ticket_add_form_submit($form, &$form_state) {
   $eventbrite = $form_state['values'];
   // Add extra fields.
   field_attach_submit('ticket', $ticket_submit, $form, $form_state);
-	// Format the dates correctly.
-	$eventbrite['start_date'] = eventbrite_api_datef($eventbrite['start_date']);
-	$eventbrite['end_date'] = eventbrite_api_datef($eventbrite['end_date']);
-	dpm($eventbrite);
+  // Format the dates correctly.
+  $eventbrite['start_date'] = eventbrite_api_datef($eventbrite['start_date']);
+  $eventbrite['end_date'] = eventbrite_api_datef($eventbrite['end_date']);
+  dpm($eventbrite);
   // Connect to Eventbrite.
-  $auth = array('app_key'  => variable_get('eventbrite_api_appkey', ''), 'user_key' => variable_get('eventbrite_api_userkey', ''));
-  $eb_client = new Eventbrite($auth);
-  try {
-		// Should we update an existing ticket or add a new one?
-		if (!empty($form_state['tid'])) {
-			// Add the id with the correct key.
-			$eventbrite['id'] = $form_state['tid'];
-			$response = $eb_client->ticket_update($eventbrite);
-			// If the event is updated.
-			if ($response->process->status == 'OK') {
-				// Set the ticket entity values.
-        $ticket = (object) array_merge((array) $form_state['ticket'], (array) $form_state['values']);
-			}
-		}
-		else {
-			// Add the event id.
-			$eventbrite['event_id'] = $eventbrite['eid'];
-			$response = $eb_client->ticket_new($eventbrite);
-			// If the event is added.
-			if ($response->process->status == 'OK') {
-				// Ticket ID.
-				$tid = $response->process->id;
-				// We have to call the actual event to get the full ticket details.
-				$response = $eb_client->event_get(array('id' => $eventbrite['eid']));
-				// Get the list of tickets.
-				$ticket = array('tid' => $tid);
-				$tickets = $response->event->tickets;
-				// Find the ticket we just added.
-				foreach ($tickets as $t) {
-					if ($t->ticket->id == $tid) {
-						$ticket = $ticket + $t;
-						break;
-					}
-				}
-				// Set the ticket.
-        $ticket = (object) array_merge((array) $form_state['ticket'], (array) $ticket);
-			}
-		}
+  if (($library = libraries_load('eventbrite')) && !empty($library['loaded'])) {
+    $auth = array('app_key'  => variable_get('eventbrite_api_appkey', ''), 'user_key' => variable_get('eventbrite_api_userkey', ''));
+    $eb_client = new Eventbrite($auth);
+    try {
+      // Should we update an existing ticket or add a new one?
+      if (!empty($form_state['tid'])) {
+        // Add the id with the correct key.
+        $eventbrite['id'] = $form_state['tid'];
+        $response = $eb_client->ticket_update($eventbrite);
+        // If the event is updated.
+        if ($response->process->status == 'OK') {
+          // Set the ticket entity values.
+          $ticket = (object) array_merge((array) $form_state['ticket'], (array) $form_state['values']);
+        }
+      }
+      else {
+        // Add the event id.
+        $eventbrite['event_id'] = $eventbrite['eid'];
+        $response = $eb_client->ticket_new($eventbrite);
+        // If the event is added.
+        if ($response->process->status == 'OK') {
+          // Ticket ID.
+          $tid = $response->process->id;
+          // We have to call the actual event to get the full ticket details.
+          $response = $eb_client->event_get(array('id' => $eventbrite['eid']));
+          // Get the list of tickets.
+          $ticket = array('tid' => $tid);
+          $tickets = $response->event->tickets;
+          // Find the ticket we just added.
+          foreach ($tickets as $t) {
+            if ($t->ticket->id == $tid) {
+              $ticket = $ticket + $t;
+              break;
+            }
+          }
+          // Set the ticket.
+          $ticket = (object) array_merge((array) $form_state['ticket'], (array) $ticket);
+        }
+      }
+    }
+    catch (Exception $e) {
+      $response = $e->getMessage();
+      dpm($response);
+      form_set_error(NULL, $response);
+    }
   }
-  catch (Exception $e) {
-    $response = $e->getMessage();
-		dpm($response);
-    form_set_error(NULL, $response);
+  else {
+    drupal_set_message(t('Please install the Eventbrite API library. Check the !readme for further information.', array('!readme' => l(t('README'), 'admin/help/eventbrite_api'))), 'error');
   }
   $save = ticket_save($ticket);
   if (!empty($save)) {
@@ -771,7 +812,7 @@ function ticket_delete_form($form, &$form_state, $ticket) {
     t('Cancel'),
     'confirm'
   );
-  
+
   return $form;
 }
 

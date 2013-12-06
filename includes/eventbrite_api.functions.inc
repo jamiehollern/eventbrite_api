@@ -168,9 +168,9 @@ function eventbrite_api_currencies() {
 }
 
 function eventbrite_api_ctime($timestamp = NULL) {
-	if (empty($timestamp)) {
-		$timestamp = time();
-	}
+  if (empty($timestamp)) {
+    $timestamp = time();
+  }
   $time = date('c', $timestamp);
   $time = str_replace('T', ' ', $time);
   $time = explode('+', $time);
@@ -271,47 +271,52 @@ function ticket_delete($entity) {
 }
 
 function eventbrite_api_import_all() {
-  // Authorisation details.
-  $auth = array('app_key'  => variable_get('eventbrite_api_appkey', ''), 'user_key' => variable_get('eventbrite_api_userkey', ''));
-  // Connect to Eventbrite.
-  $eb_client = new Eventbrite($auth);
-  // Get all data by using the user_list_events method.
-  $import = $eb_client->user_list_events();
-  // Format it nicely.
-  $events = eventbrite_api_format_all($import);
-  // Should we delete everything before importing?
-  if (variable_get('eventbrite_api_import_delete', 1) == 1) {
-    // Yes.
-    $result = db_truncate('eventbrite_api_events')->execute();
-    $result = db_truncate('eventbrite_api_organizers')->execute();
-    $result = db_truncate('eventbrite_api_tickets')->execute();
-    $result = db_truncate('eventbrite_api_venues')->execute();
-    // Set a count array for our entities.
-    $count = array();
-    // Run through the array.
-    foreach ($events as $type => $data) {
-      // Count how many entities we have.
-      $count[$type] = count($data);
-      // Run through the sub arrays.
-      foreach ($data as $record) {
-        // Make sure all records have the correct keys.
-        $record = (object) array_merge((array) eventbrite_api_entity_prepare($type), (array) $record);
-        // Write the record.
-        $write = drupal_write_record('eventbrite_api_' . $type, $record);
+  if (($library = libraries_load('eventbrite')) && !empty($library['loaded'])) {
+    // Authorisation details.
+    $auth = array('app_key'  => variable_get('eventbrite_api_appkey', ''), 'user_key' => variable_get('eventbrite_api_userkey', ''));
+    // Connect to Eventbrite.
+    $eb_client = new Eventbrite($auth);
+    // Get all data by using the user_list_events method.
+    $import = $eb_client->user_list_events();
+    // Format it nicely.
+    $events = eventbrite_api_format_all($import);
+    // Should we delete everything before importing?
+    if (variable_get('eventbrite_api_import_delete', 1) == 1) {
+      // Yes.
+      $result = db_truncate('eventbrite_api_events')->execute();
+      $result = db_truncate('eventbrite_api_organizers')->execute();
+      $result = db_truncate('eventbrite_api_tickets')->execute();
+      $result = db_truncate('eventbrite_api_venues')->execute();
+      // Set a count array for our entities.
+      $count = array();
+      // Run through the array.
+      foreach ($events as $type => $data) {
+        // Count how many entities we have.
+        $count[$type] = count($data);
+        // Run through the sub arrays.
+        foreach ($data as $record) {
+          // Make sure all records have the correct keys.
+          $record = (object) array_merge((array) eventbrite_api_entity_prepare($type), (array) $record);
+          // Write the record.
+          $write = drupal_write_record('eventbrite_api_' . $type, $record);
+        }
       }
+      // Set a message and let the user know what's been imported.
+      $placeholders =  array(
+        '@events' => $count['events'],
+        '@organizers' => $count['organizers'],
+        '@tickets' => $count['tickets'],
+        '@venues' => $count['venues'],
+      );
+      drupal_set_message(t('Import successful. @events events, @organizers organizers,
+      @tickets tickets and @venues venues imported.', $placeholders));
     }
-    // Set a message and let the user know what's been imported.
-    $placeholders =  array(
-      '@events' => $count['events'],
-      '@organizers' => $count['organizers'],
-      '@tickets' => $count['tickets'],
-      '@venues' => $count['venues'],
-    );
-    drupal_set_message(t('Import successful. @events events, @organizers organizers, 
-    @tickets tickets and @venues venues imported.', $placeholders));
+    else {
+      // Update.
+    }
   }
   else {
-    // Update.
+    drupal_set_message(t('Please install the Eventbrite API library. Check the !readme for further information.', array('!readme' => l(t('README'), 'admin/help/eventbrite_api'))), 'error');
   }
 }
 
@@ -359,10 +364,10 @@ function eventbrite_api_format_all($data) {
         unset($ticket->ticket->id);
         // Add the eid.
         $ticket->ticket->eid = $eid;
-				// Remove commas from ticket prices.
-				if (!empty($ticket->ticket->price)) {
+        // Remove commas from ticket prices.
+        if (!empty($ticket->ticket->price)) {
           $ticket->ticket->price = str_replace(',', '', $ticket->ticket->price);
-				}
+        }
         // Assign the venue object as an array to $events.
         $events['tickets'][$tid] = (array) $ticket->ticket;
       }
@@ -523,7 +528,7 @@ function _eventbrite_event_autocomplete($string) {
     ->condition('e.title', '%' . db_like($string) . '%', 'LIKE')
     ->range(0, 10)
     ->execute();
-  // Add matches to $matches . 
+  // Add matches to $matches .
   foreach ($return as $row) {
     $matches[$row->eid] = check_plain($row->title);
   }
@@ -544,7 +549,7 @@ function _eventbrite_organizer_autocomplete($string) {
     ->condition('o.name', '%' . db_like($string) . '%', 'LIKE')
     ->range(0, 10)
     ->execute();
-  // Add matches to $matches . 
+  // Add matches to $matches .
   foreach ($return as $row) {
     $matches[$row->oid] = check_plain($row->name);
   }
@@ -565,7 +570,7 @@ function _eventbrite_venue_autocomplete($string) {
     ->condition('v.name', '%' . db_like($string) . '%', 'LIKE')
     ->range(0, 10)
     ->execute();
-  // Add matches to $matches . 
+  // Add matches to $matches .
   foreach ($return as $row) {
     $matches[$row->vid] = check_plain($row->name);
   }
