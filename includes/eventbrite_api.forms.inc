@@ -787,3 +787,268 @@ function ticket_edit_wrapper($ticket) {
 function ticket_delete_wrapper($ticket) {
   return drupal_get_form('ticket_delete_form', $ticket);
 }
+
+/**
+ * Venue add form.
+ */
+function venue_add_form($form, &$form_state, $venue) {
+	// Add the TID into the $form_state array.
+	$form_state['tid'] = $venue->tid;
+
+  $form['eid'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Event'),
+    '#default_value' => isset($venue->eid) ? $venue->eid : '',
+    '#maxlength' => 255,
+    '#required' => TRUE,
+  );
+	
+	// If we're editing an event we can't edit the event ID.
+	if (!empty($venue->name)) {
+		$form['eid']['#disabled'] = TRUE;
+	}
+	// If it's not being edited, add autocomplete to the field.
+	else {
+    $form['eid']['#autocomplete_path'] = 'eventbrite/event/autocomplete';
+	}
+
+  $form['name'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Name'),
+    '#default_value' => isset($venue->name) ? $venue->name : '',
+    '#maxlength' => 255,
+    '#required' => TRUE,
+  );
+
+  $form['type'] = array(
+    '#type' => 'select',
+    '#title' => t('Type'),
+		'#options' => array(
+		  0 => 'Fixed price',
+			1 => 'Donation',
+		),
+    '#default_value' => isset($venue->type) ? $venue->type : 0,
+    '#required' => TRUE,
+  );
+
+  $form['min'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Min'),
+    '#default_value' => isset($venue->max) ? $venue->max : 1,
+    '#maxlength' => 255,
+    '#required' => TRUE,
+  );
+
+  $form['max'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Max'),
+    '#default_value' => isset($venue->max) ? $venue->max : 0,
+    '#maxlength' => 255,
+    '#required' => TRUE,
+  );
+
+  $form['price'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Price'),
+    '#default_value' => isset($venue->price) ? $venue->price : '',
+  );
+
+  $form['quantity_available'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Quantity available'),
+    '#default_value' => isset($venue->quantity_available) ? $venue->quantity_available : '',
+  );
+
+  $form['currency'] = array(
+    '#type' => 'select',
+    '#title' => t('Currency'),
+		'#options' => eventbrite_api_currencies(),
+    '#default_value' => !empty($venue->currency) ? $venue->currency : variable_get('eventbrite_api_currency', 'USD'),
+    '#required' => TRUE,
+  );
+  
+  $form['description'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Description'),
+    '#default_value' => isset($venue->description) ? $venue->description : '',
+  );
+  
+  $form['start_date'] = array(
+    '#type' => 'date_popup',
+    '#title' => t('Start date'),
+    '#default_value' => isset($venue->start_date) ? $venue->start_date : '',
+    '#required' => TRUE,
+  );
+  
+  $form['end_date'] = array(
+    '#type' => 'date_popup',
+    '#title' => t('End date'),
+    '#default_value' => isset($venue->end_date) ? $venue->end_date : '',
+    '#required' => TRUE,
+  );
+
+  $form['include_fee'] = array(
+    '#type' => 'select',
+    '#title' => t('Include fee'),
+		'#options' => array(
+		  0 => 'Add to venue price',
+			1 => 'Include in venue price',
+		),
+    '#default_value' => isset($venue->include_fee) ? $venue->include_fee : 0,
+    '#required' => TRUE,
+  );
+	
+  if (!empty($venue->name)) {
+	  $form['hide'] = array(
+			'#type' => 'select',
+			'#title' => t('Show or hide'),
+			'#options' => array(
+				'n' => 'Show',
+				'y' => 'Hide',
+			),
+			'#default_value' => isset($venue->hide) ? $venue->hide : 'n',
+			'#required' => TRUE,
+		);
+  }
+  
+  $submit = array();
+
+  if (!empty($form['#submit'])) {
+    $submit += $form['#submit'];
+  }
+  
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save'),
+    '#submit' => $submit + array('venue_add_form_submit'),
+  );
+  if (!empty($venue->name)) {
+    $form['delete'] = array(
+      '#type' => 'submit',
+      '#value' => t('Delete venue'),
+      '#suffix' => l(t('Cancel'), 'admin/eventbrite/venue'),
+      '#submit' => $submit + array('venue_form_submit_delete'),
+      '#weight' => 45,
+    );
+  }
+  $form['#validate'][] = 'venue_add_form_validate';
+  // Add the field related form elements.
+  $form_state['venue'] = $venue;
+  $form_state['tid'] = $venue->tid;
+  
+  field_attach_form('venue', $venue, $form, $form_state);
+	return $form;
+}
+
+/**
+ * Validation function for event add form.
+ */
+function venue_add_form_validate($form, &$form_state) {
+  $venue_submit = (object) $form_state['values'];
+  field_attach_form_validate('event', $venue_submit, $form, $form_state);
+}
+
+/**
+ * Submit function for venue add form.
+ */
+function venue_add_form_submit($form, &$form_state) {
+  $venue_submit = (object) $form_state['values'];
+  // Assign them to an array to send to Eventbrite.
+  $eventbrite = $form_state['values'];
+  // Add extra fields.
+  field_attach_submit('venue', $venue_submit, $form, $form_state);
+	// Format the dates correctly.
+	$eventbrite['start_date'] = eventbrite_api_datef($eventbrite['start_date']);
+	$eventbrite['end_date'] = eventbrite_api_datef($eventbrite['end_date']);
+	dpm($eventbrite);
+  // Connect to Eventbrite.
+  $auth = array('app_key'  => variable_get('eventbrite_api_appkey', ''), 'user_key' => variable_get('eventbrite_api_userkey', ''));
+  $eb_client = new Eventbrite($auth);
+  try {
+		// Should we update an existing venue or add a new one?
+		if (!empty($form_state['vid'])) {
+			// Add the id with the correct key.
+			$eventbrite['id'] = $form_state['vid'];
+			$response = $eb_client->venue_update($eventbrite);
+			// If the event is updated.
+			if ($response->process->status == 'OK') {
+				// Set the venue entity values.
+        $venue = (object) array_merge((array) $form_state['venue'], (array) $form_state['values']);
+			}
+		}
+		else {
+			// Add the event id.
+			$eventbrite['event_id'] = $eventbrite['eid'];
+			$response = $eb_client->venue_new($eventbrite);
+			// If the event is added.
+			if ($response->process->status == 'OK') {
+				// venue ID.
+				$vid = $response->process->id;
+				// We have to call the actual event to get the full venue details.
+				$response = $eb_client->event_get(array('id' => $eventbrite['eid']));
+				// Get the list of venues.
+				$venue = array('vid' => $vid);
+				$venues = $response->event->venues;
+				// Find the venue we just added.
+				foreach ($venues as $t) {
+					if ($t->venue->id == $vid) {
+						$venue = $venue + $t;
+						break;
+					}
+				}
+				// Set the venue.
+        $venue = (object) array_merge((array) $form_state['venue'], (array) $venue);
+			}
+		}
+  }
+  catch (Exception $e) {
+    $response = $e->getMessage();
+		dpm($response);
+    form_set_error(NULL, $response);
+  }
+  $save = venue_save($venue);
+  if (!empty($save)) {
+    drupal_set_message(t('venue !name saved to Eventbrite and cached locally.', array('!name' => '<em>' . $venue->name . '</em>')));
+    //$form_state['redirect'] = 'admin/eventbrite/venue';
+  }
+}
+
+/**
+ * Form API submit callback for the venue delete button.
+ */
+function venue_form_submit_delete(&$form, &$form_state) {
+  $form_state['redirect'] = 'admin/eventbrite/venue/' . $form_state['vid'] . '/delete';
+}
+
+/**
+ * Organizer delete form.
+ */
+function venue_delete_form($form, &$form_state, $venue) {
+  $form_state['venue'] = $venue;
+
+  $form['#submit'][] = 'venue_delete_form_submit';
+
+  $form = confirm_form($form,
+    t('Are you sure you want to delete venue "@name"?', array('@name' => $venue->name)),
+    'admin/content/events/event',
+    '<p>' . t('This will delete the venue on Eventbrite and delete it locally. This action cannot be undone.') . '</p>',
+    t('Delete'),
+    t('Cancel'),
+    'confirm'
+  );
+  
+  return $form;
+}
+
+function venue_add_wrapper() {
+  $venue = venue_create();
+  return drupal_get_form('venue_add_form', $venue);
+}
+
+function venue_edit_wrapper($venue) {
+  return drupal_get_form('venue_add_form', $venue);
+}
+
+function venue_delete_wrapper($venue) {
+  return drupal_get_form('venue_delete_form', $venue);
+}
