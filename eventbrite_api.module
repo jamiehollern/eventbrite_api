@@ -352,6 +352,16 @@ function ticket_load_multiple($tids = array(), $conditions = array(), $reset = F
   return entity_load('ticket', $tids, $conditions, $reset);
 }
 
+function venue_load($vid = NULL, $reset = FALSE) {
+  $vids = (isset ($vid) ? array($vid) : array());
+  $venue = venue_load_multiple($vids, $reset);
+  return $venue ? reset ($venue) : FALSE;
+}
+
+function venue_load_multiple($vids = array(), $conditions = array(), $reset = FALSE) {
+  return entity_load('venue', $vids, $conditions, $reset);
+}
+
 /**
  * Implementation hook_help() for eventbrite_api.
  *
@@ -401,7 +411,7 @@ function eventbrite_api_cron() {
 /*
  * Implements hook_cron_queue_info().
  */
-function eventbrite_api_cron_queue_info(){
+function eventbrite_api_cron_queue_info() {
   $queues['eventbrite_api_sync_events'] = array(
     'worker callback' => '_eventbrite_api_cron_add_event',
     'time' => 120,
@@ -448,4 +458,3 @@ function _eventbrite_api_cron_add_event($vars) {
     watchdog(t('eventbrite_api', 'Sync failed Please install the Eventbrite API library. Check the !readme for further information.', array('!readme' => l(t('README'), 'admin/help/eventbrite_api'))), 'error');
   }
 }
-
