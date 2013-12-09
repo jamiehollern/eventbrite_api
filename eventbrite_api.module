@@ -351,13 +351,3 @@ function ticket_load($tid = NULL, $reset = FALSE) {
 function ticket_load_multiple($tids = array(), $conditions = array(), $reset = FALSE) {
   return entity_load('ticket', $tids, $conditions, $reset);
 }
-
-function venue_load($vid = NULL, $reset = FALSE) {
-  $vids = (isset ($vid) ? array($vid) : array());
-  $venue = venue_load_multiple($vids, $reset);
-  return $venue ? reset ($venue) : FALSE;
-}
-
-function venue_load_multiple($vids = array(), $conditions = array(), $reset = FALSE) {
-  return entity_load('venue', $vids, $conditions, $reset);
-}
