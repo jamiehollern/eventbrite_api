@@ -181,15 +181,6 @@ function eventbrite_api_datef($date) {
   return $date . ':00';
 }
 
-function event_save(&$event) {
-  return entity_save('event', $event);
-}
-
-function event_delete($entity) {
-  entity_delete('event', $entity->eid);
-  // MAKE THIS CANCEL EVENT WITH EVENTBRITE.
-}
-
 function event_create() {
   $event = (object) array(
     'eid' => '',
@@ -216,6 +207,15 @@ function event_create() {
     'repeats' => '',
   );
   return $event;
+}
+
+function event_save(&$event) {
+  return entity_save('event', $event);
+}
+
+function event_delete($entity) {
+  entity_delete('event', $entity->eid);
+  // MAKE THIS CANCEL EVENT WITH EVENTBRITE.
 }
 
 function organizer_create() {
@@ -267,6 +267,37 @@ function ticket_save(&$ticket) {
 
 function ticket_delete($entity) {
   entity_delete('ticket', $entity->tid);
+  // MAKE THIS CANCEL EVENT WITH EVENTBRITE.
+}
+
+function venue_create() {
+  $venue = (object) array(
+    'tid' => '',
+    'eid' => '',
+    'name' => '',
+    'type' => '',
+    'description' => '',
+    'start_date' => '',
+    'end_date' => '',
+    'min' => '',
+    'max' => '',
+    'price' => '',
+    'quantity_sold' => '',
+    'visible' => '',
+    'currency' => '',
+    'quantity_available' => '',
+    'display_price' => '',
+    'is_new' => TRUE,
+  );
+  return $venue;
+}
+
+function venue_save(&$venue) {
+  return entity_save('venue', $venue);
+}
+
+function venue_delete($entity) {
+  entity_delete('venue', $entity->tid);
   // MAKE THIS CANCEL EVENT WITH EVENTBRITE.
 }
 
