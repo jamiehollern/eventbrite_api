@@ -834,23 +834,23 @@ function ticket_delete_wrapper($ticket) {
  */
 function venue_add_form($form, &$form_state, $venue) {
 	// Add the TID into the $form_state array.
-	$form_state['tid'] = $venue->tid;
+	$form_state['vid'] = $venue->vid;
 
-  $form['eid'] = array(
+  $form['oid'] = array(
     '#type' => 'textfield',
-    '#title' => t('Event'),
-    '#default_value' => isset($venue->eid) ? $venue->eid : '',
+    '#title' => t('Organizer'),
+    '#default_value' => isset($venue->oid) ? $venue->oid : '',
     '#maxlength' => 255,
     '#required' => TRUE,
   );
 	
 	// If we're editing an event we can't edit the event ID.
 	if (!empty($venue->name)) {
-		$form['eid']['#disabled'] = TRUE;
+		$form['oid']['#disabled'] = TRUE;
 	}
 	// If it's not being edited, add autocomplete to the field.
 	else {
-    $form['eid']['#autocomplete_path'] = 'eventbrite/event/autocomplete';
+    $form['oid']['#autocomplete_path'] = 'eventbrite/organizer/autocomplete';
 	}
 
   $form['name'] = array(
@@ -859,6 +859,48 @@ function venue_add_form($form, &$form_state, $venue) {
     '#default_value' => isset($venue->name) ? $venue->name : '',
     '#maxlength' => 255,
     '#required' => TRUE,
+  );
+
+  $form['address'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Address'),
+    '#default_value' => isset($venue->address) ? $venue->address : '',
+    '#maxlength' => 255,
+  );
+
+  $form['address2'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Address 2'),
+    '#default_value' => isset($venue->address2) ? $venue->address2 : '',
+    '#maxlength' => 255,
+  );
+
+  $form['city'] = array(
+    '#type' => 'textfield',
+    '#title' => t('City'),
+    '#default_value' => isset($venue->city) ? $venue->city : '',
+    '#maxlength' => 255,
+  );
+
+  $form['region'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Region'),
+    '#default_value' => isset($venue->region) ? $venue->region : '',
+    '#maxlength' => 255,
+  );
+
+  $form['postal_code'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Postal code'),
+    '#default_value' => isset($venue->postal_code) ? $venue->postal_code : '',
+    '#maxlength' => 255,
+  );
+
+  $form['country_code'] = array(
+    '#type' => 'select',
+    '#title' => t('Country code'),
+    '#default_value' => isset($venue->postal_code) ? $venue->postal_code : '',
+		'#options' => eventbrite_api_countries(),
   );
 
   $form['type'] = array(
