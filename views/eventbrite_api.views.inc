@@ -935,8 +935,8 @@ function eventbrite_api_views_data() {
     ),
   );
 
-  // Expose the venue address2.
-  $data['eventbrite_api_venues']['address2'] = array(
+  // Expose the venue address_2.
+  $data['eventbrite_api_venues']['address_2'] = array(
     'title' => t('Address 2'),
     'help' => t('The address 2 of the venue.'),
     'field' => array(

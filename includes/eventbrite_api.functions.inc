@@ -419,6 +419,8 @@ function eventbrite_api_countries() {
 		'ZM' => 'Zambia',
 		'ZW' => 'Zimbabwe',
 	);
+	// Sort the array by the country name.
+	asort($countries);
 	return $countries;
 }
 
@@ -527,21 +529,15 @@ function ticket_delete($entity) {
 
 function venue_create() {
   $venue = (object) array(
-    'tid' => '',
-    'eid' => '',
+    'vid' => '',
+    'oid' => '',
     'name' => '',
-    'type' => '',
-    'description' => '',
-    'start_date' => '',
-    'end_date' => '',
-    'min' => '',
-    'max' => '',
-    'price' => '',
-    'quantity_sold' => '',
-    'visible' => '',
-    'currency' => '',
-    'quantity_available' => '',
-    'display_price' => '',
+    'address' => '',
+    'address_2' => '',
+    'city' => '',
+    'region' => '',
+    'postal_code' => '',
+    'country_code' => '',
     'is_new' => TRUE,
   );
   return $venue;
