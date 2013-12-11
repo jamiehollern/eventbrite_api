@@ -45,7 +45,7 @@ function eventbrite_api_menu() {
     'title' => 'Eventbrite',
     'description' => 'Administer Eventbrite data.',
     'page callback' => 'system_admin_menu_block_page',
-    'access arguments' => array('access administration pages'),
+    'access callback' => 'eventbrite_api_access',
     'file path' => drupal_get_path('module', 'system'),
     'file' => 'system.admin.inc',
     'weight' => -7,
@@ -55,7 +55,7 @@ function eventbrite_api_menu() {
   $items[$path . '/event/add'] = array(
     'title' => t('Add an event'),
     'page callback' => 'event_add_wrapper',
-    'access arguments' => array('edit'),
+    'access callback' => 'eventbrite_api_access',
     'file path' => drupal_get_path('module', 'eventbrite_api') . '/includes',
     'file' => 'eventbrite_api.forms.inc',
   );
@@ -64,7 +64,7 @@ function eventbrite_api_menu() {
     'title' => t('Edit an event'),
     'page callback' => 'event_edit_wrapper',
     'page arguments' => array(3),
-    'access arguments' => array('edit'),
+    'access callback' => 'eventbrite_api_access',
     'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
     'file path' => drupal_get_path('module', 'eventbrite_api') . '/includes',
     'file' => 'eventbrite_api.forms.inc',
@@ -80,7 +80,7 @@ function eventbrite_api_menu() {
     'title' => t('Delete an event'),
     'page callback' => 'event_delete_wrapper',
     'page arguments' => array(3),
-    'access arguments' => array('edit'),
+    'access callback' => 'eventbrite_api_access',
     'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
     'file path' => drupal_get_path('module', 'eventbrite_api') . '/includes',
     'file' => 'eventbrite_api.forms.inc',
@@ -90,7 +90,7 @@ function eventbrite_api_menu() {
   $items[$path . '/organizer/add'] = array(
     'title' => t('Add an organizer'),
     'page callback' => 'organizer_add_wrapper',
-    'access arguments' => array('edit'),
+    'access callback' => 'eventbrite_api_access',
     'file path' => drupal_get_path('module', 'eventbrite_api') . '/includes',
     'file' => 'eventbrite_api.forms.inc',
   );
@@ -99,7 +99,7 @@ function eventbrite_api_menu() {
     'title' => t('Edit an organizer'),
     'page callback' => 'organizer_edit_wrapper',
     'page arguments' => array(3),
-    'access arguments' => array('edit'),
+    'access callback' => 'eventbrite_api_access',
     'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
     'file path' => drupal_get_path('module', 'eventbrite_api') . '/includes',
     'file' => 'eventbrite_api.forms.inc',
@@ -115,7 +115,7 @@ function eventbrite_api_menu() {
     'title' => t('Delete an organizer'),
     'page callback' => 'organizer_delete_wrapper',
     'page arguments' => array(3),
-    'access arguments' => array('edit'),
+    'access callback' => 'eventbrite_api_access',
     'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
     'file path' => drupal_get_path('module', 'eventbrite_api') . '/includes',
     'file' => 'eventbrite_api.forms.inc',
@@ -125,7 +125,7 @@ function eventbrite_api_menu() {
   $items[$path . '/ticket/add'] = array(
     'title' => t('Add a ticket'),
     'page callback' => 'ticket_add_wrapper',
-    'access arguments' => array('edit'),
+    'access callback' => 'eventbrite_api_access',
     'file path' => drupal_get_path('module', 'eventbrite_api') . '/includes',
     'file' => 'eventbrite_api.forms.inc',
   );
@@ -134,7 +134,7 @@ function eventbrite_api_menu() {
     'title' => t('Edit a ticket'),
     'page callback' => 'ticket_edit_wrapper',
     'page arguments' => array(3),
-    'access arguments' => array('edit'),
+    'access callback' => 'eventbrite_api_access',
     'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
     'file path' => drupal_get_path('module', 'eventbrite_api') . '/includes',
     'file' => 'eventbrite_api.forms.inc',
@@ -150,7 +150,7 @@ function eventbrite_api_menu() {
     'title' => t('Delete a ticket'),
     'page callback' => 'ticket_delete_wrapper',
     'page arguments' => array(3),
-    'access arguments' => array('edit'),
+    'access callback' => 'eventbrite_api_access',
     'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
     'file path' => drupal_get_path('module', 'eventbrite_api') . '/includes',
     'file' => 'eventbrite_api.forms.inc',
@@ -160,7 +160,7 @@ function eventbrite_api_menu() {
   $items[$path . '/venue/add'] = array(
     'title' => t('Add a venue'),
     'page callback' => 'venue_add_wrapper',
-    'access arguments' => array('edit'),
+    'access callback' => 'eventbrite_api_access',
     'file path' => drupal_get_path('module', 'eventbrite_api') . '/includes',
     'file' => 'eventbrite_api.forms.inc',
   );
@@ -169,7 +169,7 @@ function eventbrite_api_menu() {
     'title' => t('Edit a venue'),
     'page callback' => 'venue_edit_wrapper',
     'page arguments' => array(3),
-    'access arguments' => array('edit'),
+    'access callback' => 'eventbrite_api_access',
     'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
     'file path' => drupal_get_path('module', 'eventbrite_api') . '/includes',
     'file' => 'eventbrite_api.forms.inc',
@@ -185,7 +185,7 @@ function eventbrite_api_menu() {
     'title' => t('Delete a venue'),
     'page callback' => 'venue_delete_wrapper',
     'page arguments' => array(3),
-    'access arguments' => array('edit'),
+    'access callback' => 'eventbrite_api_access',
     'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
     'file path' => drupal_get_path('module', 'eventbrite_api') . '/includes',
     'file' => 'eventbrite_api.forms.inc',
@@ -196,7 +196,7 @@ function eventbrite_api_menu() {
     'description' => 'Configure settings for Eventbrite.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('eventbrite_api_config_form'),
-    'access arguments' => array('access administration pages'),
+    'access callback' => 'eventbrite_api_access',
     'type' => MENU_NORMAL_ITEM,
     'file' => 'includes/eventbrite_api.forms.inc',
     'weight' => 50,
@@ -204,19 +204,19 @@ function eventbrite_api_menu() {
   // Ticket form organizer autocomplete.
   $items['eventbrite/event/autocomplete'] = array(
     'page callback' => '_eventbrite_event_autocomplete',
-    'access arguments' => array('administer eventbrite'),
+    'access callback' => 'eventbrite_api_access',
     'type' => MENU_CALLBACK
   );
   // Event form organizer autocomplete.
   $items['eventbrite/organizer/autocomplete'] = array(
     'page callback' => '_eventbrite_organizer_autocomplete',
-    'access arguments' => array('administer eventbrite'),
+    'access callback' => 'eventbrite_api_access',
     'type' => MENU_CALLBACK
   );
   // Event form venue autocomplete.
   $items['eventbrite/venue/autocomplete'] = array(
     'page callback' => '_eventbrite_venue_autocomplete',
-    'access arguments' => array('administer eventbrite'),
+    'access callback' => 'eventbrite_api_access',
     'type' => MENU_CALLBACK
   );
   return $items;
@@ -302,6 +302,21 @@ function eventbrite_api_permission() {
     ),
   );
   return $permissions;
+}
+
+/**
+ * Access callback.
+ */
+function eventbrite_api_access($op, $account = NULL) {
+	global $user;
+	if (empty($account)) {
+		$account = $user;
+	}
+	$perm = 'administer eventbrite';
+	if (user_access($perm, $account)) {
+		return TRUE;
+	}
+	return FALSE;
 }
 
 /**
