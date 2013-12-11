@@ -772,8 +772,9 @@ function ticket_add_form_submit($form, &$form_state) {
           // We have to call the actual event to get the full ticket details.
           $response = $eb_client->event_get(array('id' => $eventbrite['eid']));
           // Get the list of tickets.
-          $ticket = array('tid' => $tid);
           $tickets = $response->event->tickets;
+					// Add some IDs.
+          $ticket = array('tid' => $tid, 'eid' => $eventbrite['eid']);
           // Find the ticket we just added.
           foreach ($tickets as $t) {
             if ($t->ticket->id == $tid) {
