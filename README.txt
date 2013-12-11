@@ -21,7 +21,8 @@ installed, libraries, date_popup, entity and views
 You will also need to download the eventbrite php library from GitHub,
 https://github.com/eventbrite/eventbrite.php and unpack it in the
 sites/all/libraries folder. Rename the unpacked folder eventbrite. You should
-delete the examples folder in the eventbrite library.
+delete the examples folder in the eventbrite library. Remember that libraries 
+are case sensitive, so ensure the file is named in lower case "eventbrite.php".
 
 Create a new account on eventbrite by clicking the signup link in the top right
 corner and following the steps. Next, get your API by clicking on your account

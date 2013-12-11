@@ -151,8 +151,16 @@ function eventbrite_api_config_form_validate($form, &$form_state) {
     }
   }
   else {
-    drupal_set_message(t('Please install the Eventbrite API library. Check the !readme for further information.', array('!readme' => l(t('README'), 'admin/help/eventbrite_api'))), 'error');
-  }
+		// Check if the eventbrite.php is named Eventbrite.php.
+		$lib = getcwd() . '/sites/all/libraries/eventbrite/Eventbrite.php';
+		if (file_exists($lib)) {
+			form_set_error('form', t('The Eventbrite library file should be renamed from "Eventbrite.php" to "eventbrite.php" (lower case).  Please rename this file.'));
+		}
+		// Otherwise tell user to install the library.
+		else {
+			drupal_set_message(t('Please install the Eventbrite API library. Check the !readme for further information.', array('!readme' => l(t('README'), 'admin/help/eventbrite_api'))), 'error');
+		}
+	}
 }
 
 /**
@@ -769,7 +777,7 @@ function ticket_add_form_submit($form, &$form_state) {
           // Find the ticket we just added.
           foreach ($tickets as $t) {
             if ($t->ticket->id == $tid) {
-              $ticket = $ticket + $t;
+              $ticket = $ticket + (array) $t->ticket;
               break;
             }
           }
@@ -789,7 +797,7 @@ function ticket_add_form_submit($form, &$form_state) {
   $save = ticket_save($ticket);
   if (!empty($save)) {
     drupal_set_message(t('Ticket !name saved to Eventbrite and cached locally.', array('!name' => '<em>' . $ticket->name . '</em>')));
-    //$form_state['redirect'] = 'admin/eventbrite/ticket';
+    $form_state['redirect'] = 'admin/eventbrite/ticket';
   }
 }
 
