@@ -524,6 +524,23 @@ function eventbrite_api_views_data() {
     ),
   );
 
+  // Expose links to operate on the organizer.
+  $data['eventbrite_api_organizers']['edit_organizer'] = array(
+    'field' => array(
+      'title' => t('Edit link'),
+      'help' => t('Provide a simple link to the edit organizer page.'),
+      'handler' => 'eventbrite_api_handler_field_organizer_link_edit',
+    ),
+  );
+  
+  $data['eventbrite_api_organizers']['delete_organizer'] = array(
+    'field' => array(
+      'title' => t('Delete link'),
+      'help' => t('Provide a simple link to the administrator view of the organizer.'),
+      'handler' => 'eventbrite_api_handler_field_organizer_link_delete',
+    ),
+  );
+
   /**
    * Integrate the tickets table.
    */

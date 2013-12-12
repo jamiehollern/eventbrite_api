@@ -977,6 +977,7 @@ function venue_add_form_submit($form, &$form_state) {
 			// Add the organizer id.
 			$eventbrite['organizer_id'] = $eventbrite['oid'];
 			$response = $eb_client->venue_new($eventbrite);
+			dpm($response);
 			// If the event is added.
 			if ($response->process->status == 'OK') {
 				// venue ID.
@@ -985,6 +986,10 @@ function venue_add_form_submit($form, &$form_state) {
 				$response = $eb_client->venue_get(array('id' => $vid));
 				// Assign details of the venue.
 				$venue = $response->venue[0];
+				// VID.
+				$venue->vid = $vid;
+				// Lat/long
+				$venue->lat_long = $venue->latitude . ', ' . $venue->longitude;
 				// Set the venue.
         $venue = (object) array_merge((array) $form_state['venue'], (array) $venue);
 			}
