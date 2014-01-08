@@ -471,8 +471,12 @@ function event_save(&$event) {
 }
 
 function event_delete($entity) {
+	// Delete the entity locally.
   entity_delete('event', $entity->eid);
-  // MAKE THIS CANCEL EVENT WITH EVENTBRITE.
+  // Update the event on Eventbrite.
+	$auth = array('app_key'  => variable_get('eventbrite_api_appkey', ''), 'user_key' => variable_get('eventbrite_api_userkey', ''));
+  $eb_client = new Eventbrite($auth);
+  $response = $eb_client->event_update(array('id' => $entity->eid, 'status' => 'deleted'));
 }
 
 function organizer_create() {
@@ -570,7 +574,12 @@ function eventbrite_api_import_all() {
       $result = db_truncate('eventbrite_api_tickets')->execute();
       $result = db_truncate('eventbrite_api_venues')->execute();
       // Set a count array for our entities.
-      $count = array();
+      $count = array(
+			 'events' => 0,
+			 'organizers' => 0,
+			 'tickets' => 0,
+			 'venues' => 0,
+			);
       // Run through the array.
       foreach ($events as $type => $data) {
         // Count how many entities we have.

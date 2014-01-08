@@ -389,7 +389,7 @@ function event_delete_form($form, &$form_state, $event) {
 function event_delete_form_submit($form, &$form_state) {
   $event = $form_state['event'];
   event_delete($event);
-  drupal_set_message(t('The event %name has been deleted.', array('%name' => $event->name)));
+  drupal_set_message(t('The event %name has been deleted.', array('%name' => (!empty($event->name) ? $event->name : ''))));
   $form_state['redirect'] = 'admin/eventbrite/event';
 }
 
