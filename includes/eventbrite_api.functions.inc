@@ -496,8 +496,8 @@ function organizer_save(&$organizer) {
 }
 
 function organizer_delete($entity) {
+	// Delete the entity locally.
   entity_delete('organizer', $entity->oid);
-  // MAKE THIS DELETE ORGANIZER WITH EVENTBRITE.
 }
 
 function ticket_create() {

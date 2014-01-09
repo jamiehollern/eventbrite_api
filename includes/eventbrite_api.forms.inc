@@ -448,7 +448,8 @@ function organizer_add_form($form, &$form_state, $organizer) {
     '#value' => t('Save'),
     '#submit' => $submit + array('organizer_add_form_submit'),
   );
-  if (!empty($organizer->name)) {
+	// Turns out we can't delete organizers.
+  /*if (!empty($organizer->name)) {
     $form['delete'] = array(
       '#type' => 'submit',
       '#value' => t('Delete organizer'),
@@ -456,7 +457,7 @@ function organizer_add_form($form, &$form_state, $organizer) {
       '#submit' => $submit + array('organizer_form_submit_delete'),
       '#weight' => 45,
     );
-  }
+  }*/
   $form['#validate'][] = 'organizer_add_form_validate';
   // Add the field related form elements.
   $form_state['organizer'] = $organizer;
@@ -707,7 +708,8 @@ function ticket_add_form($form, &$form_state, $ticket) {
     '#value' => t('Save'),
     '#submit' => $submit + array('ticket_add_form_submit'),
   );
-  if (!empty($ticket->name)) {
+	// We can't delete tickets.
+  /*if (!empty($ticket->name)) {
     $form['delete'] = array(
       '#type' => 'submit',
       '#value' => t('Delete ticket'),
@@ -715,7 +717,7 @@ function ticket_add_form($form, &$form_state, $ticket) {
       '#submit' => $submit + array('ticket_form_submit_delete'),
       '#weight' => 45,
     );
-  }
+  }*/
   $form['#validate'][] = 'ticket_add_form_validate';
   // Add the field related form elements.
   $form_state['ticket'] = $ticket;
@@ -923,7 +925,8 @@ function venue_add_form($form, &$form_state, $venue) {
     '#value' => t('Save'),
     '#submit' => $submit + array('venue_add_form_submit'),
   );
-  if (!empty($venue->name)) {
+	// We can't delete venues.
+  /*if (!empty($venue->name)) {
     $form['delete'] = array(
       '#type' => 'submit',
       '#value' => t('Delete venue'),
@@ -931,7 +934,7 @@ function venue_add_form($form, &$form_state, $venue) {
       '#submit' => $submit + array('venue_form_submit_delete'),
       '#weight' => 45,
     );
-  }
+  }*/
   $form['#validate'][] = 'venue_add_form_validate';
   // Add the field related form elements.
   $form_state['venue'] = $venue;
