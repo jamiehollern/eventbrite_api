@@ -12,3 +12,4 @@ core = 7.x
 files[] = views/eventbrite_api_handler_field_datetime.inc
 files[] = views/eventbrite_api_handler_field_event_link.inc
 files[] = views/eventbrite_api_handler_field_event_link_delete.inc
+files[] = views/eventbrite_api_handler_field_organizer_link_edit.inc

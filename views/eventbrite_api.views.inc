@@ -533,13 +533,13 @@ function eventbrite_api_views_data() {
     ),
   );
   
-  $data['eventbrite_api_organizers']['delete_organizer'] = array(
+  /*$data['eventbrite_api_organizers']['delete_organizer'] = array(
     'field' => array(
       'title' => t('Delete link'),
       'help' => t('Provide a simple link to the administrator view of the organizer.'),
       'handler' => 'eventbrite_api_handler_field_organizer_link_delete',
     ),
-  );
+  );*/
 
   /**
    * Integrate the tickets table.
