@@ -311,6 +311,10 @@ function eventbrite_api_views_default_views() {
   $handler->display->display_options['fields']['clone_ticket']['id'] = 'clone_ticket';
   $handler->display->display_options['fields']['clone_ticket']['table'] = 'eventbrite_api_tickets';
   $handler->display->display_options['fields']['clone_ticket']['field'] = 'clone_ticket';
+  /* Field: Eventbrite ticket: Clone to other event */
+  $handler->display->display_options['fields']['clone_other']['id'] = 'clone_other';
+  $handler->display->display_options['fields']['clone_other']['table'] = 'eventbrite_api_tickets';
+  $handler->display->display_options['fields']['clone_other']['field'] = 'clone_other';
   
   /* Display: Page */
   $handler = $view->new_display('page', 'Page', 'page');

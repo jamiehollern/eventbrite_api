@@ -827,6 +827,15 @@ function eventbrite_api_views_data() {
     ),
   );
 
+  // Expose links to operate on the ticket.
+  $data['eventbrite_api_tickets']['clone_other'] = array(
+    'field' => array(
+      'title' => t('Clone to other event'),
+      'help' => t('Provide a simple link to the clone ticket to other event page.'),
+      'handler' => 'eventbrite_api_handler_field_ticket_link_clone_other',
+    ),
+  );
+
   /**
    * Integrate the venues table.
    */

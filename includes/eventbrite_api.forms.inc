@@ -425,7 +425,7 @@ function organizer_add_form($form, &$form_state, $organizer) {
 
   $form['name'] = array(
     '#type' => 'textfield',
-    '#title' => t('Event title'),
+    '#title' => t('Organizer name'),
     '#default_value' => isset($organizer->name) ? $organizer->name : '',
     '#maxlength' => 255,
     '#required' => TRUE,
@@ -578,19 +578,30 @@ function organizer_delete_wrapper($organizer) {
  * Ticket add form.
  */
 function ticket_add_form($form, &$form_state, $ticket) {
+  // Ability to clone the ticket to another event.
+  $arg = arg(4);
+  if (empty($ticket->tid) && !empty($arg)) {
+    $entity = entity_load('ticket', array($arg));
+    if (!empty($entity)) {
+      $ticket = array_shift($entity);
+      // Get rid of the event and ticket IDs.
+      $ticket->tid = $ticket->eid = '';
+    }
+  }
   // Add the TID into the $form_state array.
   $form_state['tid'] = $ticket->tid;
 
   $form['eid'] = array(
     '#type' => 'textfield',
     '#title' => t('Event'),
+    '#description' => t('A ticket can only be associated with one event so once chosen, the associated event cannot be changed.'),
     '#default_value' => isset($ticket->eid) ? $ticket->eid : '',
     '#maxlength' => 255,
     '#required' => TRUE,
   );
 
   // If we're editing an event we can't edit the event ID.
-  if (!empty($ticket->name)) {
+  if (!empty($ticket->eid)) {
     $form['eid']['#disabled'] = TRUE;
   }
   // If it's not being edited, add autocomplete to the field.
@@ -620,14 +631,17 @@ function ticket_add_form($form, &$form_state, $ticket) {
   $form['min'] = array(
     '#type' => 'textfield',
     '#title' => t('Min'),
-    '#default_value' => isset($ticket->min) ? $ticket->min : '',
+    '#description' => t('The minimum number of this ticket a person can purchase. The default is 1.'),
+    '#default_value' => !empty($ticket->min) ? $ticket->min : 1,
+    '#required' => TRUE,
     '#maxlength' => 255,
   );
 
   $form['max'] = array(
     '#type' => 'textfield',
     '#title' => t('Max'),
-    '#default_value' => isset($ticket->max) ? $ticket->max : '',
+    '#description' => t('The maximum number of this ticket a person can purchase. This is optional and if left blank, the default will be whatever value is entered into the "Quantity available" field.'),
+    '#default_value' => (!empty($ticket->max) ? $ticket->max : (isset($ticket->quantity_available) ? $ticket->quantity_available : '')),
     '#maxlength' => 255,
   );
 
@@ -640,6 +654,7 @@ function ticket_add_form($form, &$form_state, $ticket) {
   $form['quantity_available'] = array(
     '#type' => 'textfield',
     '#title' => t('Quantity available'),
+    '#description' => t('The number of this ticket available.'),
     '#default_value' => isset($ticket->quantity_available) ? $ticket->quantity_available : '',
   );
 
@@ -674,6 +689,7 @@ function ticket_add_form($form, &$form_state, $ticket) {
   $form['include_fee'] = array(
     '#type' => 'select',
     '#title' => t('Include fee'),
+    '#description' => t('Should the Eventbrite fee be added onto the ticket price or included as part of the ticket price.'),
     '#options' => array(
       0 => 'Add to ticket price',
       1 => 'Include in ticket price',
@@ -682,10 +698,11 @@ function ticket_add_form($form, &$form_state, $ticket) {
     '#required' => TRUE,
   );
 
-  if (!empty($ticket->name)) {
+  if (!empty($ticket->eid)) {
     $form['hide'] = array(
       '#type' => 'select',
       '#title' => t('Show or hide'),
+      '#description' => t('Display this ticket on the Eventbrite booking page or hide it from view.'),
       '#options' => array(
         'n' => 'Show',
         'y' => 'Hide',
@@ -740,6 +757,10 @@ function ticket_add_form_submit($form, &$form_state) {
     $auth = array('app_key'  => variable_get('eventbrite_api_appkey', ''), 'user_key' => variable_get('eventbrite_api_userkey', ''));
     $eb_client = new Eventbrite($auth);
     try {
+      // Ensure empty max field doesn't cause an error.
+      if (empty($eventbrite['max'])) {
+        $eventbrite['max'] = $eventbrite['quantity_available'];
+      }
       // Should we update an existing ticket or add a new one?
       if (!empty($form_state['tid'])) {
         // Add the id with the correct key.
@@ -779,12 +800,14 @@ function ticket_add_form_submit($form, &$form_state) {
     }
     catch (Exception $e) {
       $response = $e->getMessage();
+      dpm($response);
       form_set_error(NULL, $response);
     }
   }
   else {
     drupal_set_message(t('Please install the Eventbrite API library. Check the !readme for further information.', array('!readme' => l(t('README'), 'admin/help/eventbrite_api'))), 'error');
   }
+  dpm($ticket);
   $save = ticket_save($ticket);
   if (!empty($save)) {
     drupal_set_message(t('Ticket !name saved to Eventbrite and cached locally.', array('!name' => '<em>' . $ticket->name . '</em>')));
@@ -835,8 +858,9 @@ function ticket_clone_wrapper($ticket) {
 function ticket_clone_form_submit($form, &$form_state) {
   // Assign them to an array to send to Eventbrite.
   $eventbrite = (array) $form_state['ticket'];
+  // Ensure empty max field doesn't cause an error.
   if (empty($eventbrite['max'])) {
-    unset($eventbrite['max']);
+    $eventbrite['max'] = $eventbrite['quantity_available'];
   }
   // Connect to Eventbrite.
   if (($library = libraries_load('eventbrite')) && !empty($library['loaded'])) {
@@ -846,8 +870,7 @@ function ticket_clone_form_submit($form, &$form_state) {
       // Add the event id.
       $eventbrite['event_id'] = $eventbrite['eid'];
       $response = $eb_client->ticket_new($eventbrite);
-      dpm(array($response));
-      /*// If the event is added.
+      // If the event is added.
       if ($response->process->status == 'OK') {
         // Ticket ID.
         $tid = $response->process->id;
@@ -869,7 +892,7 @@ function ticket_clone_form_submit($form, &$form_state) {
         // Set the ticket.
         $ticket = (object) array_merge((array) $form_state['ticket'], (array) $ticket);
       }
-    */}
+    }
     catch (Exception $e) {
       $response = $e->getMessage();
       dpm($response);
