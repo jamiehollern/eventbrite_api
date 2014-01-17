@@ -821,7 +821,8 @@ function _eventbrite_event_autocomplete($string) {
     ->execute();
   // Add matches to $matches .
   foreach ($return as $row) {
-    $matches[$row->eid] = check_plain($row->title);
+		$string = check_plain($row->title) . ' (' . $row->eid . ')';
+    $matches[$string] = $string;
   }
   // Return for JS.
   drupal_json_output($matches);
@@ -842,7 +843,8 @@ function _eventbrite_organizer_autocomplete($string) {
     ->execute();
   // Add matches to $matches .
   foreach ($return as $row) {
-    $matches[$row->oid] = check_plain($row->name);
+		$string = check_plain($row->name) . ' (' . $row->oid . ')';
+    $matches[$string] = $string;
   }
   // Return for JS.
   drupal_json_output($matches);
@@ -863,8 +865,35 @@ function _eventbrite_venue_autocomplete($string) {
     ->execute();
   // Add matches to $matches .
   foreach ($return as $row) {
-    $matches[$row->vid] = check_plain($row->name);
+		$string = check_plain($row->name) . ' (' . $row->vid . ')';
+    $matches[$string] = $string;
   }
   // Return for JS.
   drupal_json_output($matches);
+}
+
+/**
+ * Returns the text from between parenthesis ().
+ */
+function eventbrite_autocomplete_filter($string) {
+  preg_match('#\((.*?)\)#', $string, $match);
+  return $match[1];
+}
+
+/**
+ * Returns a formatted string instead of just an ID for autocomplete fields.
+ */
+function eventbrite_autocomplete_build($id, $entity_type) {
+	$entity = entity_load($entity_type, array($id));
+	$entity = array_shift($entity);
+	switch ($entity_type) {
+		case 'event':
+		  $text = $entity->title;
+		break;
+		default:
+		  $text = $entity->name;
+		break;
+	}
+	$string = $text . ' (' . $id . ')';
+	return $string;
 }

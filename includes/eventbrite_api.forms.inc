@@ -214,14 +214,14 @@ function event_add_form($form, &$form_state, $event) {
     '#title' => t('Organizer'),
     '#type' => 'textfield',
     '#autocomplete_path' => 'eventbrite/organizer/autocomplete',
-    '#default_value' => isset($event->oid) ? $event->oid : '',
+    '#default_value' => isset($event->oid) ? eventbrite_autocomplete_build($event->oid, 'organizer') : '',
    );
 
   $form['details']['vid'] = array(
     '#title' => t('Venue'),
     '#type' => 'textfield',
     '#autocomplete_path' => 'eventbrite/venue/autocomplete',
-    '#default_value' => isset($event->vid) ? $event->vid : '',
+    '#default_value' => isset($event->vid) ? eventbrite_autocomplete_build($event->vid, 'venue') : '',
    );
 
   $form['dates'] = array(
@@ -294,6 +294,9 @@ function event_add_form_validate($form, &$form_state) {
  * Submit function for event add form.
  */
 function event_add_form_submit($form, &$form_state) {
+	// Extract IDs from autocomplete fields.
+	$form_state['values']['oid'] = eventbrite_autocomplete_filter($form_state['values']['oid']);
+	$form_state['values']['vid'] = eventbrite_autocomplete_filter($form_state['values']['vid']);
   $event_submit = (object) $form_state['values'];
   // Assign them to an array to send to Eventbrite.
   $eventbrite = $form_state['values'];
@@ -448,16 +451,6 @@ function organizer_add_form($form, &$form_state, $organizer) {
     '#value' => t('Save'),
     '#submit' => $submit + array('organizer_add_form_submit'),
   );
-  // Turns out we can't delete organizers.
-  /*if (!empty($organizer->name)) {
-    $form['delete'] = array(
-      '#type' => 'submit',
-      '#value' => t('Delete organizer'),
-      '#suffix' => l(t('Cancel'), 'admin/eventbrite/organizer'),
-      '#submit' => $submit + array('organizer_form_submit_delete'),
-      '#weight' => 45,
-    );
-  }*/
   $form['#validate'][] = 'organizer_add_form_validate';
   // Add the field related form elements.
   $form_state['organizer'] = $organizer;
@@ -595,7 +588,7 @@ function ticket_add_form($form, &$form_state, $ticket) {
     '#type' => 'textfield',
     '#title' => t('Event'),
     '#description' => t('A ticket can only be associated with one event so once chosen, the associated event cannot be changed.'),
-    '#default_value' => isset($ticket->eid) ? $ticket->eid : '',
+    '#default_value' => isset($ticket->eid) ? eventbrite_autocomplete_build($ticket->eid, 'event') : '',
     '#maxlength' => 255,
     '#required' => TRUE,
   );
@@ -744,6 +737,8 @@ function ticket_add_form_validate($form, &$form_state) {
  * Submit function for ticket add form.
  */
 function ticket_add_form_submit($form, &$form_state) {
+	// Extract IDs from autocomplete fields.
+	$form_state['values']['eid'] = eventbrite_autocomplete_filter($form_state['values']['eid']);
   $ticket_submit = (object) $form_state['values'];
   // Assign them to an array to send to Eventbrite.
   $eventbrite = $form_state['values'];
