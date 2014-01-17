@@ -8,6 +8,9 @@
  * Implements hook_views_default_views().
  */
 function eventbrite_api_views_default_views() {
+  
+  // Events.
+  
   $view = new view();
   $view->name = 'events_list';
   $view->description = '';
@@ -104,6 +107,9 @@ function eventbrite_api_views_default_views() {
   $handler->display->display_options['fields']['url']['id'] = 'url';
   $handler->display->display_options['fields']['url']['table'] = 'eventbrite_api_events';
   $handler->display->display_options['fields']['url']['field'] = 'url';
+  $handler->display->display_options['fields']['url']['alter']['make_link'] = TRUE;
+  $handler->display->display_options['fields']['url']['alter']['path'] = '[url]';
+  $handler->display->display_options['fields']['url']['alter']['external'] = TRUE;
   /* Field: Eventbrite events: Modified */
   $handler->display->display_options['fields']['modified']['id'] = 'modified';
   $handler->display->display_options['fields']['modified']['table'] = 'eventbrite_api_events';
@@ -140,6 +146,8 @@ function eventbrite_api_views_default_views() {
   $handler->display->display_options['tab_options']['name'] = 'management';
 
   $views[$view->name] = $view;
+  
+  // Organizers.
   
   $view = new view();
   $view->name = 'organizers';
@@ -184,6 +192,10 @@ function eventbrite_api_views_default_views() {
   $handler->display->display_options['fields']['description']['id'] = 'description';
   $handler->display->display_options['fields']['description']['table'] = 'eventbrite_api_organizers';
   $handler->display->display_options['fields']['description']['field'] = 'description';
+  /* Field: Eventbrite organizer: Edit link */
+  $handler->display->display_options['fields']['edit_organizer']['id'] = 'edit_organizer';
+  $handler->display->display_options['fields']['edit_organizer']['table'] = 'eventbrite_api_organizers';
+  $handler->display->display_options['fields']['edit_organizer']['field'] = 'edit_organizer';
   
   /* Display: Page */
   $handler = $view->new_display('page', 'Page', 'page');
@@ -202,6 +214,8 @@ function eventbrite_api_views_default_views() {
   $handler->display->display_options['tab_options']['name'] = 'management';
 
   $views[$view->name] = $view;
+  
+  // Tickets.
   
   $view = new view();
   $view->name = 'tickets';
@@ -245,6 +259,10 @@ function eventbrite_api_views_default_views() {
   $handler->display->display_options['empty']['area']['empty'] = TRUE;
   $handler->display->display_options['empty']['area']['content'] = 'There are no tickets. <a href="/admin/eventbrite/ticket/add">Add a ticket</a>.';
   $handler->display->display_options['empty']['area']['format'] = 'filtered_html';
+  /* Relationship: Eventbrite ticket: Event ID */
+  $handler->display->display_options['relationships']['eid']['id'] = 'eid';
+  $handler->display->display_options['relationships']['eid']['table'] = 'eventbrite_api_tickets';
+  $handler->display->display_options['relationships']['eid']['field'] = 'eid';
   /* Field: Eventbrite ticket: Ticket ID */
   $handler->display->display_options['fields']['tid']['id'] = 'tid';
   $handler->display->display_options['fields']['tid']['table'] = 'eventbrite_api_tickets';
@@ -254,6 +272,17 @@ function eventbrite_api_views_default_views() {
   $handler->display->display_options['fields']['name']['id'] = 'name';
   $handler->display->display_options['fields']['name']['table'] = 'eventbrite_api_tickets';
   $handler->display->display_options['fields']['name']['field'] = 'name';
+  /* Field: Eventbrite events: Event ID */
+  $handler->display->display_options['fields']['eid']['id'] = 'eid';
+  $handler->display->display_options['fields']['eid']['table'] = 'eventbrite_api_events';
+  $handler->display->display_options['fields']['eid']['field'] = 'eid';
+  $handler->display->display_options['fields']['eid']['relationship'] = 'eid';
+  $handler->display->display_options['fields']['eid']['separator'] = '';
+  /* Field: Eventbrite events: Title */
+  $handler->display->display_options['fields']['title']['id'] = 'title';
+  $handler->display->display_options['fields']['title']['table'] = 'eventbrite_api_events';
+  $handler->display->display_options['fields']['title']['field'] = 'title';
+  $handler->display->display_options['fields']['title']['relationship'] = 'eid';
   /* Field: Eventbrite ticket: Quantity available */
   $handler->display->display_options['fields']['quantity_available']['id'] = 'quantity_available';
   $handler->display->display_options['fields']['quantity_available']['table'] = 'eventbrite_api_tickets';
@@ -271,8 +300,17 @@ function eventbrite_api_views_default_views() {
   $handler->display->display_options['fields']['price']['id'] = 'price';
   $handler->display->display_options['fields']['price']['table'] = 'eventbrite_api_tickets';
   $handler->display->display_options['fields']['price']['field'] = 'price';
-  $handler->display->display_options['fields']['price']['precision'] = '0';
+  $handler->display->display_options['fields']['price']['set_precision'] = TRUE;
+  $handler->display->display_options['fields']['price']['precision'] = '2';
   $handler->display->display_options['fields']['price']['prefix'] = '£';
+  /* Field: Eventbrite ticket: Edit link */
+  $handler->display->display_options['fields']['edit_ticket']['id'] = 'edit_ticket';
+  $handler->display->display_options['fields']['edit_ticket']['table'] = 'eventbrite_api_tickets';
+  $handler->display->display_options['fields']['edit_ticket']['field'] = 'edit_ticket';
+  /* Field: Eventbrite ticket: Clone link */
+  $handler->display->display_options['fields']['clone_ticket']['id'] = 'clone_ticket';
+  $handler->display->display_options['fields']['clone_ticket']['table'] = 'eventbrite_api_tickets';
+  $handler->display->display_options['fields']['clone_ticket']['field'] = 'clone_ticket';
   
   /* Display: Page */
   $handler = $view->new_display('page', 'Page', 'page');
@@ -291,6 +329,8 @@ function eventbrite_api_views_default_views() {
   $handler->display->display_options['tab_options']['name'] = 'management';
 
   $views[$view->name] = $view;
+
+  // Venues.
   
   $view = new view();
   $view->name = 'venues';
@@ -339,6 +379,10 @@ function eventbrite_api_views_default_views() {
   $handler->display->display_options['fields']['region']['id'] = 'region';
   $handler->display->display_options['fields']['region']['table'] = 'eventbrite_api_venues';
   $handler->display->display_options['fields']['region']['field'] = 'region';
+  /* Field: Eventbrite venue: Edit link */
+  $handler->display->display_options['fields']['edit_venue']['id'] = 'edit_venue';
+  $handler->display->display_options['fields']['edit_venue']['table'] = 'eventbrite_api_venues';
+  $handler->display->display_options['fields']['edit_venue']['field'] = 'edit_venue';
   
   /* Display: Page */
   $handler = $view->new_display('page', 'Page', 'page');
@@ -355,7 +399,6 @@ function eventbrite_api_views_default_views() {
   $handler->display->display_options['tab_options']['description'] = 'Manage Eventbrite venues.';
   $handler->display->display_options['tab_options']['weight'] = '0';
   $handler->display->display_options['tab_options']['name'] = 'management';
-
 
   $views[$view->name] = $view;
   

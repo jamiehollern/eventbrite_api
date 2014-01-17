@@ -165,6 +165,17 @@ function eventbrite_api_menu() {
     'file path' => drupal_get_path('module', 'eventbrite_api') . '/includes',
     'file' => 'eventbrite_api.forms.inc',
   );
+  // Clone a ticket.
+  $items[$path . '/ticket/%ticket/clone'] = array(
+    'title' => t('Clone a ticket'),
+    'page callback' => 'ticket_clone_wrapper',
+    'page arguments' => array(3),
+    'access callback' => 'eventbrite_api_access',
+    'access arguments' => array('all'),
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+    'file path' => drupal_get_path('module', 'eventbrite_api') . '/includes',
+    'file' => 'eventbrite_api.forms.inc',
+  );
   // Intermediate path ['admin/eventbrite/venue'] is handled by a view.
   // Add a venue.
   $items[$path . '/venue/add'] = array(
@@ -325,15 +336,15 @@ function eventbrite_api_permission() {
  * Access callback.
  */
 function eventbrite_api_access($op, $account = NULL) {
-	global $user;
-	if (empty($account)) {
-		$account = $user;
-	}
-	$perm = 'administer eventbrite';
-	if (user_access($perm, $account)) {
-		return TRUE;
-	}
-	return FALSE;
+  global $user;
+  if (empty($account)) {
+    $account = $user;
+  }
+  $perm = 'administer eventbrite';
+  if (user_access($perm, $account)) {
+    return TRUE;
+  }
+  return FALSE;
 }
 
 /**

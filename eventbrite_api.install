@@ -296,7 +296,6 @@ function eventbrite_api_schema() {
         'description' => 'The maximum ticket quantity per order.',
         'type' => 'int',
         'unsigned' => TRUE,
-        'not null' => TRUE,
       ),
       'price' => array(
         'description' => 'The price of the ticket.',
