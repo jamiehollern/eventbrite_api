@@ -40,12 +40,6 @@ function eventbrite_api_views_data() {
     'argument' => array(
       'handler' => 'views_handler_argument_numeric',
     ),
-    /*'relationship' => array(
-      'handler' => 'views_handler_relationship',
-      'base' => 'eventbrite_api_tickets',
-      'base field' => 'eid',
-      'label' => t('Ticket'),
-    ),*/
   );
   
    $data['eventbrite_api_events']['tid'] = array(
@@ -532,14 +526,6 @@ function eventbrite_api_views_data() {
       'handler' => 'eventbrite_api_handler_field_organizer_link_edit',
     ),
   );
-  
-  /*$data['eventbrite_api_organizers']['delete_organizer'] = array(
-    'field' => array(
-      'title' => t('Delete link'),
-      'help' => t('Provide a simple link to the administrator view of the organizer.'),
-      'handler' => 'eventbrite_api_handler_field_organizer_link_delete',
-    ),
-  );*/
 
   /**
    * Integrate the tickets table.
@@ -823,6 +809,24 @@ function eventbrite_api_views_data() {
     ),
   );
 
+  // Expose links to operate on the ticket.
+  $data['eventbrite_api_tickets']['edit_ticket'] = array(
+    'field' => array(
+      'title' => t('Edit link'),
+      'help' => t('Provide a simple link to the edit ticket page.'),
+      'handler' => 'eventbrite_api_handler_field_ticket_link_edit',
+    ),
+  );
+
+  // Expose links to operate on the ticket.
+  $data['eventbrite_api_tickets']['clone_ticket'] = array(
+    'field' => array(
+      'title' => t('Clone link'),
+      'help' => t('Provide a simple link to the clone ticket page.'),
+      'handler' => 'eventbrite_api_handler_field_ticket_link_clone',
+    ),
+  );
+
   /**
    * Integrate the venues table.
    */
@@ -1065,6 +1069,15 @@ function eventbrite_api_views_data() {
     ),
     'argument' => array(
       'handler' => 'views_handler_argument_string',
+    ),
+  );
+
+  // Expose links to operate on the venue.
+  $data['eventbrite_api_venues']['edit_venue'] = array(
+    'field' => array(
+      'title' => t('Edit link'),
+      'help' => t('Provide a simple link to the edit venue page.'),
+      'handler' => 'eventbrite_api_handler_field_venue_link_edit',
     ),
   );
 

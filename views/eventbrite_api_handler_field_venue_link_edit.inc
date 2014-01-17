@@ -3,11 +3,11 @@
 /**
  * Field handler to present a link to an event.
  */
-class eventbrite_api_handler_field_organizer_link_edit extends views_handler_field {
+class eventbrite_api_handler_field_venue_link_edit extends views_handler_field {
   function construct() {
     parent::construct();
 
-    $this->additional_fields['oid'] = 'oid';
+    $this->additional_fields['vid'] = 'vid';
   }
 
   function option_definition() {
@@ -35,8 +35,8 @@ class eventbrite_api_handler_field_organizer_link_edit extends views_handler_fie
 
   function render($values) {
     $text = !empty($this->options['text']) ? $this->options['text'] : t('edit');
-    $oid = $this->get_value($values, 'oid');
+    $vid = $this->get_value($values, 'vid');
 
-    return l($text, 'admin/eventbrite/organizer/' . $oid . '/edit');
+    return l($text, 'admin/eventbrite/venue/' . $vid . '/edit');
   }
 }
