@@ -483,8 +483,9 @@ function eventbrite_api_help($path, $arg) {
  */
 function eventbrite_api_cron() {
   // Check that enough time has past since the last cron run
-  if (time() > variable_get('eventbrite_api_cron_time',0)) {
-    $events = array();
+  if (time() > variable_get('eventbrite_api_cron_time', 0)) {
+		eventbrite_api_import_all();
+    /*$events = array();
     // Get all of the events that are relevant
     $count = 0;
 
@@ -496,21 +497,21 @@ function eventbrite_api_cron() {
         $queue->createItem(array('event_id' => $id, 'created' => $created));
       }
     }
-    watchdog('eventbrite_api', '!count new events have been found.', array('!count' => $count), WATCHDOG_INFO);
-    variable_set('eventbrite_api_cron_time',time() + variable_get('eventbrite_api_cron_delay',360));
+    watchdog('eventbrite_api', '!count new events have been found.', array('!count' => $count), WATCHDOG_INFO);*/
+    variable_set('eventbrite_api_cron_time', time() + variable_get('eventbrite_api_cron_delay', 360));
   }
 }
 
 /*
  * Implements hook_cron_queue_info().
  */
-function eventbrite_api_cron_queue_info() {
+/*function eventbrite_api_cron_queue_info() {
   $queues['eventbrite_api_sync_events'] = array(
     'worker callback' => '_eventbrite_api_cron_add_event',
     'time' => 120,
   );
   return $queues;
-}
+}*/
 
 /**
  * Function _eventbrite_api_cron_add_event
@@ -521,7 +522,7 @@ function eventbrite_api_cron_queue_info() {
  *  An eventbrite id
  *
  */
-function _eventbrite_api_cron_add_event($vars) {
+/*function _eventbrite_api_cron_add_event($vars) {
   if (($library = libraries_load('eventbrite')) && !empty($library['loaded'])) {
    //  // Get the app key and user key values from the form..
    //  $akey = variable_get('eventbrite_api_appkey', '');
@@ -550,7 +551,7 @@ function _eventbrite_api_cron_add_event($vars) {
   else {
     watchdog(t('eventbrite_api', 'Sync failed Please install the Eventbrite API library. Check the !readme for further information.', array('!readme' => l(t('README'), 'admin/help/eventbrite_api'))), 'error');
   }
-}
+}*/
 
 function attendee_view($attendee) {
 	// Strip the first 6 keys, as they're not needed.
