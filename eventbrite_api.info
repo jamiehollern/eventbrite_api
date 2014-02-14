@@ -8,6 +8,8 @@ dependencies[] = views
 configure = admin/eventbrite/config
 core = 7.x
 
+files[] = includes/eventbrite_api_attendees.controller.inc
+
 ; Views Handlers
 files[] = views/eventbrite_api_handler_field_datetime.inc
 files[] = views/eventbrite_api_handler_field_event_link.inc
@@ -17,3 +19,4 @@ files[] = views/eventbrite_api_handler_field_ticket_link_clone.inc
 files[] = views/eventbrite_api_handler_field_ticket_link_clone_other.inc
 files[] = views/eventbrite_api_handler_field_ticket_link_edit.inc
 files[] = views/eventbrite_api_handler_field_venue_link_edit.inc
+files[] = views/eventbrite_api_handler_field_attendee_link.inc

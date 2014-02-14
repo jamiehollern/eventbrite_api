@@ -564,8 +564,30 @@ function eventbrite_api_import_all() {
     $eb_client = new Eventbrite($auth);
     // Get all data by using the user_list_events method.
     $import = $eb_client->user_list_events();
+    // Now get all attendee data..
+    $results = array();
+    // Go through the events.
+    foreach ($import->events as $entity) {
+      // Try to load attendees from this event by the event ID.
+      try {
+        $id = $entity->event->id;
+        $results[$id] = $eb_client->event_list_attendees(array('id' => $id));
+      }
+      // If we can't, set an error.
+      catch (Exception $e) {
+        $error = $e->getMessage();
+        // But make sure the error isn't just no attendees to load.
+        if ($error != 'No records were found with the given parameters..') {
+          drupal_set_message($error, 'error');
+        }
+      }
+    }
+    // Add the attendees to our import data.
+    $import->attendees = $results;
     // Format it nicely.
     $events = eventbrite_api_format_all($import);
+    //dpm($events);
+    //return;
     // Should we delete everything before importing?
     if (variable_get('eventbrite_api_import_delete', 1) == 1) {
       // Yes.
@@ -573,12 +595,15 @@ function eventbrite_api_import_all() {
       $result = db_truncate('eventbrite_api_organizers')->execute();
       $result = db_truncate('eventbrite_api_tickets')->execute();
       $result = db_truncate('eventbrite_api_venues')->execute();
+      $result = db_truncate('eventbrite_api_attendees')->execute();
+      $result = db_truncate('eventbrite_api_attendees_answers')->execute();
       // Set a count array for our entities.
       $count = array(
        'events' => 0,
        'organizers' => 0,
        'tickets' => 0,
        'venues' => 0,
+       'attendees' => 0,
       );
       // Run through the array.
       foreach ($events as $type => $data) {
@@ -598,9 +623,10 @@ function eventbrite_api_import_all() {
         '@organizers' => $count['organizers'],
         '@tickets' => $count['tickets'],
         '@venues' => $count['venues'],
+        '@attendees' => $count['attendees'],
       );
       drupal_set_message(t('Import successful. @events events, @organizers organizers,
-      @tickets tickets and @venues venues imported.', $placeholders));
+      @tickets tickets, @venues venues and @attendees attendees imported.', $placeholders));
     }
     else {
       // Update.
@@ -678,6 +704,57 @@ function eventbrite_api_format_all($data) {
       $events['events'][$eid]['vid'] = $vid;
     }
   }
+  // Run through the attendee data.
+  $attendees = array();
+  $answers = array();
+  foreach ($data->attendees as $result) {
+    foreach ($result->attendees as $record) {
+      // Move the answers to their own array.
+      if (!empty($record->attendee->answers)) {
+        $answers[$record->attendee->id] = $record->attendee->answers;
+      }
+      unset($record->attendee->answers);
+      // Add the attendees to their array.
+      $attendees[$record->attendee->id] = (array) $record->attendee;
+    }
+  }
+  // Format the attendees.
+  foreach ($attendees as $attendee) {
+    // Set a quick ID var.
+    $id = $attendee['id'];
+    // Add 'aid' to the array.
+    $attendees[$id]['aid'] = $id;
+    // Add 'tid' to the array.
+    $attendees[$id]['tid'] = $attendees[$id]['ticket_id'];
+    // Add 'orid' to the array.
+    $attendees[$id]['orid'] = $attendees[$id]['order_id'];
+    // Add 'eid' to the array.
+    $attendees[$id]['eid'] = $attendees[$id]['event_id'];
+    // Remove the id key, the ticket_id key, the order_id key and the event_id key.
+    unset($attendees[$id]['id'], $attendees[$id]['ticket_id'], $attendees[$id]['order_id'], $attendees[$id]['event_id']);
+    // Finally, if the array has empty values, remove them too.
+    foreach ($attendee as $key => $value) {
+      if (empty($attendees[$id][$key])) {
+        unset($attendees[$id][$key]);
+      }
+    }
+  }
+  // Add the attendees to the data we're returning.
+  $events['attendees'] = $attendees;
+  // Format the questions/answers.
+  $questions = array();
+  foreach($answers as $key => $answer) {
+    foreach ($answer as $a) {
+      $a->answer->aid = $key;
+      $questions[$key] = (array) $a->answer;
+      // Add qid.
+      $questions[$key]['qid'] = $questions[$key]['question_id'];
+      // Unset question_id.
+      unset($questions[$key]['question_id']);
+    }
+  }
+  // Add the attendees questions/answers to the data we're returning.
+  $events['attendees_answers'] = $questions;
   ksort($events);
   return $events;
 }
@@ -752,6 +829,64 @@ function eventbrite_api_entity_prepare($type) {
     'lat_long' => '',
     'is_new' => TRUE,
   );
+  $attendee = array(
+    'aid' => '',
+    'tid' => '',
+    'orid' => '',
+    'eid' => '',
+    'work_postal_code' => '',
+    'last_name' => '',
+    'home_address' => '',
+    'suffix' => '',
+    'home_postal_code' => '',
+    'tax' => '',
+    'currency' => '',
+    'prefix' => '',
+    'first_name' => '',
+    'order_type' => '',
+    'work_phone' => '',
+    'home_address_2' => '',
+    'work_region' => '',
+    'work_address_2' => '',
+    'blog' => '',
+    'email' => '',
+    'work_address' => '',
+    'event_date' => eventbrite_api_ctime(),
+    'eventbrite_fee' => '',
+    'amount_paid' => '',
+    'job_title' => '',
+    'website' => '',
+    'home_country_code' => '',
+    'home_city' => '',
+    'home_phone' => '',
+    'company' => '',
+    'barcode' => '',
+    'home_region' => '',
+    'work_country' => '',
+    'discount' => '0.00',
+    'work_city' => '',
+    'home_country' => '',
+    'created' => '',
+    'gender' => '',
+    'notes' => '',
+    'modified' => '',
+    'cc_fee' => '0.00',
+    'affiliate' => '',
+    'work_country_code' => '',
+    'birth_date' => '',
+    'cell_phone' => '',
+    'age' => '',
+    'quantity' => '',
+    'is_new' => TRUE,
+  );
+  $attendee_answer = array(
+    'qid' => '',
+    'aid' => '',
+    'answer_text' => '',
+    'question' => '',
+    'question_type' => '',
+    'is_new' => TRUE,
+  );
   switch ($type) {
     case 'event':
       $entity = $event;
@@ -776,6 +911,18 @@ function eventbrite_api_entity_prepare($type) {
       break;
     case 'venues':
       $entity = $venue;
+      break;
+    case 'attendee':
+      $entity = $attendee;
+      break;
+    case 'attendees':
+      $entity = $attendee;
+      break;
+    case 'attendee_answer':
+      $entity = $attendee;
+      break;
+    case 'attendees_answers':
+      $entity = $attendee;
       break;
   }
   return (object) $entity;
@@ -821,7 +968,7 @@ function _eventbrite_event_autocomplete($string) {
     ->execute();
   // Add matches to $matches .
   foreach ($return as $row) {
-		$string = check_plain($row->title) . ' (' . $row->eid . ')';
+    $string = check_plain($row->title) . ' (' . $row->eid . ')';
     $matches[$string] = $string;
   }
   // Return for JS.
@@ -843,7 +990,7 @@ function _eventbrite_organizer_autocomplete($string) {
     ->execute();
   // Add matches to $matches .
   foreach ($return as $row) {
-		$string = check_plain($row->name) . ' (' . $row->oid . ')';
+    $string = check_plain($row->name) . ' (' . $row->oid . ')';
     $matches[$string] = $string;
   }
   // Return for JS.
@@ -865,7 +1012,7 @@ function _eventbrite_venue_autocomplete($string) {
     ->execute();
   // Add matches to $matches .
   foreach ($return as $row) {
-		$string = check_plain($row->name) . ' (' . $row->vid . ')';
+    $string = check_plain($row->name) . ' (' . $row->vid . ')';
     $matches[$string] = $string;
   }
   // Return for JS.
@@ -884,16 +1031,16 @@ function eventbrite_autocomplete_filter($string) {
  * Returns a formatted string instead of just an ID for autocomplete fields.
  */
 function eventbrite_autocomplete_build($id, $entity_type) {
-	$entity = entity_load($entity_type, array($id));
-	$entity = array_shift($entity);
-	switch ($entity_type) {
-		case 'event':
-		  $text = $entity->title;
-		break;
-		default:
-		  $text = $entity->name;
-		break;
-	}
-	$string = $text . ' (' . $id . ')';
-	return $string;
+  $entity = entity_load($entity_type, array($id));
+  $entity = array_shift($entity);
+  switch ($entity_type) {
+    case 'event':
+      $text = $entity->title;
+    break;
+    default:
+      $text = $entity->name;
+    break;
+  }
+  $string = $text . ' (' . $id . ')';
+  return $string;
 }

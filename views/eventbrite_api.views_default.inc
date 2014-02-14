@@ -406,5 +406,171 @@ function eventbrite_api_views_default_views() {
 
   $views[$view->name] = $view;
   
+  // Attendees.
+  
+  $view = new view();
+  $view->name = 'attendees';
+  $view->description = '';
+  $view->tag = 'default';
+  $view->base_table = 'eventbrite_api_attendees';
+  $view->human_name = 'Attendees';
+  $view->core = 7;
+  $view->api_version = '3.0';
+  $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
+  
+  /* Display: Master */
+  $handler = $view->new_display('default', 'Master', 'default');
+  $handler->display->display_options['title'] = 'Attendees';
+  $handler->display->display_options['use_more_always'] = FALSE;
+  $handler->display->display_options['access']['type'] = 'perm';
+  $handler->display->display_options['access']['perm'] = 'administer eventbrite';
+  $handler->display->display_options['cache']['type'] = 'none';
+  $handler->display->display_options['query']['type'] = 'views_query';
+  $handler->display->display_options['exposed_form']['type'] = 'basic';
+  $handler->display->display_options['pager']['type'] = 'full';
+  $handler->display->display_options['pager']['options']['items_per_page'] = '50';
+  $handler->display->display_options['pager']['options']['offset'] = '0';
+  $handler->display->display_options['pager']['options']['id'] = '0';
+  $handler->display->display_options['pager']['options']['quantity'] = '9';
+  $handler->display->display_options['style_plugin'] = 'table';
+  $handler->display->display_options['style_options']['columns'] = array(
+    'aid' => 'aid',
+    'first_name' => 'first_name',
+    'last_name' => 'last_name',
+    'company' => 'company',
+    'quantity' => 'quantity',
+    'amount_paid' => 'amount_paid',
+    'modified' => 'modified',
+    'created' => 'created',
+    'view_attendee' => 'view_attendee',
+  );
+  $handler->display->display_options['style_options']['default'] = 'created';
+  $handler->display->display_options['style_options']['info'] = array(
+    'aid' => array(
+      'sortable' => 1,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+      'empty_column' => 0,
+    ),
+    'first_name' => array(
+      'sortable' => 1,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+      'empty_column' => 0,
+    ),
+    'last_name' => array(
+      'sortable' => 1,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+      'empty_column' => 0,
+    ),
+    'company' => array(
+      'sortable' => 1,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+      'empty_column' => 0,
+    ),
+    'quantity' => array(
+      'sortable' => 1,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+      'empty_column' => 0,
+    ),
+    'amount_paid' => array(
+      'sortable' => 1,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+      'empty_column' => 0,
+    ),
+    'modified' => array(
+      'sortable' => 1,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+      'empty_column' => 0,
+    ),
+    'created' => array(
+      'sortable' => 1,
+      'default_sort_order' => 'desc',
+      'align' => '',
+      'separator' => '',
+      'empty_column' => 0,
+    ),
+    'view_attendee' => array(
+      'align' => '',
+      'separator' => '',
+      'empty_column' => 0,
+    ),
+  );
+  /* Field: Eventbrite attendee: Attendee ID */
+  $handler->display->display_options['fields']['aid']['id'] = 'aid';
+  $handler->display->display_options['fields']['aid']['table'] = 'eventbrite_api_attendees';
+  $handler->display->display_options['fields']['aid']['field'] = 'aid';
+  $handler->display->display_options['fields']['aid']['separator'] = '';
+  /* Field: Eventbrite attendee: First name */
+  $handler->display->display_options['fields']['first_name']['id'] = 'first_name';
+  $handler->display->display_options['fields']['first_name']['table'] = 'eventbrite_api_attendees';
+  $handler->display->display_options['fields']['first_name']['field'] = 'first_name';
+  /* Field: Eventbrite attendee: Last name */
+  $handler->display->display_options['fields']['last_name']['id'] = 'last_name';
+  $handler->display->display_options['fields']['last_name']['table'] = 'eventbrite_api_attendees';
+  $handler->display->display_options['fields']['last_name']['field'] = 'last_name';
+  /* Field: Eventbrite attendee: Company */
+  $handler->display->display_options['fields']['company']['id'] = 'company';
+  $handler->display->display_options['fields']['company']['table'] = 'eventbrite_api_attendees';
+  $handler->display->display_options['fields']['company']['field'] = 'company';
+  /* Field: Eventbrite attendee: Quantity */
+  $handler->display->display_options['fields']['quantity']['id'] = 'quantity';
+  $handler->display->display_options['fields']['quantity']['table'] = 'eventbrite_api_attendees';
+  $handler->display->display_options['fields']['quantity']['field'] = 'quantity';
+  /* Field: Eventbrite attendee: Amount paid */
+  $handler->display->display_options['fields']['amount_paid']['id'] = 'amount_paid';
+  $handler->display->display_options['fields']['amount_paid']['table'] = 'eventbrite_api_attendees';
+  $handler->display->display_options['fields']['amount_paid']['field'] = 'amount_paid';
+  $handler->display->display_options['fields']['amount_paid']['precision'] = '0';
+  /* Field: Eventbrite attendee: Order modified date */
+  $handler->display->display_options['fields']['modified']['id'] = 'modified';
+  $handler->display->display_options['fields']['modified']['table'] = 'eventbrite_api_attendees';
+  $handler->display->display_options['fields']['modified']['field'] = 'modified';
+  $handler->display->display_options['fields']['modified']['label'] = 'Order modified';
+  $handler->display->display_options['fields']['modified']['date_format'] = 'custom';
+  $handler->display->display_options['fields']['modified']['custom_date_format'] = 'd/m/Y h:i:s';
+  /* Field: Eventbrite attendee: Order created date */
+  $handler->display->display_options['fields']['created']['id'] = 'created';
+  $handler->display->display_options['fields']['created']['table'] = 'eventbrite_api_attendees';
+  $handler->display->display_options['fields']['created']['field'] = 'created';
+  $handler->display->display_options['fields']['created']['label'] = 'Order created';
+  $handler->display->display_options['fields']['created']['date_format'] = 'custom';
+  $handler->display->display_options['fields']['created']['custom_date_format'] = 'd/m/Y h:i:s';
+  /* Field: Eventbrite attendee: Link */
+  $handler->display->display_options['fields']['view_attendee']['id'] = 'view_attendee';
+  $handler->display->display_options['fields']['view_attendee']['table'] = 'eventbrite_api_attendees';
+  $handler->display->display_options['fields']['view_attendee']['field'] = 'view_attendee';
+  $handler->display->display_options['fields']['view_attendee']['label'] = 'View';
+  $handler->display->display_options['fields']['view_attendee']['element_label_colon'] = FALSE;
+  
+  /* Display: Page */
+  $handler = $view->new_display('page', 'Page', 'page');
+  $handler->display->display_options['path'] = 'admin/eventbrite/attendee/list';
+  $handler->display->display_options['menu']['type'] = 'default tab';
+  $handler->display->display_options['menu']['title'] = 'Attendees';
+  $handler->display->display_options['menu']['description'] = 'View Eventbrite attendee data.';
+  $handler->display->display_options['menu']['weight'] = '49';
+  $handler->display->display_options['menu']['context'] = 0;
+  $handler->display->display_options['menu']['context_only_inline'] = 0;
+  $handler->display->display_options['tab_options']['type'] = 'normal';
+  $handler->display->display_options['tab_options']['title'] = 'Attendees';
+  $handler->display->display_options['tab_options']['description'] = 'View Eventbrite attendee data.';
+  $handler->display->display_options['tab_options']['weight'] = '0';
+  $handler->display->display_options['tab_options']['name'] = 'management';
+
+  $views[$view->name] = $view;
+ 
   return $views;
 }

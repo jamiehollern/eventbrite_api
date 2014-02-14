@@ -12,6 +12,7 @@ function eventbrite_api_config_form() {
   // Load the details.
   $ukey = variable_get('eventbrite_api_userkey', '');
   $akey = variable_get('eventbrite_api_appkey', '');
+  // Form.
   $form = array();
   $form['auth'] = array(
     '#type' => 'fieldset',
@@ -294,9 +295,9 @@ function event_add_form_validate($form, &$form_state) {
  * Submit function for event add form.
  */
 function event_add_form_submit($form, &$form_state) {
-	// Extract IDs from autocomplete fields.
-	$form_state['values']['oid'] = eventbrite_autocomplete_filter($form_state['values']['oid']);
-	$form_state['values']['vid'] = eventbrite_autocomplete_filter($form_state['values']['vid']);
+  // Extract IDs from autocomplete fields.
+  $form_state['values']['oid'] = eventbrite_autocomplete_filter($form_state['values']['oid']);
+  $form_state['values']['vid'] = eventbrite_autocomplete_filter($form_state['values']['vid']);
   $event_submit = (object) $form_state['values'];
   // Assign them to an array to send to Eventbrite.
   $eventbrite = $form_state['values'];
@@ -737,8 +738,8 @@ function ticket_add_form_validate($form, &$form_state) {
  * Submit function for ticket add form.
  */
 function ticket_add_form_submit($form, &$form_state) {
-	// Extract IDs from autocomplete fields.
-	$form_state['values']['eid'] = eventbrite_autocomplete_filter($form_state['values']['eid']);
+  // Extract IDs from autocomplete fields.
+  $form_state['values']['eid'] = eventbrite_autocomplete_filter($form_state['values']['eid']);
   $ticket_submit = (object) $form_state['values'];
   // Assign them to an array to send to Eventbrite.
   $eventbrite = $form_state['values'];

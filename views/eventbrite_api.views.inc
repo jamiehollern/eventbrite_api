@@ -42,7 +42,7 @@ function eventbrite_api_views_data() {
     ),
   );
   
-   $data['eventbrite_api_events']['tid'] = array(
+  $data['eventbrite_api_events']['tid'] = array(
     'title' => t('Tickets'),
     'help' => t('The unique internal identifier of event tickets.'),
     'relationship' => array(
@@ -1087,6 +1087,1049 @@ function eventbrite_api_views_data() {
       'title' => t('Edit link'),
       'help' => t('Provide a simple link to the edit venue page.'),
       'handler' => 'eventbrite_api_handler_field_venue_link_edit',
+    ),
+  );
+
+ /**
+  * Integrate the attendees table.
+  */
+  $data['eventbrite_api_attendees']['table']['group']  = t('Eventbrite attendee');
+  $data['eventbrite_api_attendees']['table']['entity type'] = 'attendee';
+
+  $data['eventbrite_api_attendees']['table']['base'] = array(
+    'field' => 'aid',
+    'title' => t('Eventbrite Attendees'),
+    'help' => t('Attendees of Eventbrite events.'),
+  );
+
+  // Expose the attendee ID.
+  $data['eventbrite_api_attendees']['aid'] = array(
+    'title' => t('Attendee ID'),
+    'help' => t('The unique internal identifier of the event attendee.'),
+    'field' => array(
+      'handler' => 'views_handler_field_numeric',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_numeric',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_numeric',
+    ),
+    'relationship' => array(
+      'handler' => 'views_handler_relationship',
+      'base' => 'eventbrite_api_attendees_answers',
+      'base field' => 'aid',
+      'title' => t('Attendee ID'),
+      'label' => t('Get the questions and answers for an attendee.'),
+    ),
+  );
+  
+  $data['eventbrite_api_attendees']['table']['default_relationship'] = array(
+    'eventbrite_api_attendees_answers' => array(
+      'table' => 'eventbrite_api_attendees_answers',
+      'field' => 'aid',
+    ),
+  );
+
+  // Expose the attendee work postal code.
+  $data['eventbrite_api_attendees']['work_postal_code'] = array(
+    'title' => t('Work postal code'),
+    'help' => t('The work postal code of the event attendee.'),
+    'field' => array(
+      'handler' => 'views_handler_field',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+    ),
+  );
+
+  // Expose the attendee last name.
+  $data['eventbrite_api_attendees']['last_name'] = array(
+    'title' => t('Last name'),
+    'help' => t('The last name of the event attendee.'),
+    'field' => array(
+      'handler' => 'views_handler_field',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+    ),
+  );
+
+  // Expose the attendee home address.
+  $data['eventbrite_api_attendees']['home_address'] = array(
+    'title' => t('Home address'),
+    'help' => t('The home address of the event attendee.'),
+    'field' => array(
+      'handler' => 'views_handler_field',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+    ),
+  );
+
+  // Expose the attendee suffix.
+  $data['eventbrite_api_attendees']['suffix'] = array(
+    'title' => t('Suffix'),
+    'help' => t('The suffix of the event attendee.'),
+    'field' => array(
+      'handler' => 'views_handler_field',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+    ),
+  );
+
+  // Expose the attendee home postal code.
+  $data['eventbrite_api_attendees']['home_postal_code'] = array(
+    'title' => t('Home postal code'),
+    'help' => t('The home postal code of the event attendee.'),
+    'field' => array(
+      'handler' => 'views_handler_field',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+    ),
+  );
+
+  // Expose the attendee order tax.
+  $data['eventbrite_api_attendees']['tax'] = array(
+    'title' => t('Tax'),
+    'help' => t('The tax on this order.'),
+    'field' => array(
+      'handler' => 'views_handler_field_numeric',
+      'click sortable' => TRUE,
+      'float' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_numeric',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_numeric',
+    ),
+  );
+
+  // Expose the order currency.
+  $data['eventbrite_api_attendees']['currency'] = array(
+    'title' => t('Currency'),
+    'help' => t('The currency of the order.'),
+    'field' => array(
+      'handler' => 'views_handler_field',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+    ),
+  );
+
+  // Expose the prefix.
+  $data['eventbrite_api_attendees']['prefix'] = array(
+    'title' => t('Prefix'),
+    'help' => t('The attendee prefix.'),
+    'field' => array(
+      'handler' => 'views_handler_field',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+    ),
+  );
+
+  // Expose the first name.
+  $data['eventbrite_api_attendees']['first_name'] = array(
+    'title' => t('First name'),
+    'help' => t('The attendee first name.'),
+    'field' => array(
+      'handler' => 'views_handler_field',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+    ),
+  );
+
+  // Expose the order type.
+  $data['eventbrite_api_attendees']['order_type'] = array(
+    'title' => t('Order type'),
+    'help' => t('The order type.'),
+    'field' => array(
+      'handler' => 'views_handler_field',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+    ),
+  );
+
+  // Expose the attendee work phone.
+  $data['eventbrite_api_attendees']['work_phone'] = array(
+    'title' => t('Work phone'),
+    'help' => t('The attendee work phone.'),
+    'field' => array(
+      'handler' => 'views_handler_field',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+    ),
+  );
+
+  // Expose the attendee home address 2.
+  $data['eventbrite_api_attendees']['home_address_2'] = array(
+    'title' => t('Home address 2'),
+    'help' => t('The attendee home address 2.'),
+    'field' => array(
+      'handler' => 'views_handler_field',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+    ),
+  );
+
+  // Expose the attendee work region.
+  $data['eventbrite_api_attendees']['work_region'] = array(
+    'title' => t('Work region'),
+    'help' => t('The attendee work region.'),
+    'field' => array(
+      'handler' => 'views_handler_field',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+    ),
+  );
+
+  // Expose the attendee work address 2.
+  $data['eventbrite_api_attendees']['work_address_2'] = array(
+    'title' => t('Work address 2'),
+    'help' => t('The attendee work address 2.'),
+    'field' => array(
+      'handler' => 'views_handler_field',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+    ),
+  );
+
+  // Expose the attendee blog.
+  $data['eventbrite_api_attendees']['blog'] = array(
+    'title' => t('Blog'),
+    'help' => t('The attendee work blog.'),
+    'field' => array(
+      'handler' => 'views_handler_field',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+    ),
+  );
+
+  // Expose the attendee email.
+  $data['eventbrite_api_attendees']['email'] = array(
+    'title' => t('Email'),
+    'help' => t('The attendee email.'),
+    'field' => array(
+      'handler' => 'views_handler_field',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+    ),
+  );
+  
+  // Expose the ticket ID.
+  $data['eventbrite_api_attendees']['tid'] = array(
+    'title' => t('Ticket ID'),
+    'help' => t('The unique internal identifier of event tickets.'),
+    'relationship' => array(
+      'base' => 'eventbrite_api_tickets',
+      'base field' => 'tid',
+      'field' => 'tid',
+      'handler' => 'views_handler_relationship',
+      'label' => t('Event tickets'),
+      'title' => t('Tickets'),
+      'help' => t('The tickets associated with the event.'),
+    ),
+  );
+
+  // Expose the attendee work address.
+  $data['eventbrite_api_attendees']['work_address'] = array(
+    'title' => t('Work address'),
+    'help' => t('The attendee work address.'),
+    'field' => array(
+      'handler' => 'views_handler_field',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+    ),
+  );
+
+  // Expose the event date.
+  $data['eventbrite_api_attendees']['event_date'] = array(
+    'title' => t('Event date'),
+    'help' => t('The date of the event.'),
+    'field' => array(
+      'handler' => 'eventbrite_api_handler_field_datetime',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_date',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort_date',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_date',
+    ),
+  );
+
+  // Expose the order Eventbrite fee.
+  $data['eventbrite_api_attendees']['eventbrite_fee'] = array(
+    'title' => t('Eventbrite fee'),
+    'help' => t('The order Eventbrite fee.'),
+    'field' => array(
+      'handler' => 'views_handler_field_numeric',
+      'click sortable' => TRUE,
+      'float' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_numeric',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_numeric',
+    ),
+  );
+
+  // Expose the order amount paid.
+  $data['eventbrite_api_attendees']['amount_paid'] = array(
+    'title' => t('Amount paid'),
+    'help' => t('The amount paid on this order.'),
+    'field' => array(
+      'handler' => 'views_handler_field_numeric',
+      'click sortable' => TRUE,
+      'float' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_numeric',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_numeric',
+    ),
+  );
+
+  // Expose the attendee job title.
+  $data['eventbrite_api_attendees']['job_title'] = array(
+    'title' => t('Job title'),
+    'help' => t('The attendee job title.'),
+    'field' => array(
+      'handler' => 'views_handler_field',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+    ),
+  );
+
+  // Expose the attendee work website.
+  $data['eventbrite_api_attendees']['website'] = array(
+    'title' => t('Website'),
+    'help' => t('The attendee work website.'),
+    'field' => array(
+      'handler' => 'views_handler_field',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+    ),
+  );
+
+  // Expose the attendee home country code.
+  $data['eventbrite_api_attendees']['home_country_code'] = array(
+    'title' => t('Home country code'),
+    'help' => t('The attendee home country code.'),
+    'field' => array(
+      'handler' => 'views_handler_field',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+    ),
+  );
+
+  // Expose the attendee home city.
+  $data['eventbrite_api_attendees']['home_city'] = array(
+    'title' => t('Home city'),
+    'help' => t('The attendee home city.'),
+    'field' => array(
+      'handler' => 'views_handler_field',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+    ),
+  );
+
+  // Expose the attendee home phone.
+  $data['eventbrite_api_attendees']['home_phone'] = array(
+    'title' => t('Home phone'),
+    'help' => t('The attendee home phone.'),
+    'field' => array(
+      'handler' => 'views_handler_field',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+    ),
+  );
+  
+  // Expose the ticket ID.
+  $data['eventbrite_api_attendees']['orid'] = array(
+    'title' => t('OrID'),
+    'help' => t('The unique internal identifier of event ticket orders.'),
+    'field' => array(
+      'handler' => 'views_handler_field_numeric',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_numeric',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_numeric',
+    ),
+  );
+
+  // Expose the attendee company.
+  $data['eventbrite_api_attendees']['company'] = array(
+    'title' => t('Company'),
+    'help' => t('The attendee company.'),
+    'field' => array(
+      'handler' => 'views_handler_field',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+    ),
+  );
+
+  // Expose the attendee ticket barcode.
+  $data['eventbrite_api_attendees']['barcode'] = array(
+    'title' => t('Barcode'),
+    'help' => t('The attendee barcode.'),
+    'field' => array(
+      'handler' => 'views_handler_field',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+    ),
+  );
+
+  // Expose the attendee home region.
+  $data['eventbrite_api_attendees']['home_region'] = array(
+    'title' => t('Home region'),
+    'help' => t('The attendee home region.'),
+    'field' => array(
+      'handler' => 'views_handler_field',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+    ),
+  );
+
+  // Expose the attendee work country.
+  $data['eventbrite_api_attendees']['work_country'] = array(
+    'title' => t('Work country'),
+    'help' => t('The attendee work country.'),
+    'field' => array(
+      'handler' => 'views_handler_field',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+    ),
+  );
+
+  // Expose the order discount.
+  $data['eventbrite_api_attendees']['discount'] = array(
+    'title' => t('Discount'),
+    'help' => t('The amount of discount on this order.'),
+    'field' => array(
+      'handler' => 'views_handler_field_numeric',
+      'click sortable' => TRUE,
+      //'float' => TRUE,?
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_numeric',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_numeric',
+    ),
+  );
+
+  // Expose the attendee work city.
+  $data['eventbrite_api_attendees']['work_city'] = array(
+    'title' => t('Work country'),
+    'help' => t('The attendee work city.'),
+    'field' => array(
+      'handler' => 'views_handler_field',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+    ),
+  );
+
+  // Expose the attendee home country.
+  $data['eventbrite_api_attendees']['work_city'] = array(
+    'title' => t('Work country'),
+    'help' => t('The attendee work city.'),
+    'field' => array(
+      'handler' => 'views_handler_field',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+    ),
+  );
+
+  // Expose the order created date.
+  $data['eventbrite_api_attendees']['created'] = array(
+    'title' => t('Order created date'),
+    'help' => t('The date the order was created.'),
+    'field' => array(
+      'handler' => 'eventbrite_api_handler_field_datetime',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_date',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort_date',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_date',
+    ),
+  );
+
+  // Expose the attendee gender.
+  $data['eventbrite_api_attendees']['gender'] = array(
+    'title' => t('Gender'),
+    'help' => t('The attendee gender.'),
+    'field' => array(
+      'handler' => 'views_handler_field',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+    ),
+  );
+
+  // Expose the attendee notes.
+  $data['eventbrite_api_attendees']['notes'] = array(
+    'title' => t('Notes'),
+    'help' => t('The attendee notes.'),
+    'field' => array(
+      'handler' => 'views_handler_field',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+    ),
+  );
+
+  // Expose the order modified date.
+  $data['eventbrite_api_attendees']['modified'] = array(
+    'title' => t('Order modified date'),
+    'help' => t('The date the order was modified.'),
+    'field' => array(
+      'handler' => 'eventbrite_api_handler_field_datetime',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_date',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort_date',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_date',
+    ),
+  );
+
+  // Expose the order credit card fee.
+  $data['eventbrite_api_attendees']['cc_fee'] = array(
+    'title' => t('Credit card fee'),
+    'help' => t('The amount of credit card fee on this order.'),
+    'field' => array(
+      'handler' => 'views_handler_field_numeric',
+      'click sortable' => TRUE,
+      //'float' => TRUE,?
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_numeric',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_numeric',
+    ),
+  );
+  
+  // Expose the event ID.
+  $data['eventbrite_api_attendees']['eid'] = array(
+    'title' => t('Event ID'),
+    'help' => t('The unique internal identifier of events.'),
+    'relationship' => array(
+      'base' => 'eventbrite_api_events',
+      'base field' => 'eid',
+      'field' => 'eid',
+      'handler' => 'views_handler_relationship',
+      'label' => t('Events'),
+      'title' => t('Events'),
+      'help' => t('The events associated with the attendee.'),
+    ),
+  );
+
+  // Expose the attendee affiliate.
+  $data['eventbrite_api_attendees']['affiliate'] = array(
+    'title' => t('Affiliate'),
+    'help' => t('The attendee affiliate.'),
+    'field' => array(
+      'handler' => 'views_handler_field',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+    ),
+  );
+
+  // Expose the attendee work country code.
+  $data['eventbrite_api_attendees']['work_country_code'] = array(
+    'title' => t('Work country code'),
+    'help' => t('The attendee work country code.'),
+    'field' => array(
+      'handler' => 'views_handler_field',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+    ),
+  );
+
+  // Expose the attendee birth date.
+  $data['eventbrite_api_attendees']['birth_date'] = array(
+    'title' => t('Birth date'),
+    'help' => t('The attendee birth date.'),
+    'field' => array(
+      'handler' => 'views_handler_field',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+    ),
+  );
+
+  // Expose the attendee cell/mobile phone number.
+  $data['eventbrite_api_attendees']['cell_phone'] = array(
+    'title' => t('Cell phone'),
+    'help' => t('The attendee cell/mobile phone number.'),
+    'field' => array(
+      'handler' => 'views_handler_field',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+    ),
+  );
+
+  // Expose the attendee age.
+  $data['eventbrite_api_attendees']['age'] = array(
+    'title' => t('Age'),
+    'help' => t('The attendee age.'),
+    'field' => array(
+      'handler' => 'views_handler_field_numeric',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_numeric',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_numeric',
+    ),
+  );
+
+  // Expose the attendee quantity.
+  $data['eventbrite_api_attendees']['quantity'] = array(
+    'title' => t('Quantity'),
+    'help' => t('The attendee quantity.'),
+    'field' => array(
+      'handler' => 'views_handler_field_numeric',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_numeric',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_numeric',
+    ),
+  );
+
+  // Expose link to view the full attendee record.
+  $data['eventbrite_api_attendees']['view_attendee'] = array(
+    'field' => array(
+      'title' => t('Link'),
+      'help' => t('Provide a simple link to the view attendee page.'),
+      'handler' => 'eventbrite_api_handler_field_attendee_link',
+    ),
+  );
+
+  /**
+   * Integrate the attendees answers table.
+   */
+  $data['eventbrite_api_attendees_answers']['table']['group']  = t('Eventbrite attendee answers');
+  $data['eventbrite_api_attendees_answers']['table']['entity type'] = 'attendee';
+
+  $data['eventbrite_api_attendees_answers']['table']['base'] = array(
+    'field' => 'aid',
+    'title' => t('Eventbrite Attendee Answers'),
+    'help' => t('Answers to Eventbrite questions.'),
+  );
+
+  // Expose the attendee ID.
+  $data['eventbrite_api_attendees_answers']['aid'] = array(
+    'title' => t('Attendee ID'),
+    'help' => t('The unique internal identifier of attendees.'),
+    'title' => t('Attendee ID'),
+    'help' => t('The unique internal identifier of the event attendee.'),
+    'field' => array(
+      'handler' => 'views_handler_field_numeric',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_numeric',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_numeric',
+    ),
+    'relationship' => array(
+      'base' => 'eventbrite_api_attendees',
+      'base field' => 'aid',
+      'field' => 'aid',
+      'handler' => 'views_handler_relationship',
+      'label' => t('Attendees'),
+      'title' => t('Attendees'),
+      'help' => t('The attendees associated with the question/answer.'),
+    ),
+  );
+
+  // Expose the attendee question ID.
+  $data['eventbrite_api_attendees_answers']['qid'] = array(
+    'title' => t('Question ID'),
+    'help' => t('The unique internal identifier of the attendee question.'),
+    'field' => array(
+      'handler' => 'views_handler_field_numeric',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_numeric',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_numeric',
+    ),
+  );
+
+  // Expose the attendee answer text.
+  $data['eventbrite_api_attendees_answers']['answer_text'] = array(
+    'title' => t('Answer'),
+    'help' => t('The answer text to the attendee question.'),
+    'field' => array(
+      'handler' => 'views_handler_field',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+    ),
+  );
+
+  // Expose the attendee answer question.
+  $data['eventbrite_api_attendees_answers']['question'] = array(
+    'title' => t('Question'),
+    'help' => t('The attendee question.'),
+    'field' => array(
+      'handler' => 'views_handler_field',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+    ),
+  );
+
+  // Expose the attendee answer question type.
+  $data['eventbrite_api_attendees_answers']['question_type'] = array(
+    'title' => t('Question type'),
+    'help' => t('The attendee question type.'),
+    'field' => array(
+      'handler' => 'views_handler_field',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
     ),
   );
 
