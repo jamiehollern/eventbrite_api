@@ -302,7 +302,7 @@ function eventbrite_api_views_default_views() {
   $handler->display->display_options['fields']['price']['field'] = 'price';
   $handler->display->display_options['fields']['price']['set_precision'] = TRUE;
   $handler->display->display_options['fields']['price']['precision'] = '2';
-  $handler->display->display_options['fields']['price']['prefix'] = '£';
+  $handler->display->display_options['fields']['price']['prefix'] = '$';
   /* Field: Eventbrite ticket: Edit link */
   $handler->display->display_options['fields']['edit_ticket']['id'] = 'edit_ticket';
   $handler->display->display_options['fields']['edit_ticket']['table'] = 'eventbrite_api_tickets';
