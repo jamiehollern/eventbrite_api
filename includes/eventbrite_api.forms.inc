@@ -959,6 +959,11 @@ function venue_add_form($form, &$form_state, $venue) {
     '#title' => t('Region'),
     '#default_value' => isset($venue->region) ? $venue->region : '',
     '#maxlength' => 255,
+		'#description' => t('
+		   Please note that if your event is in the US, this field is mandatory and requires 
+			 a 2 digit US state code. You can find a list of US state codes at !url.', 
+			 array('!url' => l('https://en.wikipedia.org/wiki/List_of_U.S._state_abbreviations', 
+			 'https://en.wikipedia.org/wiki/List_of_U.S._state_abbreviations'))),
   );
 
   $form['postal_code'] = array(
