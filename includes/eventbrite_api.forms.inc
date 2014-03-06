@@ -215,14 +215,14 @@ function event_add_form($form, &$form_state, $event) {
     '#title' => t('Organizer'),
     '#type' => 'textfield',
     '#autocomplete_path' => 'eventbrite/organizer/autocomplete',
-    '#default_value' => isset($event->oid) ? eventbrite_autocomplete_build($event->oid, 'organizer') : '',
+    '#default_value' => isset($event->oid) ? eventbrite_api_autocomplete_build($event->oid, 'organizer') : '',
    );
 
   $form['details']['vid'] = array(
     '#title' => t('Venue'),
     '#type' => 'textfield',
     '#autocomplete_path' => 'eventbrite/venue/autocomplete',
-    '#default_value' => isset($event->vid) ? eventbrite_autocomplete_build($event->vid, 'venue') : '',
+    '#default_value' => isset($event->vid) ? eventbrite_api_autocomplete_build($event->vid, 'venue') : '',
    );
 
   $form['dates'] = array(
@@ -589,7 +589,7 @@ function ticket_add_form($form, &$form_state, $ticket) {
     '#type' => 'textfield',
     '#title' => t('Event'),
     '#description' => t('A ticket can only be associated with one event so once chosen, the associated event cannot be changed.'),
-    '#default_value' => isset($ticket->eid) ? eventbrite_autocomplete_build($ticket->eid, 'event') : '',
+    '#default_value' => isset($ticket->eid) ? eventbrite_api_autocomplete_build($ticket->eid, 'event') : '',
     '#maxlength' => 255,
     '#required' => TRUE,
   );
