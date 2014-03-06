@@ -1020,9 +1020,9 @@ function _eventbrite_venue_autocomplete($string) {
 /**
  * Returns the text from between parenthesis ().
  */
-function eventbrite_autocomplete_filter($string) {
+function eventbrite_api_autocomplete_filter($string) {
   preg_match('#\((.*?)\)#', $string, $match);
-  return $match[1];
+  return !empty($match[1]) ? $match[1] : $string;
 }
 
 /**

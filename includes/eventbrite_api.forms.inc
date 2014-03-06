@@ -296,8 +296,8 @@ function event_add_form_validate($form, &$form_state) {
  */
 function event_add_form_submit($form, &$form_state) {
   // Extract IDs from autocomplete fields.
-  $form_state['values']['oid'] = eventbrite_autocomplete_filter($form_state['values']['oid']);
-  $form_state['values']['vid'] = eventbrite_autocomplete_filter($form_state['values']['vid']);
+  $form_state['values']['oid'] = eventbrite_api_autocomplete_filter($form_state['values']['oid']);
+  $form_state['values']['vid'] = eventbrite_api_autocomplete_filter($form_state['values']['vid']);
   $event_submit = (object) $form_state['values'];
   // Assign them to an array to send to Eventbrite.
   $eventbrite = $form_state['values'];
@@ -347,7 +347,7 @@ function event_add_form_submit($form, &$form_state) {
     }
     catch (Exception $e) {
       $response = $e->getMessage();
-      form_set_error(NULL, $response);
+      form_set_error('form', $response);
     }
   }
   else {
@@ -425,7 +425,7 @@ function event_delete_wrapper($event) {
  */
 function organizer_add_form($form, &$form_state, $organizer) {
   // Add the OID into the $form_state array.
-  $form_state['oid'] = $organizer->oid;
+  $form_state['oid'] = !empty($organizer->oid) ? $organizer->oid : '';
 
   $form['name'] = array(
     '#type' => 'textfield',
@@ -515,7 +515,7 @@ function organizer_add_form_submit($form, &$form_state) {
     }
     catch (Exception $e) {
       $response = $e->getMessage();
-      form_set_error(NULL, $response);
+      form_set_error('form', $response);
     }
   }
   else {
@@ -739,7 +739,7 @@ function ticket_add_form_validate($form, &$form_state) {
  */
 function ticket_add_form_submit($form, &$form_state) {
   // Extract IDs from autocomplete fields.
-  $form_state['values']['eid'] = eventbrite_autocomplete_filter($form_state['values']['eid']);
+  $form_state['values']['eid'] = eventbrite_api_autocomplete_filter($form_state['values']['eid']);
   $ticket_submit = (object) $form_state['values'];
   // Assign them to an array to send to Eventbrite.
   $eventbrite = $form_state['values'];
@@ -796,7 +796,7 @@ function ticket_add_form_submit($form, &$form_state) {
     }
     catch (Exception $e) {
       $response = $e->getMessage();
-      form_set_error(NULL, $response);
+      form_set_error('form', $response);
     }
   }
   else {
@@ -891,7 +891,7 @@ function ticket_clone_form_submit($form, &$form_state) {
     catch (Exception $e) {
       $response = $e->getMessage();
       dpm($response);
-      form_set_error(NULL, $response);
+      form_set_error('form', $response);
     }
     // Save the entity.
     $save = ticket_save($ticket);
@@ -911,7 +911,7 @@ function ticket_clone_form_submit($form, &$form_state) {
 function venue_add_form($form, &$form_state, $venue) {
   
   // Add the VID into the $form_state array.
-  $form_state['vid'] = $venue->vid;
+  $form_state['vid'] = !empty($venue->vid) ? $venue->vid : '';
   
   // If we're editing an event we don't show the organizer ID.
   if (empty($venue->name)) {
@@ -986,16 +986,7 @@ function venue_add_form($form, &$form_state, $venue) {
     '#value' => t('Save'),
     '#submit' => $submit + array('venue_add_form_submit'),
   );
-  // We can't delete venues.
-  /*if (!empty($venue->name)) {
-    $form['delete'] = array(
-      '#type' => 'submit',
-      '#value' => t('Delete venue'),
-      '#suffix' => l(t('Cancel'), 'admin/eventbrite/venue'),
-      '#submit' => $submit + array('venue_form_submit_delete'),
-      '#weight' => 45,
-    );
-  }*/
+	
   $form['#validate'][] = 'venue_add_form_validate';
   // Add the field related form elements.
   $form_state['venue'] = $venue;
@@ -1039,7 +1030,7 @@ function venue_add_form_submit($form, &$form_state) {
     }
     else {
       // Add the organizer id.
-      $eventbrite['organizer_id'] = $eventbrite['oid'];
+      $eventbrite['organizer_id'] = eventbrite_api_autocomplete_filter($eventbrite['oid']);
       $response = $eb_client->venue_new($eventbrite);
       // If the event is added.
       if ($response->process->status == 'OK') {
@@ -1060,7 +1051,7 @@ function venue_add_form_submit($form, &$form_state) {
   }
   catch (Exception $e) {
     $response = $e->getMessage();
-    form_set_error(NULL, $response);
+    form_set_error('form', $response);
   }
   $save = venue_save($venue);
   if (!empty($save)) {
