@@ -802,7 +802,6 @@ function ticket_add_form_submit($form, &$form_state) {
   else {
     drupal_set_message(t('Please install the Eventbrite API library. Check the !readme for further information.', array('!readme' => l(t('README'), 'admin/help/eventbrite_api'))), 'error');
   }
-  dpm($ticket);
   $save = ticket_save($ticket);
   if (!empty($save)) {
     drupal_set_message(t('Ticket !name saved to Eventbrite and cached locally.', array('!name' => '<em>' . $ticket->name . '</em>')));
@@ -869,8 +868,6 @@ function ticket_clone_form_submit($form, &$form_state) {
       if ($response->process->status == 'OK') {
         // Ticket ID.
         $tid = $response->process->id;
-        dpm($response);
-        return;
         // We have to call the actual event to get the full ticket details.
         $response = $eb_client->event_get(array('id' => $eventbrite['eid']));
         // Get the list of tickets.
@@ -890,7 +887,6 @@ function ticket_clone_form_submit($form, &$form_state) {
     }
     catch (Exception $e) {
       $response = $e->getMessage();
-      dpm($response);
       form_set_error('form', $response);
     }
     // Save the entity.

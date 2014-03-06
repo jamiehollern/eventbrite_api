@@ -91,7 +91,7 @@ class EventbriteApiAttendeesController extends EntityAPIController {
           }
         }
 
-        $queried_entities[$record->{$this->idKey}] = $record; // dpm this
+        $queried_entities[$record->{$this->idKey}] = $record; // d p m  this
         
         /*if (isset($queried_entities[$record->{$this->idKey}])) {
           $queried_entities[$record->{$this->idKey}]->methods[] = $record->method;
