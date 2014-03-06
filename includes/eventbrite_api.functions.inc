@@ -586,8 +586,6 @@ function eventbrite_api_import_all() {
     $import->attendees = $results;
     // Format it nicely.
     $events = eventbrite_api_format_all($import);
-    //dpm($events);
-    //return;
     // Should we delete everything before importing?
     if (variable_get('eventbrite_api_import_delete', 1) == 1) {
       // Yes.

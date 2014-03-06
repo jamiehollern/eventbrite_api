@@ -796,7 +796,6 @@ function ticket_add_form_submit($form, &$form_state) {
     }
     catch (Exception $e) {
       $response = $e->getMessage();
-      dpm($response);
       form_set_error(NULL, $response);
     }
   }
