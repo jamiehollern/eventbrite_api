@@ -224,7 +224,7 @@ function eventbrite_api_menu() {
     'file path' => drupal_get_path('module', 'eventbrite_api') . '/includes',
     'file' => 'eventbrite_api.forms.inc',
   );
-	$items[$path . '/attendee/%attendee/view'] = array(
+  $items[$path . '/attendee/%attendee/view'] = array(
     'title' => 'View',
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'weight' => -10,
@@ -364,12 +364,12 @@ function eventbrite_api_permission() {
  * Implements hook_theme().
  */
 function eventbrite_api_theme($existing, $type, $theme, $path) {
-	return array(
-	  'attendee' => array (
-		  'template' => 'attendee',
-			'path' => drupal_get_path('module', 'eventbrite_api') . '/theme',
-		),
-	);
+  return array(
+    'attendee' => array(
+      'template' => 'attendee',
+      'path' => drupal_get_path('module', 'eventbrite_api') . '/theme',
+    ),
+  );
 }
 
 /**
@@ -405,52 +405,147 @@ function eventbrite_api_field_update_field($field, $prior_field, $has_data) {
   _eventbrite_api_alter_field($field);
 }
 
+/**
+ * Loads an event by the event ID.
+ */
 function event_load($eid = NULL, $reset = FALSE) {
-  $eids = (isset ($eid) ? array($eid) : array());
+  $eids = (isset($eid) ? array($eid) : array());
   $event = event_load_multiple($eids, $reset);
-  return $event ? reset ($event) : FALSE;
+  return $event ? reset($event) : FALSE;
 }
 
+/**
+ * Loads multiple events by ID or based on a set of matching conditions.
+ *
+ * @see entity_load()
+ *
+ * @param $eids
+ *   An array of event IDs.
+ * @param $conditions
+ *   An array of conditions on the {eventbrite_api_events} table in the form
+ *     'field' => $value.
+ * @param $reset
+ *   Whether to reset the internal event loading cache.
+ *
+ * @return
+ *   An array of event objects indexed by eid.
+ */
 function event_load_multiple($eids = array(), $conditions = array(), $reset = FALSE) {
   return entity_load('event', $eids, $conditions, $reset);
 }
 
+/**
+ * Loads an event by the organizer ID.
+ */
 function organizer_load($oid = NULL, $reset = FALSE) {
-  $oids = (isset ($oid) ? array($oid) : array());
+  $oids = (isset($oid) ? array($oid) : array());
   $organizer = organizer_load_multiple($oids, $reset);
-  return $organizer ? reset ($organizer) : FALSE;
+  return $organizer ? reset($organizer) : FALSE;
 }
 
+/**
+ * Loads multiple organizers by ID or based on a set of matching conditions.
+ *
+ * @see entity_load()
+ *
+ * @param $oids
+ *   An array of organzer IDs.
+ * @param $conditions
+ *   An array of conditions on the {eventbrite_api_organizers} table in the form
+ *     'field' => $value.
+ * @param $reset
+ *   Whether to reset the internal organizer loading cache.
+ *
+ * @return
+ *   An array of organizer objects indexed by oid.
+ */
 function organizer_load_multiple($oids = array(), $conditions = array(), $reset = FALSE) {
   return entity_load('organizer', $oids, $conditions, $reset);
 }
 
+/**
+ * Loads an event by the ticket ID.
+ */
 function ticket_load($tid = NULL, $reset = FALSE) {
-  $tids = (isset ($tid) ? array($tid) : array());
+  $tids = (isset($tid) ? array($tid) : array());
   $ticket = ticket_load_multiple($tids, $reset);
-  return $ticket ? reset ($ticket) : FALSE;
+  return $ticket ? reset($ticket) : FALSE;
 }
 
+/**
+ * Loads multiple tickets by ID or based on a set of matching conditions.
+ *
+ * @see entity_load()
+ *
+ * @param $tids
+ *   An array of ticket IDs.
+ * @param $conditions
+ *   An array of conditions on the {eventbrite_api_tickets} table in the form
+ *     'field' => $value.
+ * @param $reset
+ *   Whether to reset the internal ticket loading cache.
+ *
+ * @return
+ *   An array of organizer objects indexed by tid.
+ */
 function ticket_load_multiple($tids = array(), $conditions = array(), $reset = FALSE) {
   return entity_load('ticket', $tids, $conditions, $reset);
 }
 
+/**
+ * Loads an event by the venue ID.
+ */
 function venue_load($vid = NULL, $reset = FALSE) {
-  $vids = (isset ($vid) ? array($vid) : array());
+  $vids = (isset($vid) ? array($vid) : array());
   $venue = venue_load_multiple($vids, $reset);
-  return $venue ? reset ($venue) : FALSE;
+  return $venue ? reset($venue) : FALSE;
 }
 
+/**
+ * Loads multiple venues by ID or based on a set of matching conditions.
+ *
+ * @see entity_load()
+ *
+ * @param $vids
+ *   An array of venue IDs.
+ * @param $conditions
+ *   An array of conditions on the {eventbrite_api_venues} table in the form
+ *     'field' => $value.
+ * @param $reset
+ *   Whether to reset the internal venue loading cache.
+ *
+ * @return
+ *   An array of organizer objects indexed by vid.
+ */
 function venue_load_multiple($vids = array(), $conditions = array(), $reset = FALSE) {
   return entity_load('venue', $vids, $conditions, $reset);
 }
 
+/**
+ * Loads an event by the attendee ID.
+ */
 function attendee_load($aid = NULL, $reset = FALSE) {
-  $aids = (isset ($aid) ? array($aid) : array());
+  $aids = (isset($aid) ? array($aid) : array());
   $attendee = attendee_load_multiple($aids, $reset);
-  return $attendee ? reset ($attendee) : FALSE;
+  return $attendee ? reset($attendee) : FALSE;
 }
 
+/**
+ * Loads multiple attendees by ID or based on a set of matching conditions.
+ *
+ * @see entity_load()
+ *
+ * @param $aids
+ *   An array of attendee IDs.
+ * @param $conditions
+ *   An array of conditions on the {eventbrite_api_attendees} table in the form
+ *     'field' => $value.
+ * @param $reset
+ *   Whether to reset the internal attendee loading cache.
+ *
+ * @return
+ *   An array of organizer objects indexed by aid.
+ */
 function attendee_load_multiple($aids = array(), $conditions = array(), $reset = FALSE) {
   return entity_load('attendee', $aids, $conditions, $reset);
 }
@@ -484,15 +579,18 @@ function eventbrite_api_help($path, $arg) {
 function eventbrite_api_cron() {
   // Check that enough time has past since the last cron run
   if (time() > variable_get('eventbrite_api_cron_time', 0)) {
-		eventbrite_api_import_all();
+    eventbrite_api_import_all();
     variable_set('eventbrite_api_cron_time', time() + variable_get('eventbrite_api_cron_delay', 360));
   }
 }
 
+/**
+ * Display an attendee on the front end.
+ */
 function attendee_view($attendee) {
-	// Strip the first 6 keys, as they're not needed.
-	$attendee = array_slice((array) $attendee, 6);
-	// Add the attendees array as a keyed array.
-	$attendee = array('attendee' => $attendee);
-	return theme('attendee', $attendee);
+  // Strip the first 6 keys, as they're not needed.
+  $attendee = array_slice((array) $attendee, 6);
+  // Add the attendees array as a keyed array.
+  $attendee = array('attendee' => $attendee);
+  return theme('attendee', $attendee);
 }

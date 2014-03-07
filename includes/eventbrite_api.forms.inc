@@ -71,7 +71,7 @@ function eventbrite_api_config_form() {
     $form['import_settings']['eventbrite_api_cron_delay'] = array(
       '#type' => 'select',
       '#title' => t('How often should we run cron'),
-      '#default_value' => variable_get('eventbrite_api_cron_delay',360),
+      '#default_value' => variable_get('eventbrite_api_cron_delay', 360),
       '#options' => array(
         3600 => 'Every hour',
         7200 => 'Every 2 hours',
@@ -86,7 +86,7 @@ function eventbrite_api_config_form() {
         604800 => 'Once per week',
         1209600 => 'Every 2 weeks',
       ),
-      '#description' => t('Select the gap in hours between each cron run. Remember that syncronising with the server requires resources, so set this value to as high as you believe is feasible to keep your site up to date.',array()),
+      '#description' => t('Select the gap in hours between each cron run. Remember that syncronising with the server requires resources, so set this value to as high as you believe is feasible to keep your site up to date.', array()),
     );
     $form['import_settings']['eventbrite_api_import_strip'] = array(
       '#type' => 'checkbox',
@@ -216,14 +216,14 @@ function event_add_form($form, &$form_state, $event) {
     '#type' => 'textfield',
     '#autocomplete_path' => 'eventbrite/organizer/autocomplete',
     '#default_value' => isset($event->oid) ? eventbrite_api_autocomplete_build($event->oid, 'organizer') : '',
-   );
+  );
 
   $form['details']['vid'] = array(
     '#title' => t('Venue'),
     '#type' => 'textfield',
     '#autocomplete_path' => 'eventbrite/venue/autocomplete',
     '#default_value' => isset($event->vid) ? eventbrite_api_autocomplete_build($event->vid, 'venue') : '',
-   );
+  );
 
   $form['dates'] = array(
     '#type' => 'fieldset',
@@ -355,7 +355,7 @@ function event_add_form_submit($form, &$form_state) {
   }
   $save = event_save($event);
   if (!empty($save)) {
-    drupal_set_message(t('Event !title saved to Eventbrite and cached locally.', array('!title' => '<em>' . $event->title . '</em>')));
+    drupal_set_message(t('Event !title saved to Eventbrite and cached locally.', array('!title' => '<em>' . check_plain($event->title) . '</em>')));
     $form_state['redirect'] = 'admin/eventbrite/event';
   }
 }
@@ -905,10 +905,10 @@ function ticket_clone_form_submit($form, &$form_state) {
  * Venue add form.
  */
 function venue_add_form($form, &$form_state, $venue) {
-  
+
   // Add the VID into the $form_state array.
   $form_state['vid'] = !empty($venue->vid) ? $venue->vid : '';
-  
+
   // If we're editing an event we don't show the organizer ID.
   if (empty($venue->name)) {
     $form['oid'] = array(
@@ -955,11 +955,7 @@ function venue_add_form($form, &$form_state, $venue) {
     '#title' => t('Region'),
     '#default_value' => isset($venue->region) ? $venue->region : '',
     '#maxlength' => 255,
-		'#description' => t('
-		   Please note that if your event is in the US, this field is mandatory and requires 
-			 a 2 digit US state code. You can find a list of US state codes at !url.', 
-			 array('!url' => l('https://en.wikipedia.org/wiki/List_of_U.S._state_abbreviations', 
-			 'https://en.wikipedia.org/wiki/List_of_U.S._state_abbreviations'))),
+    '#description' => t('Please note that if your event is in the US, this field is mandatory and requires a 2 digit US state code. You can find a list of US state codes at !url.', array('!url' => l('https://en.wikipedia.org/wiki/List_of_U.S._state_abbreviations', 'https://en.wikipedia.org/wiki/List_of_U.S._state_abbreviations'))),
   );
 
   $form['postal_code'] = array(
@@ -975,24 +971,24 @@ function venue_add_form($form, &$form_state, $venue) {
     '#default_value' => !empty($venue->postal_code) ? $venue->postal_code : variable_get('eventbrite_api_country_code', 'US'),
     '#options' => eventbrite_api_countries(),
   );
-  
+
   $submit = array();
 
   if (!empty($form['#submit'])) {
     $submit += $form['#submit'];
   }
-  
+
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Save'),
     '#submit' => $submit + array('venue_add_form_submit'),
   );
-	
+
   $form['#validate'][] = 'venue_add_form_validate';
   // Add the field related form elements.
   $form_state['venue'] = $venue;
   $form_state['vid'] = $venue->vid;
-  
+
   field_attach_form('venue', $venue, $form, $form_state);
   return $form;
 }
@@ -1056,7 +1052,7 @@ function venue_add_form_submit($form, &$form_state) {
   }
   $save = venue_save($venue);
   if (!empty($save)) {
-    drupal_set_message(t('Venue !name saved to Eventbrite and cached locally.', array('!name' => '<em>' . $venue->name . '</em>')));
+    drupal_set_message(t('Venue !name saved to Eventbrite and cached locally.', array('!name' => '<em>' . check_plain($venue->name) . '</em>')));
     $form_state['redirect'] = 'admin/eventbrite/venue';
   }
 }
@@ -1084,7 +1080,7 @@ function venue_delete_form($form, &$form_state, $venue) {
     t('Cancel'),
     'confirm'
   );
-  
+
   return $form;
 }
 

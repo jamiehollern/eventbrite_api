@@ -1030,9 +1030,9 @@ function eventbrite_api_autocomplete_filter($string) {
  */
 function eventbrite_api_autocomplete_build($id, $entity_type) {
   $entity = entity_load($entity_type, array($id));
-	if (empty($entity)) {
-		return '';
-	}
+  if (empty($entity)) {
+    return '';
+  }
   $entity = array_shift($entity);
   switch ($entity_type) {
     case 'event':
