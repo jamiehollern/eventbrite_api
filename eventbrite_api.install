@@ -52,21 +52,21 @@ function eventbrite_api_schema() {
         'description' => 'The primary identifier for an event.',
         'type' => 'int',
         'size' => 'big',
-        'unsigned' => TRUE,
+        'unsigned' => FALSE,
         'not null' => TRUE,
       ),
       'oid' => array(
         'description' => 'The id of the event organiser.',
         'type' => 'int',
         'size' => 'big',
-        'unsigned' => TRUE,
+        'unsigned' => FALSE,
         'not null' => TRUE,
       ),
       'vid' => array(
         'description' => 'The id of the associated venue.',
         'type' => 'int',
         'size' => 'big',
-        'unsigned' => TRUE,
+        'unsigned' => FALSE,
         'not null' => TRUE,
       ),
       'locale' => array(
@@ -207,7 +207,7 @@ function eventbrite_api_schema() {
         'description' => 'The primary identifier for an event organizer.',
         'type' => 'int',
         'size' => 'big',
-        'unsigned' => TRUE,
+        'unsigned' => FALSE,
         'not null' => TRUE,
       ),
       'name' => array(
@@ -247,14 +247,14 @@ function eventbrite_api_schema() {
         'description' => 'The primary identifier for an event ticket.',
         'type' => 'int',
         'size' => 'big',
-        'unsigned' => TRUE,
+        'unsigned' => FALSE,
         'not null' => TRUE,
       ),
       'eid' => array(
         'description' => 'The id of the associated event.',
         'type' => 'int',
         'size' => 'big',
-        'unsigned' => TRUE,
+        'unsigned' => FALSE,
         'not null' => TRUE,
       ),
       'name' => array(
@@ -362,7 +362,7 @@ function eventbrite_api_schema() {
         'description' => 'The primary identifier for an event venue.',
         'type' => 'int',
         'size' => 'big',
-        'unsigned' => TRUE,
+        'unsigned' => FALSE,
         'not null' => TRUE,
       ),
       'city' => array(
@@ -461,7 +461,7 @@ function eventbrite_api_schema() {
         'description' => 'The primary identifier for an event attendee.',
         'type' => 'int',
         'size' => 'big',
-        'unsigned' => TRUE,
+        'unsigned' => FALSE,
         'not null' => TRUE,
       ),
       'work_postal_code' => array(
@@ -582,7 +582,7 @@ function eventbrite_api_schema() {
         'description' => 'The id of the associated ticket for this order.',
         'type' => 'int',
         'size' => 'big',
-        'unsigned' => TRUE,
+        'unsigned' => FALSE,
         'not null' => TRUE,
       ),
       'work_address' => array(
@@ -655,7 +655,7 @@ function eventbrite_api_schema() {
         'description' => 'The id of this order.',
         'type' => 'int',
         'size' => 'big',
-        'unsigned' => TRUE,
+        'unsigned' => FALSE,
         'not null' => TRUE,
       ),
       'company' => array(
@@ -746,7 +746,7 @@ function eventbrite_api_schema() {
         'description' => 'The id of this order.',
         'type' => 'int',
         'size' => 'big',
-        'unsigned' => TRUE,
+        'unsigned' => FALSE,
         'not null' => TRUE,
       ),
       'work_country_code' => array(
@@ -804,7 +804,7 @@ function eventbrite_api_schema() {
         'description' => 'The primary identifier for an event attendee.',
         'type' => 'int',
         'size' => 'big',
-        'unsigned' => TRUE,
+        'unsigned' => FALSE,
         'not null' => TRUE,
       ),
       'work_postal_code' => array(
@@ -925,7 +925,7 @@ function eventbrite_api_schema() {
         'description' => 'The id of the associated ticket for this order.',
         'type' => 'int',
         'size' => 'big',
-        'unsigned' => TRUE,
+        'unsigned' => FALSE,
         'not null' => TRUE,
       ),
       'work_address' => array(
@@ -998,7 +998,7 @@ function eventbrite_api_schema() {
         'description' => 'The id of this order.',
         'type' => 'int',
         'size' => 'big',
-        'unsigned' => TRUE,
+        'unsigned' => FALSE,
         'not null' => TRUE,
       ),
       'company' => array(
@@ -1086,10 +1086,10 @@ function eventbrite_api_schema() {
         'not null' => FALSE,
       ),
       'eid' => array(
-        'description' => 'The id of this order.',
+        'description' => 'The id of the event related this order.',
         'type' => 'int',
         'size' => 'big',
-        'unsigned' => TRUE,
+        'unsigned' => FALSE,
         'not null' => TRUE,
       ),
       'work_country_code' => array(
@@ -1147,14 +1147,14 @@ function eventbrite_api_schema() {
         'description' => 'The primary identifier for an event attendee question.',
         'type' => 'int',
         'size' => 'big',
-        'unsigned' => TRUE,
+        'unsigned' => FALSE,
         'not null' => TRUE,
       ),
       'qid' => array(
         'description' => 'The qid of this order.',
         'type' => 'int',
         'size' => 'big',
-        'unsigned' => TRUE,
+        'unsigned' => FALSE,
         'not null' => TRUE,
       ),
       'answer_text' => array(
@@ -1585,4 +1585,158 @@ function eventbrite_api_update_7100() {
   db_create_table('eventbrite_api_attendees', $schema['eventbrite_api_attendees']);
   db_create_table('eventbrite_api_attendees_answers', $schema['eventbrite_api_attendees_answers']);
   return $schema;
+}
+
+
+
+/**
+ * Implements hook_update_N().
+ *
+ * Changes ID fields from unsigned to signed to support negative integers.
+ *
+ */
+function eventbrite_api_update_7101() {
+  // Events EID.
+  $table = 'eventbrite_api_events';
+  $field = $field_new = 'eid';
+  $spec = array(
+    'description' => 'The primary identifier for an event.',
+    'type' => 'int',
+    'size' => 'big',
+    'unsigned' => FALSE,
+    'not null' => TRUE,
+  );
+  db_change_field($table, $field, $field_new, $spec);
+  // Events OID.
+  $table = 'eventbrite_api_events';
+  $field = $field_new = 'oid';
+  $spec = array(
+    'description' => 'The id of the event organiser.',
+    'type' => 'int',
+    'size' => 'big',
+    'unsigned' => FALSE,
+    'not null' => TRUE,
+  );
+  db_change_field($table, $field, $field_new, $spec);
+  // Events VID.
+  $table = 'eventbrite_api_events';
+  $field = $field_new = 'vid';
+  $spec = array(
+    'description' => 'The id of the associated venue.',
+    'type' => 'int',
+    'size' => 'big',
+    'unsigned' => FALSE,
+    'not null' => TRUE,
+  );
+  db_change_field($table, $field, $field_new, $spec);
+  // Organizers OID.
+  $table = 'eventbrite_api_organizers';
+  $field = $field_new = 'oid';
+  $spec = array(
+    'description' => 'The primary identifier for an event organizer.',
+    'type' => 'int',
+    'size' => 'big',
+    'unsigned' => FALSE,
+    'not null' => TRUE,
+  );
+  db_change_field($table, $field, $field_new, $spec);
+  // Tickets TID.
+  $table = 'eventbrite_api_tickets';
+  $field = $field_new = 'tid';
+  $spec = array(
+    'description' => 'The primary identifier for an event ticket.',
+    'type' => 'int',
+    'size' => 'big',
+    'unsigned' => FALSE,
+    'not null' => TRUE,
+  );
+  db_change_field($table, $field, $field_new, $spec);
+  // Tickets EID.
+  $table = 'eventbrite_api_tickets';
+  $field = $field_new = 'eid';
+  $spec = array(
+    'description' => 'The id of the associated event.',
+    'type' => 'int',
+    'size' => 'big',
+    'unsigned' => FALSE,
+    'not null' => TRUE,
+  );
+  db_change_field($table, $field, $field_new, $spec);
+  // Venues VID.
+  $table = 'eventbrite_api_venues';
+  $field = $field_new = 'vid';
+  $spec = array(
+    'description' => 'The primary identifier for an event venue.',
+    'type' => 'int',
+    'size' => 'big',
+    'unsigned' => FALSE,
+    'not null' => TRUE,
+  );
+  db_change_field($table, $field, $field_new, $spec);
+  // Attendees AID.
+  $table = 'eventbrite_api_attendees';
+  $field = $field_new = 'aid';
+  $spec = array(
+    'description' => 'The primary identifier for an event attendee.',
+    'type' => 'int',
+    'size' => 'big',
+    'unsigned' => FALSE,
+    'not null' => TRUE,
+  );
+  db_change_field($table, $field, $field_new, $spec);
+  // Attendees TID.
+  $table = 'eventbrite_api_attendees';
+  $field = $field_new = 'tid';
+  $spec = array(
+    'description' => 'The id of the associated ticket for this order.',
+    'type' => 'int',
+    'size' => 'big',
+    'unsigned' => FALSE,
+    'not null' => TRUE,
+  );
+  db_change_field($table, $field, $field_new, $spec);
+  // Attendees ORID.
+  $table = 'eventbrite_api_attendees';
+  $field = $field_new = 'orid';
+  $spec = array(
+    'description' => 'The id of this order.',
+    'type' => 'int',
+    'size' => 'big',
+    'unsigned' => FALSE,
+    'not null' => TRUE,
+  );
+  db_change_field($table, $field, $field_new, $spec);
+  // Attendees EID.
+  $table = 'eventbrite_api_attendees';
+  $field = $field_new = 'eid';
+  $spec = array(
+    'description' => 'The id of the event related this order.',
+    'type' => 'int',
+    'size' => 'big',
+    'unsigned' => FALSE,
+    'not null' => TRUE,
+  );
+  db_change_field($table, $field, $field_new, $spec);
+  // Attendees Answers AID.
+  $table = 'eventbrite_api_attendees_answers';
+  $field = $field_new = 'aid';
+  $spec = array(
+    'description' => 'The primary identifier for an event attendee question.',
+    'type' => 'int',
+    'size' => 'big',
+    'unsigned' => FALSE,
+    'not null' => TRUE,
+  );
+  db_change_field($table, $field, $field_new, $spec);
+  // Attendees Answers QID.
+  $table = 'eventbrite_api_attendees_answers';
+  $field = $field_new = 'qid';
+  $spec = array(
+    'description' => 'The qid of this order.',
+    'type' => 'int',
+    'size' => 'big',
+    'unsigned' => FALSE,
+    'not null' => TRUE,
+  );
+  db_change_field($table, $field, $field_new, $spec);
 }
