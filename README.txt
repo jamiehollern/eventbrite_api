@@ -9,18 +9,19 @@ uploaded to Eventbrite directly from Drupal.
 Installation
 ------------
 Please note, these instructions to not contain full instructions on how to
-setup your Eventbrite account. Seeting up an eventbrite account is fairly
-straight forward, check the eventbrite website, http://www.eventbrite.com/, for
+setup your Eventbrite account. Setting up an eventbrite account is fairly
+straight forward, check the eventbrite website, http://www.eventbrite.com/ for
 more information.
 
 Eventbrite API can be installed like any other Drupal module -- place it
 in the modules directory for your site and enable it on the
-'admin/build/modules' page. Ensure you also have the dependent modules
-installed, libraries, date_popup, entity and views
+'admin/build/modules' page. Ensure you also have these dependent modules
+installed: libraries, date_popup, entity and views.
 
-You will also need to download the eventbrite php library from GitHub,
-https://github.com/eventbrite/eventbrite.php and unpack it in the
-sites/all/libraries folder. Rename the unpacked folder eventbrite. You should
+You will also need to download the eventbrite php library from GitHub. This
+can be done with Drush using the command "drush eventbrite-php". For manual install
+download it from https://github.com/eventbrite/eventbrite.php and unpack it in 
+the sites/all/libraries folder. Rename the unpacked folder eventbrite. You should
 delete the examples folder in the eventbrite library. Remember that libraries 
 are case sensitive, so ensure the file is named in lower case "eventbrite.php".
 

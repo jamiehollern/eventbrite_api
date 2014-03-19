@@ -1432,12 +1432,10 @@ function eventbrite_api_update_7100() {
       ),
       'discount' => array(
         'description' => 'The attendee discount on this order.',
-        'type' => 'numeric',
-        'size' => 'normal',
-        'default' => 0,
-        'precision' => 10,
-        'scale' => 2,
-        'not null' => FALSE,
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
       ),
       'work_city' => array(
         'description' => 'The city of the workplace of the attendee.',
@@ -1751,6 +1749,26 @@ function eventbrite_api_update_7102() {
   $field = $field_new = 'url';
   $spec = array(
     'description' => 'The Eventbrite URL for the event.',
+    'type' => 'varchar',
+    'length' => 255,
+    'not null' => TRUE,
+    'default' => '',
+  );
+  db_change_field($table, $field, $field_new, $spec);
+}
+
+/**
+ * Implements hook_update_N().
+ *
+ * Changes the discount code to varchar.
+ *
+ */
+function eventbrite_api_update_7103() {
+  // Attendees discount.
+  $table = 'eventbrite_api_attendees';
+  $field = $field_new = 'discount';
+  $spec = array(
+    'description' => 'The attendee discount on this order.',
     'type' => 'varchar',
     'length' => 255,
     'not null' => TRUE,
