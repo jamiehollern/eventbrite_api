@@ -428,10 +428,8 @@ function eventbrite_api_ctime($timestamp = NULL) {
   if (empty($timestamp)) {
     $timestamp = time();
   }
-  $time = date('c', $timestamp);
-  $time = str_replace('T', ' ', $time);
-  $time = explode('+', $time);
-  return $time[0];
+  $time = date('Y-m-d H:i:s', $timestamp);
+  return $time;
 }
 
 function eventbrite_api_datef($date) {
