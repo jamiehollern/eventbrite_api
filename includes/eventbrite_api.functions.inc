@@ -699,6 +699,10 @@ function eventbrite_api_format_all($data) {
     if (!empty($vid)) {
       $events['events'][$eid]['vid'] = $vid;
     }
+    // Remove the HTML from the description if the user wishes.
+    if (variable_get('eventbrite_api_import_strip', 1) == 1) {
+      $events['events'][$eid]['description'] = strip_tags($events['events'][$eid]['description']);
+    }
   }
   // Run through the attendee data.
   $attendees = array();
