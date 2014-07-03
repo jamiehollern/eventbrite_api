@@ -937,7 +937,7 @@ function eventbrite_api_entity_prepare($type) {
 function _eventbrite_api_alter_field($data) {
   // Set some shorthand vars.
   $type = $data['type'];
-  $target_type = $data['settings']['target_type'];
+  $target_type = isset($data['settings']['target_type']) ? $data['settings']['target_type'] : '';
   // Check to see if this is the correct field.
   if ($type == 'entityreference' && $target_type == 'event') {
     // Get all of the necessary variables together.
