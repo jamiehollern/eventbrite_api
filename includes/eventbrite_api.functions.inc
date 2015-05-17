@@ -562,7 +562,7 @@ function eventbrite_api_import_all() {
     $eb_client = new Eventbrite($auth);
     // Get all data by using the user_list_events method.
     $import = $eb_client->user_list_events();
-    // Now get all attendee data..
+    // Now get all attendee data.
     $results = array();
     // Go through the events.
     foreach ($import->events as $entity) {
@@ -575,7 +575,7 @@ function eventbrite_api_import_all() {
       catch (Exception $e) {
         $error = $e->getMessage();
         // But make sure the error isn't just no attendees to load.
-        if ($error != 'No records were found with the given parameters..') {
+        if ($error != 'No records were found with the given parameters.') {
           drupal_set_message($error, 'error');
         }
       }
