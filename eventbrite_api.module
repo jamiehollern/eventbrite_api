@@ -577,10 +577,16 @@ function eventbrite_api_help($path, $arg) {
  * Run any scheduled tasks.
  */
 function eventbrite_api_cron() {
-  // Check that enough time has past since the last cron run
-  if (time() > variable_get('eventbrite_api_cron_time', 0)) {
-    eventbrite_api_import_all();
-    variable_set('eventbrite_api_cron_time', time() + variable_get('eventbrite_api_cron_delay', 360));
+  // Do we want to run Eventbrite with cron?
+  if (variable_get('eventbrite_api_cron_import', 0)) {
+    // Check to make sure we actually have the necessary keys.
+    if (variable_get('eventbrite_api_userkey', '') && variable_get('eventbrite_api_appkey', '')) {
+      // Check that enough time has past since the last cron run
+      if (time() > variable_get('eventbrite_api_cron_time', 0)) {
+        eventbrite_api_import_all();
+        variable_set('eventbrite_api_cron_time', time() + variable_get('eventbrite_api_cron_delay', 360));
+      }
+    }
   }
 }
 
