@@ -235,6 +235,25 @@ function eventbrite_api_views_data() {
     ),
   );
 
+  // Expose the event status.
+  $data['eventbrite_api_events']['status'] = array(
+    'title' => t('Status'),
+    'help' => t('The event status.'),
+    'field' => array(
+      'handler' => 'views_handler_field',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_string',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_string',
+    ),
+  );
+
   // Expose the event tags.
   $data['eventbrite_api_events']['tags'] = array(
     'title' => t('Tags'),
