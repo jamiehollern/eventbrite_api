@@ -580,8 +580,11 @@ function eventbrite_api_import_all() {
         }
       }
     }
-    // Add the attendees to our import data.
-    $import->attendees = $results;
+    // If we have attendees.
+    if ($results) {
+      // Add the attendees to our import data.
+      $import->attendees = $results;
+    }
     // Format it nicely.
     $events = eventbrite_api_format_all($import);
     // Should we delete everything before importing?
