@@ -402,6 +402,7 @@ function eventbrite_api_field_create_field($field) {
  * See _eventbrite_api_alter_field().
  */
 function eventbrite_api_field_update_field($field, $prior_field, $has_data) {
+  module_load_include('inc', 'eventbrite_api',' includes/eventbrite_api.functions');
   _eventbrite_api_alter_field($field);
 }
 
