@@ -575,7 +575,10 @@ function eventbrite_api_import_all() {
       catch (Exception $e) {
         $error = $e->getMessage();
         // But make sure the error isn't just no attendees to load.
-        if ($error != 'No records were found with the given parameters.') {
+        if ($error == 'No records were found with the given parameters..' || strpos($error, 'Event deleted or cancelled.') !== FALSE) {
+          drupal_set_message('Event "' . $entity->event->title . '" (ID ' . $entity->event->id . ') has no attendees to load.', 'warning');
+        }
+        else {
           drupal_set_message($error, 'error');
         }
       }
