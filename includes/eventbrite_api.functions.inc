@@ -681,6 +681,10 @@ function eventbrite_api_format_all($data) {
         if (!empty($ticket->ticket->price)) {
           $ticket->ticket->price = str_replace(',', '', $ticket->ticket->price);
         }
+        // Remove commas from display prices.
+        if (!empty($ticket->ticket->display_price)) {
+          $ticket->ticket->display_price = str_replace(',', '', $ticket->ticket->display_price);
+        }
         // Assign the venue object as an array to $events.
         $events['tickets'][$tid] = (array) $ticket->ticket;
       }
