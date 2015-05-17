@@ -66,7 +66,7 @@ function eventbrite_api_config_form() {
     $form['import_settings']['eventbrite_api_cron_import'] = array(
       '#type' => 'checkbox',
       '#title' => t('Import events from Eventbrite during cron runs'),
-      '#default_value' => variable_get('eventbrite_api_cron_import', 1),
+      '#default_value' => variable_get('eventbrite_api_cron_import', 0),
     );
     $form['import_settings']['eventbrite_api_cron_delay'] = array(
       '#type' => 'select',
