@@ -209,7 +209,26 @@ function eventbrite_api_views_data() {
       'click sortable' => TRUE,
     ),
     'filter' => array(
-      'handler' => 'views_handler_filter_date',
+      'handler' => 'eventbrite_api_handler_filter_datetime',
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort_date',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_date',
+    ),
+  );
+
+  // Expose the event end date.
+  $data['eventbrite_api_events']['end_date'] = array(
+    'title' => t('End date'),
+    'help' => t('The date the event ends.'),
+    'field' => array(
+      'handler' => 'eventbrite_api_handler_field_datetime',
+      'click sortable' => TRUE,
+    ),
+    'filter' => array(
+      'handler' => 'eventbrite_api_handler_filter_datetime',
     ),
     'sort' => array(
       'handler' => 'views_handler_sort_date',
@@ -320,7 +339,7 @@ function eventbrite_api_views_data() {
       'click sortable' => TRUE,
     ),
     'filter' => array(
-      'handler' => 'views_handler_filter_date',
+      'handler' => 'eventbrite_api_handler_filter_datetime',
     ),
     'sort' => array(
       'handler' => 'views_handler_sort_date',
@@ -377,7 +396,7 @@ function eventbrite_api_views_data() {
       'click sortable' => TRUE,
     ),
     'filter' => array(
-      'handler' => 'views_handler_filter_date',
+      'handler' => 'eventbrite_api_handler_filter_datetime',
     ),
     'sort' => array(
       'handler' => 'views_handler_sort_date',
@@ -646,7 +665,7 @@ function eventbrite_api_views_data() {
       'click sortable' => TRUE,
     ),
     'filter' => array(
-      'handler' => 'views_handler_filter_date',
+      'handler' => 'eventbrite_api_handler_filter_datetime',
     ),
     'sort' => array(
       'handler' => 'views_handler_sort_date',
@@ -665,7 +684,7 @@ function eventbrite_api_views_data() {
       'click sortable' => TRUE,
     ),
     'filter' => array(
-      'handler' => 'views_handler_filter_date',
+      'handler' => 'eventbrite_api_handler_filter_datetime',
     ),
     'sort' => array(
       'handler' => 'views_handler_sort_date',
@@ -1502,7 +1521,7 @@ function eventbrite_api_views_data() {
       'click sortable' => TRUE,
     ),
     'filter' => array(
-      'handler' => 'views_handler_filter_date',
+      'handler' => 'eventbrite_api_handler_filter_datetime',
     ),
     'sort' => array(
       'handler' => 'views_handler_sort_date',
@@ -1809,7 +1828,7 @@ function eventbrite_api_views_data() {
       'click sortable' => TRUE,
     ),
     'filter' => array(
-      'handler' => 'views_handler_filter_date',
+      'handler' => 'eventbrite_api_handler_filter_datetime',
     ),
     'sort' => array(
       'handler' => 'views_handler_sort_date',
@@ -1866,7 +1885,7 @@ function eventbrite_api_views_data() {
       'click sortable' => TRUE,
     ),
     'filter' => array(
-      'handler' => 'views_handler_filter_date',
+      'handler' => 'eventbrite_api_handler_filter_datetime',
     ),
     'sort' => array(
       'handler' => 'views_handler_sort_date',
