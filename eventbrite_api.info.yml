@@ -1,0 +1,8 @@
+name: Eventbrite API
+description: Provides an interface to the data of the Eventbrite event management service.
+package: Web services
+type: module
+version: 1.0
+core: 8.x
+dependencies:
+  - rest
