@@ -10,11 +10,11 @@
  */
 function eventbrite_api_views_data() {
   $data = array();
-  
+
   /**
    * Integrate the events table.
    */
-  $data['eventbrite_api_events']['table']['group']  = t('Eventbrite events');
+  $data['eventbrite_api_events']['table']['group'] = t('Eventbrite events');
   $data['eventbrite_api_events']['table']['entity type'] = 'event';
 
   $data['eventbrite_api_events']['table']['base'] = array(
@@ -27,7 +27,7 @@ function eventbrite_api_views_data() {
   $data['eventbrite_api_events']['eid'] = array(
     'title' => t('Event ID'),
     'help' => t('The unique internal identifier of the event.'),
-    'field' => array(  
+    'field' => array(
       'handler' => 'views_handler_field_numeric',
       'click sortable' => TRUE,
     ),
@@ -41,7 +41,7 @@ function eventbrite_api_views_data() {
       'handler' => 'views_handler_argument_numeric',
     ),
   );
-  
+
   $data['eventbrite_api_events']['tid'] = array(
     'title' => t('Tickets'),
     'help' => t('The unique internal identifier of event tickets.'),
@@ -83,28 +83,28 @@ function eventbrite_api_views_data() {
       'help' => t('The venue associated with the event.'),
     ),
   );
-  
+
   if (module_exists('locale')) {
     // Expose the language.
     $data['eventbrite_api_events']['locale'] = array(
       'title' => t('Language'),
       'help' => t('The language the event is in.'),
       'field' => array(
-       'handler' => 'views_handler_field_locale_language',
-       'click sortable' => TRUE,
+        'handler' => 'views_handler_field_locale_language',
+        'click sortable' => TRUE,
       ),
-     'filter' => array(
-       'handler' => 'views_handler_filter_locale_language',
-     ),
-     'argument' => array(
-       'handler' => 'views_handler_argument_locale_language',
-     ),
-     'sort' => array(
-     'handler' => 'views_handler_sort',
-     ),
+      'filter' => array(
+        'handler' => 'views_handler_filter_locale_language',
+      ),
+      'argument' => array(
+        'handler' => 'views_handler_argument_locale_language',
+      ),
+      'sort' => array(
+        'handler' => 'views_handler_sort',
+      ),
     );
   }
-  
+
   // Expose the timezone.
   $data['eventbrite_api_events']['timezone'] = array(
     'title' => t('Timezone'),
@@ -395,7 +395,7 @@ function eventbrite_api_views_data() {
       'handler' => 'eventbrite_api_handler_field_event_link',
     ),
   );
-  
+
   $data['eventbrite_api_events']['delete_event'] = array(
     'field' => array(
       'title' => t('Delete link'),
@@ -407,7 +407,7 @@ function eventbrite_api_views_data() {
   /**
    * Integrate the organizers table.
    */
-  $data['eventbrite_api_organizers']['table']['group']  = t('Eventbrite organizer');
+  $data['eventbrite_api_organizers']['table']['group'] = t('Eventbrite organizer');
   $data['eventbrite_api_organizers']['table']['entity type'] = 'organizer';
 
   $data['eventbrite_api_organizers']['table']['base'] = array(
@@ -530,7 +530,7 @@ function eventbrite_api_views_data() {
   /**
    * Integrate the tickets table.
    */
-  $data['eventbrite_api_tickets']['table']['group']  = t('Eventbrite ticket');
+  $data['eventbrite_api_tickets']['table']['group'] = t('Eventbrite ticket');
   $data['eventbrite_api_tickets']['table']['entity type'] = 'ticket';
 
   $data['eventbrite_api_tickets']['table']['base'] = array(
@@ -839,7 +839,7 @@ function eventbrite_api_views_data() {
   /**
    * Integrate the venues table.
    */
-  $data['eventbrite_api_venues']['table']['group']  = t('Eventbrite venue');
+  $data['eventbrite_api_venues']['table']['group'] = t('Eventbrite venue');
   $data['eventbrite_api_venues']['table']['entity type'] = 'venue';
 
   $data['eventbrite_api_venues']['table']['base'] = array(
@@ -1090,10 +1090,10 @@ function eventbrite_api_views_data() {
     ),
   );
 
- /**
-  * Integrate the attendees table.
-  */
-  $data['eventbrite_api_attendees']['table']['group']  = t('Eventbrite attendee');
+  /**
+   * Integrate the attendees table.
+   */
+  $data['eventbrite_api_attendees']['table']['group'] = t('Eventbrite attendee');
   $data['eventbrite_api_attendees']['table']['entity type'] = 'attendee';
 
   $data['eventbrite_api_attendees']['table']['base'] = array(
@@ -1127,7 +1127,7 @@ function eventbrite_api_views_data() {
       'label' => t('Get the questions and answers for an attendee.'),
     ),
   );
-  
+
   $data['eventbrite_api_attendees']['table']['default_relationship'] = array(
     'eventbrite_api_attendees_answers' => array(
       'table' => 'eventbrite_api_attendees_answers',
@@ -1439,7 +1439,7 @@ function eventbrite_api_views_data() {
       'handler' => 'views_handler_argument_string',
     ),
   );
-  
+
   // Expose the ticket ID.
   $data['eventbrite_api_attendees']['tid'] = array(
     'title' => t('Ticket ID'),
@@ -1627,7 +1627,7 @@ function eventbrite_api_views_data() {
       'handler' => 'views_handler_argument_string',
     ),
   );
-  
+
   // Expose the ticket ID.
   $data['eventbrite_api_attendees']['orid'] = array(
     'title' => t('OrID'),
@@ -1876,7 +1876,7 @@ function eventbrite_api_views_data() {
       'handler' => 'views_handler_argument_numeric',
     ),
   );
-  
+
   // Expose the event ID.
   $data['eventbrite_api_attendees']['eid'] = array(
     'title' => t('Event ID'),
@@ -2018,7 +2018,7 @@ function eventbrite_api_views_data() {
   /**
    * Integrate the attendees answers table.
    */
-  $data['eventbrite_api_attendees_answers']['table']['group']  = t('Eventbrite attendee answers');
+  $data['eventbrite_api_attendees_answers']['table']['group'] = t('Eventbrite attendee answers');
   $data['eventbrite_api_attendees_answers']['table']['entity type'] = 'attendee';
 
   $data['eventbrite_api_attendees_answers']['table']['base'] = array(

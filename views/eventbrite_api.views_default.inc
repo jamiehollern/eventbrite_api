@@ -8,9 +8,9 @@
  * Implements hook_views_default_views().
  */
 function eventbrite_api_views_default_views() {
-  
+
   // Events.
-  
+
   $view = new view();
   $view->name = 'events_list';
   $view->description = '';
@@ -20,7 +20,7 @@ function eventbrite_api_views_default_views() {
   $view->core = 7;
   $view->api_version = '3.0';
   $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
-  
+
   /* Display: Master */
   $handler = $view->new_display('default', 'Master', 'default');
   $handler->display->display_options['title'] = 'Events';
@@ -128,7 +128,7 @@ function eventbrite_api_views_default_views() {
   $handler->display->display_options['fields']['delete_event']['id'] = 'delete_event';
   $handler->display->display_options['fields']['delete_event']['table'] = 'eventbrite_api_events';
   $handler->display->display_options['fields']['delete_event']['field'] = 'delete_event';
-  
+
   /* Display: Page */
   $handler = $view->new_display('page', 'Page', 'page');
   $handler->display->display_options['path'] = 'admin/eventbrite/event/list';
@@ -146,9 +146,9 @@ function eventbrite_api_views_default_views() {
   $handler->display->display_options['tab_options']['name'] = 'management';
 
   $views[$view->name] = $view;
-  
+
   // Organizers.
-  
+
   $view = new view();
   $view->name = 'organizers';
   $view->description = '';
@@ -158,7 +158,7 @@ function eventbrite_api_views_default_views() {
   $view->core = 7;
   $view->api_version = '3.0';
   $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
-  
+
   /* Display: Master */
   $handler = $view->new_display('default', 'Master', 'default');
   $handler->display->display_options['title'] = 'Organizers';
@@ -196,7 +196,7 @@ function eventbrite_api_views_default_views() {
   $handler->display->display_options['fields']['edit_organizer']['id'] = 'edit_organizer';
   $handler->display->display_options['fields']['edit_organizer']['table'] = 'eventbrite_api_organizers';
   $handler->display->display_options['fields']['edit_organizer']['field'] = 'edit_organizer';
-  
+
   /* Display: Page */
   $handler = $view->new_display('page', 'Page', 'page');
   $handler->display->display_options['path'] = 'admin/eventbrite/organizer/list';
@@ -214,9 +214,9 @@ function eventbrite_api_views_default_views() {
   $handler->display->display_options['tab_options']['name'] = 'management';
 
   $views[$view->name] = $view;
-  
+
   // Tickets.
-  
+
   $view = new view();
   $view->name = 'tickets';
   $view->description = '';
@@ -226,7 +226,7 @@ function eventbrite_api_views_default_views() {
   $view->core = 7;
   $view->api_version = '3.0';
   $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
-  
+
   /* Display: Master */
   $handler = $view->new_display('default', 'Master', 'default');
   $handler->display->display_options['title'] = 'Tickets';
@@ -315,7 +315,7 @@ function eventbrite_api_views_default_views() {
   $handler->display->display_options['fields']['clone_other']['id'] = 'clone_other';
   $handler->display->display_options['fields']['clone_other']['table'] = 'eventbrite_api_tickets';
   $handler->display->display_options['fields']['clone_other']['field'] = 'clone_other';
-  
+
   /* Display: Page */
   $handler = $view->new_display('page', 'Page', 'page');
   $handler->display->display_options['path'] = 'admin/eventbrite/ticket/list';
@@ -335,7 +335,7 @@ function eventbrite_api_views_default_views() {
   $views[$view->name] = $view;
 
   // Venues.
-  
+
   $view = new view();
   $view->name = 'venues';
   $view->description = '';
@@ -345,7 +345,7 @@ function eventbrite_api_views_default_views() {
   $view->core = 7;
   $view->api_version = '3.0';
   $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
-  
+
   /* Display: Master */
   $handler = $view->new_display('default', 'Master', 'default');
   $handler->display->display_options['title'] = 'Venues';
@@ -387,7 +387,7 @@ function eventbrite_api_views_default_views() {
   $handler->display->display_options['fields']['edit_venue']['id'] = 'edit_venue';
   $handler->display->display_options['fields']['edit_venue']['table'] = 'eventbrite_api_venues';
   $handler->display->display_options['fields']['edit_venue']['field'] = 'edit_venue';
-  
+
   /* Display: Page */
   $handler = $view->new_display('page', 'Page', 'page');
   $handler->display->display_options['path'] = 'admin/eventbrite/venue/list';
@@ -405,9 +405,9 @@ function eventbrite_api_views_default_views() {
   $handler->display->display_options['tab_options']['name'] = 'management';
 
   $views[$view->name] = $view;
-  
+
   // Attendees.
-  
+
   $view = new view();
   $view->name = 'attendees';
   $view->description = '';
@@ -417,7 +417,7 @@ function eventbrite_api_views_default_views() {
   $view->core = 7;
   $view->api_version = '3.0';
   $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
-  
+
   /* Display: Master */
   $handler = $view->new_display('default', 'Master', 'default');
   $handler->display->display_options['title'] = 'Attendees';
@@ -554,7 +554,7 @@ function eventbrite_api_views_default_views() {
   $handler->display->display_options['fields']['view_attendee']['field'] = 'view_attendee';
   $handler->display->display_options['fields']['view_attendee']['label'] = 'View';
   $handler->display->display_options['fields']['view_attendee']['element_label_colon'] = FALSE;
-  
+
   /* Display: Page */
   $handler = $view->new_display('page', 'Page', 'page');
   $handler->display->display_options['path'] = 'admin/eventbrite/attendee/list';
@@ -571,6 +571,6 @@ function eventbrite_api_views_default_views() {
   $handler->display->display_options['tab_options']['name'] = 'management';
 
   $views[$view->name] = $view;
- 
+
   return $views;
 }

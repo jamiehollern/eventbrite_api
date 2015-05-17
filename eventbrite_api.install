@@ -24,7 +24,10 @@ function eventbrite_api_requirements($phase) {
         'title' => $t('Eventbrite'),
         'value' => $t('Not found'),
         'severity' => REQUIREMENT_ERROR,
-        'description' => $t('You need to download !eventbrite_php and place it into a directory named eventbrite in the %path directory on your server.', array('!eventbrite_php' => l($t('eventbrite.php'), $library['download url']), '%path' => 'sites/all/libraries')),
+        'description' => $t('You need to download !eventbrite_php and place it into a directory named eventbrite in the %path directory on your server.', array(
+          '!eventbrite_php' => l($t('eventbrite.php'), $library['download url']),
+          '%path' => 'sites/all/libraries'
+        )),
       );
     }
     // Let the user know that it's working.
@@ -666,7 +669,8 @@ function eventbrite_api_schema() {
         'default' => '',
       ),
       'barcode' => array(
-        'description' => 'The barcode number of the order.', // Stored as varchar because bigint is too small.
+        'description' => 'The barcode number of the order.',
+        // Stored as varchar because bigint is too small.
         'type' => 'varchar',
         'length' => 255,
         'not null' => TRUE,
@@ -1007,7 +1011,8 @@ function eventbrite_api_schema() {
         'default' => '',
       ),
       'barcode' => array(
-        'description' => 'The barcode number of the order.', // Stored as varchar because bigint is too small.
+        'description' => 'The barcode number of the order.',
+        // Stored as varchar because bigint is too small.
         'type' => 'varchar',
         'length' => 255,
         'not null' => TRUE,
@@ -1406,7 +1411,8 @@ function eventbrite_api_update_7100() {
         'default' => '',
       ),
       'barcode' => array(
-        'description' => 'The barcode number of the order.', // Stored as varchar because bigint is too small.
+        'description' => 'The barcode number of the order.',
+        // Stored as varchar because bigint is too small.
         'type' => 'varchar',
         'length' => 255,
         'not null' => TRUE,
@@ -1792,7 +1798,7 @@ function eventbrite_api_update_7104() {
   );
   db_change_field($table, $field, $field_new, $spec);
   // Add the website column.
-  $spec = array (
+  $spec = array(
     'description' => 'The website of the workplace of the attendee.',
     'type' => 'varchar',
     'length' => 2048,

@@ -472,9 +472,15 @@ function event_delete($entity) {
   // Delete the entity locally.
   entity_delete('event', $entity->eid);
   // Update the event on Eventbrite.
-  $auth = array('app_key'  => variable_get('eventbrite_api_appkey', ''), 'user_key' => variable_get('eventbrite_api_userkey', ''));
+  $auth = array(
+    'app_key' => variable_get('eventbrite_api_appkey', ''),
+    'user_key' => variable_get('eventbrite_api_userkey', '')
+  );
   $eb_client = new Eventbrite($auth);
-  $response = $eb_client->event_update(array('id' => $entity->eid, 'status' => 'deleted'));
+  $response = $eb_client->event_update(array(
+    'id' => $entity->eid,
+    'status' => 'deleted'
+  ));
 }
 
 function organizer_create() {
@@ -557,7 +563,10 @@ function venue_delete($entity) {
 function eventbrite_api_import_all() {
   if (($library = libraries_load('eventbrite')) && !empty($library['loaded'])) {
     // Authorisation details.
-    $auth = array('app_key'  => variable_get('eventbrite_api_appkey', ''), 'user_key' => variable_get('eventbrite_api_userkey', ''));
+    $auth = array(
+      'app_key' => variable_get('eventbrite_api_appkey', ''),
+      'user_key' => variable_get('eventbrite_api_userkey', '')
+    );
     // Connect to Eventbrite.
     $eb_client = new Eventbrite($auth);
     // Get all data by using the user_list_events method.
@@ -570,13 +579,12 @@ function eventbrite_api_import_all() {
       try {
         $id = $entity->event->id;
         $results[$id] = $eb_client->event_list_attendees(array('id' => $id));
-      }
-      // If we can't, set an error.
+      } // If we can't, set an error.
       catch (Exception $e) {
         $error = $e->getMessage();
         // But make sure the error isn't just no attendees to load.
         if ($error == 'No records were found with the given parameters..' || strpos($error, 'Event deleted or cancelled.') !== FALSE) {
-          drupal_set_message('Event "' . $entity->event->title . '" (ID ' . $entity->event->id . ') has no attendees to load.', 'warning');
+          drupal_set_message('Event "' . $entity->event->title . '" (ID ' . $entity->event->id . ') has no attendees to load.', 'warning§');
         }
         else {
           drupal_set_message($error, 'error');
@@ -601,11 +609,11 @@ function eventbrite_api_import_all() {
       $result = db_truncate('eventbrite_api_attendees_answers')->execute();
       // Set a count array for our entities.
       $count = array(
-       'events' => 0,
-       'organizers' => 0,
-       'tickets' => 0,
-       'venues' => 0,
-       'attendees' => 0,
+        'events' => 0,
+        'organizers' => 0,
+        'tickets' => 0,
+        'venues' => 0,
+        'attendees' => 0,
       );
       // Run through the array.
       foreach ($events as $type => $data) {
@@ -620,7 +628,7 @@ function eventbrite_api_import_all() {
         }
       }
       // Set a message and let the user know what's been imported.
-      $placeholders =  array(
+      $placeholders = array(
         '@events' => $count['events'],
         '@organizers' => $count['organizers'],
         '@tickets' => $count['tickets'],
@@ -753,7 +761,7 @@ function eventbrite_api_format_all($data) {
   $events['attendees'] = $attendees;
   // Format the questions/answers.
   $questions = array();
-  foreach($answers as $key => $answer) {
+  foreach ($answers as $key => $answer) {
     foreach ($answer as $a) {
       $a->answer->aid = $key;
       $questions[$key] = (array) $a->answer;
@@ -971,8 +979,7 @@ function _eventbrite_event_autocomplete($string) {
   // Select the organizers table.
   $query = db_select('eventbrite_api_events', 'e');
   // Select rows that match the string.
-  $return = $query
-    ->fields('e', array('eid', 'title'))
+  $return = $query->fields('e', array('eid', 'title'))
     ->condition('e.title', '%' . db_like($string) . '%', 'LIKE')
     ->range(0, 10)
     ->execute();
@@ -993,8 +1000,7 @@ function _eventbrite_organizer_autocomplete($string) {
   // Select the organizers table.
   $query = db_select('eventbrite_api_organizers', 'o');
   // Select rows that match the string.
-  $return = $query
-    ->fields('o', array('oid', 'name'))
+  $return = $query->fields('o', array('oid', 'name'))
     ->condition('o.name', '%' . db_like($string) . '%', 'LIKE')
     ->range(0, 10)
     ->execute();
@@ -1015,8 +1021,7 @@ function _eventbrite_venue_autocomplete($string) {
   // Select the organizers table.
   $query = db_select('eventbrite_api_venues', 'v');
   // Select rows that match the string.
-  $return = $query
-    ->fields('v', array('vid', 'name'))
+  $return = $query->fields('v', array('vid', 'name'))
     ->condition('v.name', '%' . db_like($string) . '%', 'LIKE')
     ->range(0, 10)
     ->execute();
@@ -1049,10 +1054,10 @@ function eventbrite_api_autocomplete_build($id, $entity_type) {
   switch ($entity_type) {
     case 'event':
       $text = $entity->title;
-    break;
+      break;
     default:
       $text = $entity->name;
-    break;
+      break;
   }
   $string = $text . ' (' . $id . ')';
   return $string;

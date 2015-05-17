@@ -132,8 +132,7 @@ function eventbrite_api_config_form_validate($form, &$form_state) {
     try {
       // If it works, don't do anything as we want to save the details.
       $events = $eb_client->user_list_events();
-    }
-    // If it doesn't work, catch the error.
+    } // If it doesn't work, catch the error.
     catch (Exception $e) {
       // Variable for the form element.
       $element = 'config';
@@ -311,7 +310,10 @@ function event_add_form_submit($form, &$form_state) {
   field_attach_submit('event', $event_submit, $form, $form_state);
   // Connect to Eventbrite.
   if (($library = libraries_load('eventbrite')) && !empty($library['loaded'])) {
-    $auth = array('app_key'  => variable_get('eventbrite_api_appkey', ''), 'user_key' => variable_get('eventbrite_api_userkey', ''));
+    $auth = array(
+      'app_key' => variable_get('eventbrite_api_appkey', ''),
+      'user_key' => variable_get('eventbrite_api_userkey', '')
+    );
     $eb_client = new Eventbrite($auth);
     try {
       // Should we update an existing event or add a new one?
@@ -344,8 +346,7 @@ function event_add_form_submit($form, &$form_state) {
           $event = (object) array_merge((array) $form_state['event'], (array) $event);
         }
       }
-    }
-    catch (Exception $e) {
+    } catch (Exception $e) {
       $response = $e->getMessage();
       form_set_error('form', $response);
     }
@@ -375,14 +376,7 @@ function event_delete_form($form, &$form_state, $event) {
 
   $form['#submit'][] = 'event_delete_form_submit';
 
-  $form = confirm_form($form,
-    t('Are you sure you want to delete event "@title"?', array('@title' => $event->title)),
-    'admin/content/events/event',
-    '<p>' . t('This will cancel the event on Eventbrite and delete it locally. This action cannot be undone.') . '</p>',
-    t('Delete'),
-    t('Cancel'),
-    'confirm'
-  );
+  $form = confirm_form($form, t('Are you sure you want to delete event "@title"?', array('@title' => $event->title)), 'admin/content/events/event', '<p>' . t('This will cancel the event on Eventbrite and delete it locally. This action cannot be undone.') . '</p>', t('Delete'), t('Cancel'), 'confirm');
 
   return $form;
 }
@@ -480,7 +474,10 @@ function organizer_add_form_submit($form, &$form_state) {
   field_attach_submit('organizer', $organizer_submit, $form, $form_state);
   // Connect to Eventbrite.
   if (($library = libraries_load('eventbrite')) && !empty($library['loaded'])) {
-    $auth = array('app_key'  => variable_get('eventbrite_api_appkey', ''), 'user_key' => variable_get('eventbrite_api_userkey', ''));
+    $auth = array(
+      'app_key' => variable_get('eventbrite_api_appkey', ''),
+      'user_key' => variable_get('eventbrite_api_userkey', '')
+    );
     $eb_client = new Eventbrite($auth);
     try {
       // Should we update an existing organizer or add a new one?
@@ -512,8 +509,7 @@ function organizer_add_form_submit($form, &$form_state) {
           $organizer = (object) array_merge((array) $form_state['organizer'], (array) $organizer);
         }
       }
-    }
-    catch (Exception $e) {
+    } catch (Exception $e) {
       $response = $e->getMessage();
       form_set_error('form', $response);
     }
@@ -543,14 +539,7 @@ function organizer_delete_form($form, &$form_state, $organizer) {
 
   $form['#submit'][] = 'organizer_delete_form_submit';
 
-  $form = confirm_form($form,
-    t('Are you sure you want to delete organizer "@name"?', array('@name' => $organizer->name)),
-    'admin/content/events/event',
-    '<p>' . t('This will delete the organizer on Eventbrite and delete it locally. This action cannot be undone.') . '</p>',
-    t('Delete'),
-    t('Cancel'),
-    'confirm'
-  );
+  $form = confirm_form($form, t('Are you sure you want to delete organizer "@name"?', array('@name' => $organizer->name)), 'admin/content/events/event', '<p>' . t('This will delete the organizer on Eventbrite and delete it locally. This action cannot be undone.') . '</p>', t('Delete'), t('Cancel'), 'confirm');
 
   return $form;
 }
@@ -750,7 +739,10 @@ function ticket_add_form_submit($form, &$form_state) {
   $eventbrite['end_date'] = eventbrite_api_datef($eventbrite['end_date']);
   // Connect to Eventbrite.
   if (($library = libraries_load('eventbrite')) && !empty($library['loaded'])) {
-    $auth = array('app_key'  => variable_get('eventbrite_api_appkey', ''), 'user_key' => variable_get('eventbrite_api_userkey', ''));
+    $auth = array(
+      'app_key' => variable_get('eventbrite_api_appkey', ''),
+      'user_key' => variable_get('eventbrite_api_userkey', '')
+    );
     $eb_client = new Eventbrite($auth);
     try {
       // Ensure empty max field doesn't cause an error.
@@ -793,8 +785,7 @@ function ticket_add_form_submit($form, &$form_state) {
           $ticket = (object) array_merge((array) $form_state['ticket'], (array) $ticket);
         }
       }
-    }
-    catch (Exception $e) {
+    } catch (Exception $e) {
       $response = $e->getMessage();
       form_set_error('form', $response);
     }
@@ -817,14 +808,7 @@ function ticket_clone_form($form, &$form_state, $ticket) {
 
   $form['#submit'][] = 'ticket_clone_form_submit';
 
-  $form = confirm_form($form,
-    t('Are you sure you want to clone ticket "@name"?', array('@name' => $ticket->name)),
-    'admin/content/events/event',
-    '<p>' . t('This will clone the ticket on Eventbrite and clone it locally.') . '</p>',
-    t('Clone'),
-    t('Cancel'),
-    'confirm'
-  );
+  $form = confirm_form($form, t('Are you sure you want to clone ticket "@name"?', array('@name' => $ticket->name)), 'admin/content/events/event', '<p>' . t('This will clone the ticket on Eventbrite and clone it locally.') . '</p>', t('Clone'), t('Cancel'), 'confirm');
 
   return $form;
 }
@@ -858,7 +842,10 @@ function ticket_clone_form_submit($form, &$form_state) {
   }
   // Connect to Eventbrite.
   if (($library = libraries_load('eventbrite')) && !empty($library['loaded'])) {
-    $auth = array('app_key'  => variable_get('eventbrite_api_appkey', ''), 'user_key' => variable_get('eventbrite_api_userkey', ''));
+    $auth = array(
+      'app_key' => variable_get('eventbrite_api_appkey', ''),
+      'user_key' => variable_get('eventbrite_api_userkey', '')
+    );
     $eb_client = new Eventbrite($auth);
     try {
       // Add the event id.
@@ -884,8 +871,7 @@ function ticket_clone_form_submit($form, &$form_state) {
         // Set the ticket.
         $ticket = (object) array_merge((array) $form_state['ticket'], (array) $ticket);
       }
-    }
-    catch (Exception $e) {
+    } catch (Exception $e) {
       $response = $e->getMessage();
       form_set_error('form', $response);
     }
@@ -1011,7 +997,10 @@ function venue_add_form_submit($form, &$form_state) {
   // Add extra fields.
   field_attach_submit('venue', $venue_submit, $form, $form_state);
   // Connect to Eventbrite.
-  $auth = array('app_key'  => variable_get('eventbrite_api_appkey', ''), 'user_key' => variable_get('eventbrite_api_userkey', ''));
+  $auth = array(
+    'app_key' => variable_get('eventbrite_api_appkey', ''),
+    'user_key' => variable_get('eventbrite_api_userkey', '')
+  );
   $eb_client = new Eventbrite($auth);
   try {
     // Should we update an existing venue or add a new one?
@@ -1045,8 +1034,7 @@ function venue_add_form_submit($form, &$form_state) {
         $venue = (object) array_merge((array) $form_state['venue'], (array) $venue);
       }
     }
-  }
-  catch (Exception $e) {
+  } catch (Exception $e) {
     $response = $e->getMessage();
     form_set_error('form', $response);
   }
@@ -1072,14 +1060,7 @@ function venue_delete_form($form, &$form_state, $venue) {
 
   $form['#submit'][] = 'venue_delete_form_submit';
 
-  $form = confirm_form($form,
-    t('Are you sure you want to delete venue "@name"?', array('@name' => $venue->name)),
-    'admin/content/events/event',
-    '<p>' . t('This will delete the venue on Eventbrite and delete it locally. This action cannot be undone.') . '</p>',
-    t('Delete'),
-    t('Cancel'),
-    'confirm'
-  );
+  $form = confirm_form($form, t('Are you sure you want to delete venue "@name"?', array('@name' => $venue->name)), 'admin/content/events/event', '<p>' . t('This will delete the venue on Eventbrite and delete it locally. This action cannot be undone.') . '</p>', t('Delete'), t('Cancel'), 'confirm');
 
   return $form;
 }
